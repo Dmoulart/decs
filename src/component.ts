@@ -9,7 +9,7 @@ export type ComponentDataType = typeof Types[ComponentDataTypeName];
 
 // The object passed into the Component factory function
 export type ComponentDefinition = {
-  [key: string]: ComponentDataType;
+  [key: string]: ComponentDataType | Array<ComponentDataType>;
 };
 
 export type CreatedComponent<Def extends ComponentDefinition> = {
@@ -24,14 +24,19 @@ const createComponentFields = <Definition extends ComponentDefinition>(
 ) => {
   const comp = {} as CreatedComponent<Definition>;
 
-  for (const [key, val] of Object.entries(def)) {
-    // If key is an array constructor let's initialize it with the world size
-    if (typeof val === "function") {
-      comp[key as keyof typeof def] = new val(size) as any;
+  for (const key of Object.keys(def)) {
+    if (def[key] === Array) {
+      console.log("is array", def[key]);
+      //   createComponentFields(def[key as keyof typeof def] as any, size);
+      (comp[key as keyof typeof def] as any) = new Array(size).fill(() => []);
+      console.log(comp[key as keyof typeof def] as any);
     }
-    //   if (Array.isArray(val)){
-    //       comp[key as keyof typeof def]
-    //   }
+    // If key is an array constructor let's initialize it with the world size
+    else if (typeof def[key] === "function") {
+      comp[key as keyof typeof def] = new (def[key] as any)(
+        size
+      ) as any;
+    }
   }
 
   return comp;

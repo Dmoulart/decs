@@ -37,29 +37,30 @@ describe("Component", () => {
 
     expect(TestComponent.field).toHaveLength(1_000_000);
   });
-  it("can have standard arrays for string and typed arrays for numbers", () => {
-    const world = World();
-    const TestComponent = Component(
-      {
-        number: Types.i8,
-        string: Types.string,
-      },
-      world
-    );
+  //   it("can have standard arrays for string and typed arrays for numbers", () => {
+  //     const world = World();
+  //     const TestComponent = Component(
+  //       {
+  //         number: Types.i8,
+  //         string: Types.string,
+  //       },
+  //       world
+  //     );
 
-    expect(TestComponent.number).toBeInstanceOf(Types.i8);
-    expect(TestComponent.string).toBeInstanceOf(Array);
-  });
+  //     expect(TestComponent.number).toBeInstanceOf(Types.i8);
+  //     expect(TestComponent.string).toBeInstanceOf(Array);
+  //   });
   it("can have arrays of arrays as data types", () => {
-    const world = World();
+    const world = World(1_000_000);
     const TestComponent = Component(
       {
-        number: [Array],
+        nested: Types.array,
       },
       world
     );
 
-    expect(TestComponent.number).toBeInstanceOf(Types.i8);
-    expect(TestComponent.string).toBeInstanceOf(Array);
+    expect(TestComponent.nested).toBeInstanceOf(Array);
+    expect(TestComponent.nested).toHaveLength(1_000_000);
+    expect((TestComponent.nested as any)[0]).toHaveLength(0);
   });
 });
