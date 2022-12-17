@@ -1,24 +1,33 @@
-import {WORLD_MAX_SIZE} from "./world";
-
-export const SparseSet = (max = WORLD_MAX_SIZE ) => {
+export const SparseSet = () => {
     const dense: number[] = []
-    const sparse: number[] = new Array(max + 1)
+    const sparse: number[] = []
 
     const insert = (num: number) => {
         sparse[num] = dense.push(num) - 1
     }
 
-    const has = (num: number) => {
-        return !!dense?.[sparse?.[num]]
+    const has = (num: number) => !!dense?.[sparse?.[num]]
+
+    const remove = (num: number) => {
+        if(!has(num)) return
+
+        const last = dense.pop() as number
+
+        if(last !== num){
+            const i = sparse[num]
+            dense[i] = last
+            sparse[last] = i
+        }
     }
 
     const count = () => dense.length
 
-
-
     return {
+        sparse,
+        dense,
         insert,
         has,
-        count
+        count,
+        remove,
     }
 }
