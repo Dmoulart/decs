@@ -5,16 +5,16 @@ import {World} from "./world";
 export type ComponentDataTypeName = keyof typeof Types;
 
 // The possible components data types constructor
-export type ComponentDataTypeCtor = typeof Types[ComponentDataTypeName];
+export type ComponentDataType = typeof Types[ComponentDataTypeName];
 
 // The object passed into the Component factory function
 export type ComponentDefinition = {
-  [key: string]: ComponentDataTypeCtor;
+  [key: string]: ComponentDataType;
 };
 
-type CreatedComponent<Def extends ComponentDefinition> = {
+export type CreatedComponent<Def extends ComponentDefinition> = {
   $world: World;
-} & {[key in keyof Def]: InstanceType<Def[key]>};
+} & {[key in keyof Def]: Def[key]};
 
 export type Component = ReturnType<typeof Component>;
 
@@ -29,6 +29,9 @@ const createComponentFields = <Definition extends ComponentDefinition>(
     if (typeof val === "function") {
       comp[key as keyof typeof def] = new val(size) as any;
     }
+    //   if (Array.isArray(val)){
+    //       comp[key as keyof typeof def]
+    //   }
   }
 
   return comp;
@@ -41,6 +44,7 @@ export const Component = <Definition extends ComponentDefinition>(
   const comp = createComponentFields(def, world.size);
 
   comp.$world = world;
+  world.$components.push(comp);
 
   return comp;
 };

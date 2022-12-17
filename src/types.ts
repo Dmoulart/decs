@@ -17,6 +17,8 @@ export const Types = Object.freeze({
   eid: Uint32Array,
 
   string: Array,
+
+  //   array: [],
 });
 
 export default Types;

@@ -50,4 +50,16 @@ describe("Component", () => {
     expect(TestComponent.number).toBeInstanceOf(Types.i8);
     expect(TestComponent.string).toBeInstanceOf(Array);
   });
+  it("can have arrays of arrays as data types", () => {
+    const world = World();
+    const TestComponent = Component(
+      {
+        number: [Array],
+      },
+      world
+    );
+
+    expect(TestComponent.number).toBeInstanceOf(Types.i8);
+    expect(TestComponent.string).toBeInstanceOf(Array);
+  });
 });
