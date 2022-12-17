@@ -54,13 +54,13 @@ describe("Component", () => {
     const world = World(1_000_000);
     const TestComponent = Component(
       {
-        nested: Types.array,
+        nested: [Types.i8, 5],
       },
       world
     );
 
     expect(TestComponent.nested).toBeInstanceOf(Array);
     expect(TestComponent.nested).toHaveLength(1_000_000);
-    expect((TestComponent.nested as any)[0]).toHaveLength(0);
+    expect((TestComponent.nested)[0]).toHaveLength(0);
   });
 });

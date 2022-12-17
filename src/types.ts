@@ -15,9 +15,16 @@ export const Types = Object.freeze({
   f64: Float64Array,
 
   eid: Uint32Array,
-
-  array: Array,
-
 });
+
+// The JS typed arrays types we'll use as component fields definitions
+export type TypedArrays = typeof Types;
+export type TypedArray = TypedArrays[keyof TypedArrays];
+
+// The nested arrays fields will be defined like in bitEcs : a typed array constructor and the length of the array
+export type NestedTypedArray = [TypedArray, number];
+
+// A component definition field will consists in simple numeric arrays or nested arrays.
+export type ComponentDefinitionField = TypedArray | NestedTypedArray;
 
 export default Types;
