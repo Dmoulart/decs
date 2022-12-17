@@ -19,8 +19,10 @@ export type CreatedComponent<Def extends ComponentDefinition> = {
 /*let c: CreatedComponent<{
     c: typeof Types.eid
     e: [typeof Types.eid, 1]
-}>
-c.*/
+}, 10000>
+c.e.*/
+
+
 
 export type Component = ReturnType<typeof Component>;
 
@@ -38,20 +40,17 @@ const createComponentFields = <Definition extends ComponentDefinition>(
 ) => {
   const comp = {} as CreatedComponent<Definition>;
 
-  for (const key of Object.keys(def) as Array<keyof Definition>) {
-    const fieldDef = def[key];
-    const fieldComp = comp[key]
+  for (const field of Object.keys(def) as Array<keyof Definition>) {
+    const fieldDef = def[field];
 
     if (isNestedArray(fieldDef)) {
       const [ArrayConstructor, arraySize] = fieldDef;
 
-      comp[key] = new Array<TypedArray>(size).map(
-        () => new ArrayConstructor(arraySize)
-      );
+      (comp[field] as any) = new Array(size).fill(0).map(() => new ArrayConstructor(arraySize));
     }
     // If key is an array constructor let's initialize it with the world size
     else if (isTypedArray(fieldDef)) {
-      comp[key] = new fieldDef(size);
+      (comp[field] as any) = new fieldDef(size);
     }
   }
 

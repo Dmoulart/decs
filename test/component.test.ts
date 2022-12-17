@@ -61,6 +61,6 @@ describe("Component", () => {
 
     expect(TestComponent.nested).toBeInstanceOf(Array);
     expect(TestComponent.nested).toHaveLength(1_000_000);
-    expect((TestComponent.nested)[0]).toHaveLength(0);
+    expect(TestComponent.nested[0]).toHaveLength(5);
   });
 });
