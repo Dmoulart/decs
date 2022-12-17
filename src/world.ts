@@ -2,9 +2,9 @@ import {SparseSet} from "./sparse-set";
 
 export const WORLD_MAX_SIZE = 100_000
 
-export type World = ReturnType<typeof createWorld>
+export type World = ReturnType<typeof World>
 
-export const createWorld = (size = WORLD_MAX_SIZE) => {
+export const World = (size = WORLD_MAX_SIZE) => {
     let cursor = 0;
 
     const sset = SparseSet()

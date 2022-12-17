@@ -1,9 +1,9 @@
 import 'jest';
-import {createWorld} from "../src/world";
+import {World} from "../src/world";
 
 describe('World', () => {
     it('can be created', () => {
-        expect(() => createWorld()).not.toThrowError()
+        expect(() => World()).not.toThrowError()
     })
 /*    it('can create entity', () => {
         const world = createWorld()

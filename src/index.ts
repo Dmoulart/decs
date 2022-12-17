@@ -1,7 +1,7 @@
-import {createWorld} from "./world";
+import {World} from "./world";
 import {createEntity} from "./entity";
 
-const world = createWorld()
+const world = World()
 
 const eid = createEntity(world)
 console.log('1', eid)
