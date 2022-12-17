@@ -1,4 +1,4 @@
-import {CreatedComponent} from "./component";
+import {Component} from "./component";
 import {SparseSet} from "./sparse-set";
 
 export const WORLD_MAX_SIZE = 100_000;
@@ -8,7 +8,7 @@ export type World = {
   cursor: number;
   sset: SparseSet;
   size: number;
-  $components: Array<CreatedComponent<any>>;
+  $components: Array<Component<any>>;
 };
 
 export const World = (size = WORLD_MAX_SIZE): World => {
@@ -21,7 +21,7 @@ export const World = (size = WORLD_MAX_SIZE): World => {
     cursor,
     sset,
     size,
-    $components: [] as Array<CreatedComponent<any>>,
+    $components: [] as Array<Component<any>>,
   };
 
   return world;

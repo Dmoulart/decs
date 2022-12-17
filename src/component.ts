@@ -6,7 +6,7 @@ export type ComponentDefinition = {
   [key: string]: ComponentDefinitionField;
 };
 
-export type CreatedComponent<Def extends ComponentDefinition> = {
+export type Component<Def extends ComponentDefinition> = {
     $world: World;
 } & {
     [key in keyof Def]: Def[key] extends TypedArray
@@ -16,15 +16,12 @@ export type CreatedComponent<Def extends ComponentDefinition> = {
     : never;
 };
 
-/*let c: CreatedComponent<{
-    c: typeof Types.eid
+/*
+let c: Component<{
+    c: typeof Types.f32
     e: [typeof Types.eid, 1]
-}, 10000>
-c.e.*/
-
-
-
-export type Component = ReturnType<typeof Component>;
+}>
+*/
 
 const isNestedArray = (field: unknown): field is NestedTypedArray => {
   return Array.isArray(field);
@@ -37,8 +34,8 @@ const isTypedArray = (field: unknown): field is TypedArray => {
 const createComponentFields = <Definition extends ComponentDefinition>(
   def: Definition,
   size: number
-) => {
-  const comp = {} as CreatedComponent<Definition>;
+): Component<Definition> => {
+  const comp = {} as Component<Definition>;
 
   for (const field of Object.keys(def) as Array<keyof Definition>) {
     const fieldDef = def[field];
