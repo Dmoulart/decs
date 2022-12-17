@@ -4,13 +4,17 @@ export const WORLD_MAX_SIZE = 100_000
 
 export type World = ReturnType<typeof createWorld>
 
-export const createWorld = (maxSize = WORLD_MAX_SIZE) => {
+export const createWorld = (size = WORLD_MAX_SIZE) => {
+    let cursor = 0;
+
     const sset = SparseSet()
-    return {
-        has: sset.has,
-        remove: sset.remove,
+
+    const world = {
         count: sset.count,
+        cursor,
         sset,
-        maxSize,
-    }
+        size,
+    };
+
+    return world
 }
