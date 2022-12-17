@@ -1,6 +1,5 @@
-import  'jest';
+import 'jest';
 import {SparseSet} from "../src/sparse-set";
-
 
 describe('Sparse set', () => {
     it('can be created', () => {
@@ -50,3 +49,4 @@ describe('Sparse set', () => {
         expect(count()).toEqual(3)
     })
 });
+

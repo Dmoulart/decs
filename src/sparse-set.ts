@@ -6,25 +6,23 @@ export const SparseSet = () => {
         sparse[num] = dense.push(num) - 1
     }
 
-    const has = (num: number) => !!dense?.[sparse?.[num]]
+    const has = (num: number) => !!dense[sparse[num]]
 
     const remove = (num: number) => {
         if(!has(num)) return
 
         const last = dense.pop() as number
 
-        if(last !== num){
-            const i = sparse[num]
-            dense[i] = last
-            sparse[last] = i
-        }
+        if(last == num) return
+
+        const i = sparse[num]
+        dense[i] = last
+        sparse[last] = i
     }
 
     const count = () => dense.length
 
     return {
-        sparse,
-        dense,
         insert,
         has,
         count,
