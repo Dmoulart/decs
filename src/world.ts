@@ -7,27 +7,27 @@ export type World = {
   count: () => number;
   entityCursor: number;
   bitflag: number
-  sset: SparseSet;
+  entities: SparseSet;
   size: number;
   masks: Uint32Array
   // Should we use a map here ? Maybe simpler/faster alternative ?
-  $components: Map<Component<any>, ComponentMeta>;
+  components: Map<Component<any>, ComponentMeta>;
 };
 
 export const World = (size = WORLD_MAX_SIZE): World => {
   let entityCursor = 0;
 
-  const sset = SparseSet();
+  const entities = SparseSet();
 
   const masks = new Uint32Array(size)
 
   return {
-    count: sset.count,
+    count: entities.count,
     bitflag: 1 << 0,
+    components: new Map(),
     masks,
     entityCursor,
-    sset,
-    size,
-    $components: new Map()
+    entities,
+    size
   };
 };

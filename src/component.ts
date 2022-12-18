@@ -66,7 +66,7 @@ export const Component = <Definition extends ComponentDefinition>(
 
   comp.$world = world;
 
-  world.$components.set(comp, {
+  world.components.set(comp, {
       bitflag: world.bitflag
   });
 
@@ -81,21 +81,21 @@ export const Component = <Definition extends ComponentDefinition>(
 export const addComponent = (comp: Component<any>, eid: Entity, world: World) => {
     if(!hasEntity(eid, world))  throw new Error('Trying to add component on a non existant entity')
 
-    const {bitflag} = world.$components.get(comp) as ComponentMeta
+    const {bitflag} = world.components.get(comp) as ComponentMeta
     world.masks[eid] |= bitflag
 }
 
 export const hasComponent = (comp: Component<any>, eid: Entity, world: World) => {
     if(!hasEntity(eid, world))  throw new Error('Trying to check component existence on a non existant entity')
 
-    const {bitflag} = world.$components.get(comp) as ComponentMeta
+    const {bitflag} = world.components.get(comp) as ComponentMeta
     return (world.masks[eid] & bitflag) === bitflag
 }
 
 export const removeComponent = (comp: Component<any>, eid: Entity, world: World) => {
     if(!hasEntity(eid, world))  throw new Error('Trying to remove component on a non existant entity')
 
-    const {bitflag} = world.$components.get(comp) as ComponentMeta
+    const {bitflag} = world.components.get(comp) as ComponentMeta
     
     return world.masks[eid] &= ~bitflag
 }
