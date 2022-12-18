@@ -5,8 +5,7 @@
     "dependencies": {},
     "type": "module",
     "scripts": {
-        "dev": "ts-node ./src/index",
-        "bench:sset": "ts-node ./bench/sparse-set",
+        "bench": "ts-node-esm ./bench/sparse-set.ts && ts-node-esm ./bench/ecs.ts",
         "test": "jest --coverage ./test",
         "test:watch": "jest --watchAll"
     },
