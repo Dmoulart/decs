@@ -11,7 +11,7 @@ export const SparseSet = () => {
   const remove = (num: number) => {
     if (!has(num)) return;
 
-    const last = dense.pop() as number;
+    const last = dense.pop()!;
 
     if (last === num) return;
 
