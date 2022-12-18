@@ -4,7 +4,7 @@ import { World } from "./world";
 export type Entity = number
 
 export const createEntity = (world: World): Entity => {
-    const eid = ++world.cursor
+    const eid = ++world.entityCursor
     world.sset.insert(eid)
     return eid
 }

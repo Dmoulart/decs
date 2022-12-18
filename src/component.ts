@@ -1,5 +1,6 @@
 import {ComponentDefinitionField, NestedTypedArray, TypedArray, Types} from "./types";
 import {World} from "./world";
+import {Entity, hasEntity} from "./entity";
 
 // The object passed into the Component factory function
 export type ComponentDefinition = {
@@ -7,6 +8,7 @@ export type ComponentDefinition = {
 };
 
 export type Component<Def extends ComponentDefinition> = {
+    /*id: number;*/
     $world: World;
 } & {
     [key in keyof Def]: Def[key] extends TypedArray
@@ -15,6 +17,8 @@ export type Component<Def extends ComponentDefinition> = {
     ? Array<InstanceType<Def[key][0]>>
     : never;
 };
+
+export type ComponentMeta = { bitflag: number }
 
 /*
 let c: Component<{
@@ -61,7 +65,36 @@ export const Component = <Definition extends ComponentDefinition>(
   const comp = createComponentFields(def, world.size);
 
   comp.$world = world;
-  world.$components.push(comp);
+
+  world.$components.set(comp, {
+      bitflag: world.bitflag
+  });
+
+  // Increment world bitmask
+  // @TODO: Find a way to bypass the limit of 32 components
+  world.bitflag *= 2
 
   return comp;
 };
+
+
+export const addComponent = (comp: Component<any>, eid: Entity, world: World) => {
+    if(!hasEntity(eid, world))  throw new Error('Trying to add component on a non existant entity')
+
+    const {bitflag} = world.$components.get(comp) as ComponentMeta
+    world.masks[eid] |= bitflag
+}
+
+export const hasComponent = (comp: Component<any>, eid: Entity, world: World) => {
+    if(!hasEntity(eid, world))  throw new Error('Trying to check component existence on a non existant entity')
+
+    const {bitflag} = world.$components.get(comp) as ComponentMeta
+    return (world.masks[eid] & bitflag) === bitflag
+}
+
+export const removeComponent = (comp: Component<any>, eid: Entity, world: World) => {
+    if(!hasEntity(eid, world))  throw new Error('Trying to remove component on a non existant entity')
+
+    const {bitflag} = world.$components.get(comp) as ComponentMeta
+    return world.masks[eid] &= ~bitflag
+}

@@ -1,8 +1,9 @@
 import "jest";
 import {World} from "../src/world";
 
-import {Component} from "../src/component";
+import {addComponent, Component, hasComponent, removeComponent} from "../src/component";
 import Types from "../src/types";
+import {createEntity} from "../src/entity";
 
 describe("Component", () => {
   it("can be created", () => {
@@ -37,19 +38,6 @@ describe("Component", () => {
 
     expect(TestComponent.field).toHaveLength(1_000_000);
   });
-  //   it("can have standard arrays for string and typed arrays for numbers", () => {
-  //     const world = World();
-  //     const TestComponent = Component(
-  //       {
-  //         number: Types.i8,
-  //         string: Types.string,
-  //       },
-  //       world
-  //     );
-
-  //     expect(TestComponent.number).toBeInstanceOf(Types.i8);
-  //     expect(TestComponent.string).toBeInstanceOf(Array);
-  //   });
   it("can have arrays of arrays as data types", () => {
     const world = World(1_000_000);
     const TestComponent = Component(
@@ -63,4 +51,68 @@ describe("Component", () => {
     expect(TestComponent.nested).toHaveLength(1_000_000);
     expect(TestComponent.nested[0]).toHaveLength(5);
   });
+  it("can be added to entities without throwing error", () => {
+      const world = World();
+      const TestComponent = Component({
+        test: Types.i8
+      }, world)
+      const eid = createEntity(world)
+
+      expect(() => addComponent(TestComponent, eid, world)).not.toThrowError()
+  });
+  it("cannot be added to non existant entities", () => {
+      const world = World();
+
+      const TestComponent = Component({
+          test: Types.i8
+      }, world)
+
+      expect(() => addComponent(TestComponent, 123, world)).toThrowError()
+  });
+  it("can be detected on an entity", () => {
+      const world = World();
+
+      const TestComponent = Component({
+          test: Types.i8
+      }, world)
+      const eid = createEntity(world)
+
+      addComponent(TestComponent, eid, world)
+
+      expect(hasComponent(TestComponent, eid, world)).toStrictEqual(true)
+  });
+  it("cannot be detected on an entity if not added", () => {
+      const world = World();
+
+      const TestComponent = Component({
+          test: Types.i8
+      }, world)
+      const eid = createEntity(world)
+
+      expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false)
+  });
+  it("can be removed", () => {
+      const world = World();
+
+      const TestComponent = Component({
+          test: Types.i8
+      }, world)
+      const eid = createEntity(world)
+
+      addComponent(TestComponent, eid, world)
+      removeComponent(TestComponent, eid, world)
+
+      expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false)
+  });
+  it("don't remove while not throwing if not added", () => {
+      const world = World();
+
+      const TestComponent = Component({
+          test: Types.i8
+      }, world)
+      const eid = createEntity(world)
+
+      expect(() => removeComponent(TestComponent, eid, world)).not.toThrowError()
+  });
 });
+
