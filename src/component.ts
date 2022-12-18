@@ -96,5 +96,6 @@ export const removeComponent = (comp: Component<any>, eid: Entity, world: World)
     if(!hasEntity(eid, world))  throw new Error('Trying to remove component on a non existant entity')
 
     const {bitflag} = world.$components.get(comp) as ComponentMeta
+    
     return world.masks[eid] &= ~bitflag
 }

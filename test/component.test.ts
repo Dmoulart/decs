@@ -87,6 +87,7 @@ describe("Component", () => {
       const TestComponent = Component({
           test: Types.i8
       }, world)
+
       const eid = createEntity(world)
 
       expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false)
@@ -104,7 +105,7 @@ describe("Component", () => {
 
       expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false)
   });
-  it("don't remove while not throwing if not added", () => {
+  it("don't throw when trying to remove component which does not exists", () => {
       const world = World();
 
       const TestComponent = Component({
