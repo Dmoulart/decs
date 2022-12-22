@@ -1,6 +1,7 @@
 import {ComponentDefinitionField, NestedTypedArray, TypedArray, Types} from "./types";
 import {World} from "./world";
 import {Entity, hasEntity} from "./entity";
+import {augmentArchetype, createArchetype, diminishArchetype} from "./archetype";
 
 // The object passed into the Component factory function
 export type ComponentDefinition = {
@@ -8,7 +9,7 @@ export type ComponentDefinition = {
 };
 
 export type Component<Def extends ComponentDefinition> = {
-    /*id: number;*/
+    id: number;
     $world: World;
 } & {
     [key in keyof Def]: Def[key] extends TypedArray
@@ -18,28 +19,26 @@ export type Component<Def extends ComponentDefinition> = {
     : never;
 };
 
-export type ComponentMeta = { bitflag: number }
+export type ComponentMetaData = { bitflag: number }
 
-/*
-let c: Component<{
+/*let c: Component<{
     c: typeof Types.f32
     e: [typeof Types.eid, 1]
-}>
-*/
-
-const isNestedArray = (field: unknown): field is NestedTypedArray => {
-  return Array.isArray(field);
-};
-
-const isTypedArray = (field: unknown): field is TypedArray => {
-  return typeof field === "function";
-};
+}>*/
 
 const createComponentFields = <Definition extends ComponentDefinition>(
   def: Definition,
   size: number
 ): Component<Definition> => {
   const comp = {} as Component<Definition>;
+
+  const isNestedArray = (field: unknown): field is NestedTypedArray => {
+      return Array.isArray(field);
+  };
+
+  const isTypedArray = (field: unknown): field is TypedArray => {
+      return typeof field === "function";
+  };
 
   for (const field of Object.keys(def) as Array<keyof Definition>) {
     const fieldDef = def[field];
@@ -66,36 +65,59 @@ export const Component = <Definition extends ComponentDefinition>(
 
   comp.$world = world;
 
-  world.components.set(comp, {
+/*  world.components.set(comp, {
       bitflag: world.bitflag
-  });
+  });*/
 
   // Increment world bitmask
   // @TODO: Find a way to bypass the limit of 32 components
-  world.bitflag *= 2
+  /*world.bitflag <<= 1*/
+
+  comp.id = ++world.nextCid
 
   return comp;
 };
 
 
-export const addComponent = (comp: Component<any>, eid: Entity, world: World) => {
+export const addComponent = (component: Component<any>, eid: Entity, world: World) => {
     if(!hasEntity(eid, world))  throw new Error('Trying to add component on a non existant entity')
 
-    const {bitflag} = world.components.get(comp) as ComponentMeta
-    world.masks[eid] |= bitflag
+    const archetype = world.entitiesArchetypes.get(eid)!
+
+    if(archetype.componentIds.has(component.id)) return
+
+    const newArchetype = augmentArchetype(archetype, component)
+
+    archetype.entities.remove(eid)
+
+    newArchetype.entities.insert(eid)
+    world.entitiesArchetypes.set(eid, newArchetype)
 }
 
 export const hasComponent = (comp: Component<any>, eid: Entity, world: World) => {
     if(!hasEntity(eid, world))  throw new Error('Trying to check component existence on a non existant entity')
 
-    const {bitflag} = world.components.get(comp) as ComponentMeta
-    return (world.masks[eid] & bitflag) === bitflag
+    const archetype = world.entitiesArchetypes.get(eid)
+
+    if(!archetype) return false
+
+    return archetype.componentIds.has(comp.id)
+
+  /*  const {bitflag} = world.components.get(comp) as ComponentMetaData
+    return (world.masks[eid] & bitflag) === bitflag*/
 }
 
-export const removeComponent = (comp: Component<any>, eid: Entity, world: World) => {
-    if(!hasEntity(eid, world))  throw new Error('Trying to remove component on a non existant entity')
+export const removeComponent = (component: Component<any>, eid: Entity, world: World) => {
+    if(!hasEntity(eid, world))  throw new Error('Trying to add component on a non existant entity')
 
-    const {bitflag} = world.components.get(comp) as ComponentMeta
-    
-    return world.masks[eid] &= ~bitflag
+    const archetype = world.entitiesArchetypes.get(eid)!
+
+    if(!archetype.componentIds.has(component.id)) return
+
+    const newArchetype = diminishArchetype(archetype, component)
+
+    archetype.entities.remove(eid)
+
+    newArchetype.entities.insert(eid)
+    world.entitiesArchetypes.set(eid, newArchetype)
 }

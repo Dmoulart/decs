@@ -16,8 +16,8 @@ const Velocity = Component({
     y: Types.f32
 }, world)
 
-run('World : Add 1_000_000 entities', () => {
-    for(let i = 0; i <= 1_000_000; i++){
+run('World : Add 5000 entities', () => {
+    for(let i = 0; i <= 5000; i++){
         const eid = createEntity(world)
     }
 })

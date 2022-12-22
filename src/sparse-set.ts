@@ -27,5 +27,6 @@ export const SparseSet = () => {
     has,
     count,
     remove,
+    dense
   };
 };

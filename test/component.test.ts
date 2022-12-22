@@ -105,6 +105,24 @@ describe("Component", () => {
 
       expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false)
   });
+  it("can add multiple components", () => {
+      const world = World();
+
+      const TestComponent = Component({
+          test: Types.i8
+      }, world)
+      const TestComponent2 = Component({
+          test: Types.i32
+      }, world)
+
+      const eid = createEntity(world)
+
+      addComponent(TestComponent, eid, world)
+      addComponent(TestComponent2, eid, world)
+
+      expect(hasComponent(TestComponent, eid, world)).toStrictEqual(true)
+      expect(hasComponent(TestComponent2, eid, world)).toStrictEqual(true)
+  });
   it("don't throw when trying to remove component which does not exists", () => {
       const world = World();
 
