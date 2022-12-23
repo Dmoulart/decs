@@ -10,8 +10,10 @@ export type Archetype = {
 }
 
 export const Archetype = (components: Component<any>[]): Archetype => {
+    const mask = BitSet(32)
     const componentIds = components.reduce((sset: SparseSet, component: Component<any>) => {
         sset.insert(component.id)
+        mask.or(component.id)
         return sset
     }, SparseSet())
 
@@ -19,7 +21,7 @@ export const Archetype = (components: Component<any>[]): Archetype => {
         componentIds,
         entities: SparseSet(),
         edges: { add: new Map(), remove: new Map() },
-        mask: BitSet(32)
+        mask
     }
 }
 
@@ -30,18 +32,22 @@ export const augmentArchetype = (from: Archetype, component: Component<any>): Ar
         return augmentedArchetype
     }
     else{
+        const mask = from.mask.clone()
+
         const componentIds = from.componentIds.dense.reduce((sset, id) => {
             sset.insert(id)
+            mask.or(id)
             return sset
         }, SparseSet())
 
         componentIds.insert(component.id)
+        mask.or(component.id)
 
         const archetype = {
             componentIds,
             entities: SparseSet(),
             edges: { add: new Map(), remove: new Map() },
-            mask: BitSet(32)
+            mask
         }
 
         from.edges.add.set(component.id, archetype)
@@ -59,18 +65,22 @@ export const diminishArchetype = (from: Archetype, component: Component<any>): A
         return diminishedArchetype
     }
     else{
+        const mask = from.mask.clone()
+
         const componentIds = from.componentIds.dense.reduce((sset, id) => {
             sset.insert(id)
+            mask.or(id)
             return sset
         }, SparseSet())
 
         componentIds.remove(component.id)
+        mask.xor(component.id)
 
         const archetype =  {
             componentIds,
             entities: SparseSet(),
             edges: {add: new Map(), remove: new Map()},
-            mask: BitSet(32)
+            mask
         }
 
         from.edges.remove.set(component.id, archetype)

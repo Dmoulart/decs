@@ -82,7 +82,7 @@ export const addComponent = (component: Component<any>, eid: Entity, world: Worl
 
     const archetype = world.entitiesArchetypes.get(eid)!
 
-    if(archetype.componentIds.has(component.id)) return
+    if(archetype.mask.has(component.id)) return
 
     const newArchetype = augmentArchetype(archetype, component)
 
@@ -99,7 +99,7 @@ export const hasComponent = (comp: Component<any>, eid: Entity, world: World) =>
 
     if(!archetype) return false
 
-    return archetype.componentIds.has(comp.id)
+    return archetype.mask.has(comp.id)
 
   /*  const {bitflag} = world.components.get(comp) as ComponentMetaData
     return (world.masks[eid] & bitflag) === bitflag*/

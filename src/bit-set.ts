@@ -12,12 +12,25 @@ export const BitSet = (size: number) => {
 
             return Boolean(mask[index] & 1 << (val % 32))
         },
-        or(val :number){
+        or(val: number){
             const index = val >>> 5
 
             if(mask[index] === undefined) throw new Error('BitSet size not sufficient')
 
             mask[index] |= 1 << (val % 32)
+        },
+        xor(value: number) {
+            const index = value >>> 5
+
+            if(mask[index] === undefined) throw new Error('BitSet size not sufficient')
+
+            mask[index] ^= 1 << (value % 32)
+            return this
+        },
+        clone(){
+            const bitSet = BitSet(size)
+            bitSet.mask.set(mask)
+            return bitSet
         }
     }
 }
