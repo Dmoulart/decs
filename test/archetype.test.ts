@@ -18,7 +18,7 @@ describe("Archetype", () => {
 
       const archetype = Archetype([TestComponent])
 
-      expect(archetype.componentIds.has(TestComponent.id)).toBeTruthy()
+      expect(archetype.mask.has(TestComponent.id)).toBeTruthy()
   });
   it("can be augmented", () => {
       const world = World();
@@ -34,8 +34,8 @@ describe("Archetype", () => {
 
       const augmentedArchetype = augmentArchetype(archetype, TestComponent2)
 
-      expect(augmentedArchetype.componentIds.has(TestComponent1.id)).toBeTruthy()
-      expect(augmentedArchetype.componentIds.has(TestComponent2.id)).toBeTruthy()
+      expect(augmentedArchetype.mask.has(TestComponent1.id)).toBeTruthy()
+      expect(augmentedArchetype.mask.has(TestComponent2.id)).toBeTruthy()
   });
   it("can be diminished", () => {
       const world = World();
@@ -50,8 +50,8 @@ describe("Archetype", () => {
       const archetype = Archetype([TestComponent1, TestComponent2])
       const diminishedArchetype = diminishArchetype(archetype, TestComponent2)
 
-      expect(diminishedArchetype.componentIds.has(TestComponent1.id)).toBeTruthy()
-      expect(diminishedArchetype.componentIds.has(TestComponent2.id)).toBeFalsy()
+      expect(diminishedArchetype.mask.has(TestComponent1.id)).toBeTruthy()
+      expect(diminishedArchetype.mask.has(TestComponent2.id)).toBeFalsy()
   });
   it("can cache augmented archetype", () => {
       const world = World();

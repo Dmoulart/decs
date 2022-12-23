@@ -110,7 +110,7 @@ export const removeComponent = (component: Component<any>, eid: Entity, world: W
 
     const archetype = world.entitiesArchetypes.get(eid)!
 
-    if(!archetype.componentIds.has(component.id)) return
+    if(!archetype.mask.has(component.id)) return
 
     const newArchetype = diminishArchetype(archetype, component)
 

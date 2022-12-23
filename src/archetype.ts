@@ -4,21 +4,16 @@ import {BitSet, Bitset} from "./bit-set";
 
 export type Archetype = {
     entities: SparseSet
-    componentIds: SparseSet
     edges: { add: Map<Component<any>['id'], Archetype>, remove: Map<Component<any>['id'], Archetype> }
     mask: Bitset
 }
 
 export const Archetype = (components: Component<any>[]): Archetype => {
-    const mask = BitSet(32)
-    const componentIds = components.reduce((sset: SparseSet, component: Component<any>) => {
-        sset.insert(component.id)
-        mask.or(component.id)
-        return sset
-    }, SparseSet())
-
+    const mask = components.reduce((mask, {id}) => {
+           mask.or(id)
+           return mask
+    }, BitSet(32))
     return {
-        componentIds,
         entities: SparseSet(),
         edges: { add: new Map(), remove: new Map() },
         mask
@@ -33,18 +28,9 @@ export const augmentArchetype = (from: Archetype, component: Component<any>): Ar
     }
     else{
         const mask = from.mask.clone()
-
-        const componentIds = from.componentIds.dense.reduce((sset, id) => {
-            sset.insert(id)
-            mask.or(id)
-            return sset
-        }, SparseSet())
-
-        componentIds.insert(component.id)
         mask.or(component.id)
 
         const archetype = {
-            componentIds,
             entities: SparseSet(),
             edges: { add: new Map(), remove: new Map() },
             mask
@@ -66,18 +52,9 @@ export const diminishArchetype = (from: Archetype, component: Component<any>): A
     }
     else{
         const mask = from.mask.clone()
-
-        const componentIds = from.componentIds.dense.reduce((sset, id) => {
-            sset.insert(id)
-            mask.or(id)
-            return sset
-        }, SparseSet())
-
-        componentIds.remove(component.id)
         mask.xor(component.id)
 
         const archetype =  {
-            componentIds,
             entities: SparseSet(),
             edges: {add: new Map(), remove: new Map()},
             mask
