@@ -19,10 +19,12 @@ export type Component<Def extends ComponentDefinition> = {
     : never;
 };
 
-/*let c: Component<{
+/*
+let c: Component<{
     c: typeof Types.f32
     e: [typeof Types.eid, 1]
-}>*/
+}>
+*/
 
 const createComponentFields = <Definition extends ComponentDefinition>(
   def: Definition,
@@ -63,14 +65,6 @@ export const Component = <Definition extends ComponentDefinition>(
 
   comp.$world = world;
 
-/*  world.components.set(comp, {
-      bitflag: world.bitflag
-  });*/
-
-  // Increment world bitmask
-  // @TODO: Find a way to bypass the limit of 32 components
-  /*world.bitflag <<= 1*/
-
   comp.id = ++world.nextCid
 
   return comp;
@@ -100,9 +94,6 @@ export const hasComponent = (comp: Component<any>, eid: Entity, world: World) =>
     if(!archetype) return false
 
     return archetype.mask.has(comp.id)
-
-  /*  const {bitflag} = world.components.get(comp) as ComponentMetaData
-    return (world.masks[eid] & bitflag) === bitflag*/
 }
 
 export const removeComponent = (component: Component<any>, eid: Entity, world: World) => {
