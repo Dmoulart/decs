@@ -1,7 +1,7 @@
 import {ComponentDefinitionField, NestedTypedArray, TypedArray, Types} from "./types";
 import {World} from "./world";
 import {Entity, hasEntity} from "./entity";
-import {augmentArchetype, createArchetype, diminishArchetype} from "./archetype";
+import {augmentArchetype, diminishArchetype} from "./archetype";
 
 // The object passed into the Component factory function
 export type ComponentDefinition = {
@@ -18,8 +18,6 @@ export type Component<Def extends ComponentDefinition> = {
     ? Array<InstanceType<Def[key][0]>>
     : never;
 };
-
-export type ComponentMetaData = { bitflag: number }
 
 /*let c: Component<{
     c: typeof Types.f32

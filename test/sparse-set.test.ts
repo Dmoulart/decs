@@ -1,7 +1,7 @@
 import 'jest';
 import {SparseSet} from "../src/sparse-set";
 
-describe('Sparse set', () => {
+describe('SparseSet', () => {
     it('can be created', () => {
         expect(() => SparseSet()).not.toThrowError()
     })

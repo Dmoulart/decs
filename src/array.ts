@@ -12,4 +12,3 @@ export type FixedArray<T, N extends number> = GrowToSize<T, [], N>;*//*
 type Tuple<TItem, TLength extends number> = [TItem, ...TItem[]] & { length: TLength };
 
 type Tuple9<T> = Tuple<T, 9>;*/
-
