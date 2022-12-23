@@ -11,5 +11,11 @@ describe('BitSet', () => {
         expect(set.has(5)).toBeTruthy()
         expect(set.has(6)).toBeFalsy()
     })
+    it('can flip value', () => {
+        const set = BitSet(32)
+        set.or(5)
+        set.xor(5)
+        expect(set.has(5)).toBeFalsy()
+    })
 });
 
