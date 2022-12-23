@@ -1,4 +1,3 @@
-import {SparseSet} from "./sparse-set";
 import {Archetype} from "./archetype";
 import {Entity} from "./entity";
 
@@ -10,14 +9,19 @@ export type World = {
   size: number;
   entitiesArchetypes: Map<Entity, Archetype>
   rootArchetype: Archetype
+  archetypes: Archetype[]
 };
 
 export const World = (size = WORLD_MAX_SIZE): World => {
-  return {
+  const world = {
     nextEid: 0,
     nextCid: 0,
     entitiesArchetypes: new Map(),
-    rootArchetype: Archetype([]),
-    size
-  };
+    archetypes: [] as Archetype[],
+    size,
+  } as World
+
+  world.rootArchetype = Archetype([], world)
+
+  return world
 };

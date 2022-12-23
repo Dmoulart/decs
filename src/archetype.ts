@@ -1,23 +1,31 @@
-import {SparseSet} from "./sparse-set";
+import {SparseSet} from "./collections/sparse-set";
 import {Component} from "./component";
-import {BitSet, Bitset} from "./bit-set";
+import {BitSet, Bitset} from "./collections/bit-set";
+import {World} from "./world";
 
 export type Archetype = {
     entities: SparseSet
     edges: { add: Map<Component<any>['id'], Archetype>, remove: Map<Component<any>['id'], Archetype> }
     mask: Bitset
+    world: World
 }
 
-export const Archetype = (components: Component<any>[]): Archetype => {
+export const Archetype = (components: Component<any>[], world: World): Archetype => {
     const mask = components.reduce((mask, {id}) => {
            mask.or(id)
            return mask
     }, BitSet(32))
-    return {
+
+    const archetype = {
         entities: SparseSet(),
         edges: { add: new Map(), remove: new Map() },
-        mask
+        mask,
+        world
     }
+
+    world.archetypes.push(archetype)
+
+    return archetype
 }
 
 export const augmentArchetype = (from: Archetype, component: Component<any>): Archetype => {
@@ -33,15 +41,14 @@ export const augmentArchetype = (from: Archetype, component: Component<any>): Ar
         const archetype = {
             entities: SparseSet(),
             edges: { add: new Map(), remove: new Map() },
-            mask
+            mask,
+            world: from.world
         }
 
         from.edges.add.set(component.id, archetype)
 
         return archetype
     }
-
-
 }
 
 export const diminishArchetype = (from: Archetype, component: Component<any>): Archetype => {
@@ -56,14 +63,16 @@ export const diminishArchetype = (from: Archetype, component: Component<any>): A
 
         const archetype =  {
             entities: SparseSet(),
-            edges: {add: new Map(), remove: new Map()},
-            mask
+            edges: {
+                add: new Map(),
+                remove: new Map()
+            },
+            mask,
+            world: from.world
         }
 
         from.edges.remove.set(component.id, archetype)
 
         return archetype
     }
-
-
 }

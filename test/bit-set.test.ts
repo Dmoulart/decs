@@ -1,5 +1,5 @@
 import 'jest';
-import {BitSet} from "../src/bit-set";
+import {BitSet} from "../src/collections/bit-set";
 
 describe('BitSet', () => {
     it('can be created', () => {

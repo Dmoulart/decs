@@ -7,7 +7,7 @@ import {Archetype, augmentArchetype, diminishArchetype} from "../src/archetype";
 
 describe("Archetype", () => {
   it("can be created without component", () => {
-    expect(() => Archetype([])).not.toThrowError();
+      expect(() => Archetype([],World())).not.toThrowError();
   });
   it("can be created with component", () => {
       const world = World();
@@ -16,7 +16,7 @@ describe("Archetype", () => {
           test: Types.i8
       }, world)
 
-      const archetype = Archetype([TestComponent])
+      const archetype = Archetype([TestComponent], world)
 
       expect(archetype.mask.has(TestComponent.id)).toBeTruthy()
   });
@@ -30,7 +30,7 @@ describe("Archetype", () => {
           test: Types.i8
       }, world)
 
-      const archetype = Archetype([TestComponent1])
+      const archetype = Archetype([TestComponent1], world)
 
       const augmentedArchetype = augmentArchetype(archetype, TestComponent2)
 
@@ -47,7 +47,7 @@ describe("Archetype", () => {
           test: Types.i8
       }, world)
 
-      const archetype = Archetype([TestComponent1, TestComponent2])
+      const archetype = Archetype([TestComponent1, TestComponent2], world)
       const diminishedArchetype = diminishArchetype(archetype, TestComponent2)
 
       expect(diminishedArchetype.mask.has(TestComponent1.id)).toBeTruthy()
@@ -63,7 +63,7 @@ describe("Archetype", () => {
           test: Types.i8
       }, world)
 
-      const archetype = Archetype([TestComponent1])
+      const archetype = Archetype([TestComponent1], world)
 
       const augmented =  augmentArchetype(archetype, TestComponent2)
 
@@ -82,7 +82,7 @@ describe("Archetype", () => {
           test: Types.i8
       }, world)
 
-      const archetype = Archetype([TestComponent1, TestComponent2])
+      const archetype = Archetype([TestComponent1, TestComponent2], world)
       const diminished = diminishArchetype(archetype, TestComponent2)
 
       expect(archetype.edges.remove.has(TestComponent2.id)).toBeTruthy()
