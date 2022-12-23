@@ -1,3 +1,5 @@
+export type Bitset = ReturnType<typeof BitSet>
+
 export const BitSet = (size: number) => {
     let mask = new Uint32Array(size)
 

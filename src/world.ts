@@ -1,3 +1,4 @@
+import {SparseSet} from "./sparse-set";
 import {Archetype} from "./archetype";
 import {Entity} from "./entity";
 
