@@ -22,7 +22,7 @@ export const Archetype = (components: Component<any>[]): Archetype => {
     }
 }
 
-export const augmentArchetype = (from: Archetype, component: Component<any>): Archetype => {
+export const augmentArchetype = (from: Archetype, component: Component<any>, world:World): Archetype => {
     const augmentedArchetype = from.edges.add.get(component.id)
 
     if(augmentedArchetype){
@@ -40,11 +40,13 @@ export const augmentArchetype = (from: Archetype, component: Component<any>): Ar
 
         from.edges.add.set(component.id, archetype)
 
+        world.archetypes.push(archetype)
+
         return archetype
     }
 }
 
-export const diminishArchetype = (from: Archetype, component: Component<any>): Archetype => {
+export const diminishArchetype = (from: Archetype, component: Component<any>, world:World): Archetype => {
     const diminishedArchetype = from.edges.remove.get(component.id)
 
     if(diminishedArchetype){
@@ -64,6 +66,8 @@ export const diminishArchetype = (from: Archetype, component: Component<any>): A
         }
 
         from.edges.remove.set(component.id, archetype)
+
+        world.archetypes.push(archetype)
 
         return archetype
     }

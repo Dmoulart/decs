@@ -78,12 +78,11 @@ export const addComponent = (component: Component<any>, eid: Entity, world: Worl
 
     if(archetype.mask.has(component.id)) return
 
-    const newArchetype = augmentArchetype(archetype, component)
-    world.archetypes.push(newArchetype)
+    const newArchetype = augmentArchetype(archetype, component, world)
 
     archetype.entities.remove(eid)
-
     newArchetype.entities.insert(eid)
+
     world.entitiesArchetypes.set(eid, newArchetype)
 }
 
@@ -104,9 +103,8 @@ export const removeComponent = (component: Component<any>, eid: Entity, world: W
 
     if(!archetype.mask.has(component.id)) return
 
-    const newArchetype = diminishArchetype(archetype, component)
-    world.archetypes.push(newArchetype)
-    
+    const newArchetype = diminishArchetype(archetype, component, world)
+
     archetype.entities.remove(eid)
 
     newArchetype.entities.insert(eid)

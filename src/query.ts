@@ -11,9 +11,9 @@ export const Query = () => {
     return {
         mask,
         archetypes,
-        some(...components: Component<any>[]) {
+        all(...components: Component<any>[]) {
             components.forEach(({id}) => mask.or(id))
-            matchers.push((arch) => mask.contains(arch.mask))
+            matchers.push((arch) => arch.mask.contains(mask))
             return this
         },
         not(...components: Component<any>[]) {

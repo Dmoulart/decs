@@ -10,7 +10,7 @@ describe("Query", () => {
    it("can be created ", () => {
         expect(() => Query()).not.toThrowError();
    });
-   it("can query some components", () => {
+   it("can query sets of components", () => {
        const world = World()
 
        const TestComponent = Component({
@@ -27,14 +27,11 @@ describe("Query", () => {
        const eid2 = createEntity(world)
        addComponent(TestComponent, eid2, world)
 
-       const a = Query().some(TestComponent, TestComponent2).from(world)
-       expect(a.archetypes.length).toStrictEqual(3);
+       const a = Query().all(TestComponent, TestComponent2).from(world)
+       expect(a.archetypes.length).toStrictEqual(1);
 
-       const b = Query().some(TestComponent).from(world)
+       const b = Query().all(TestComponent).from(world)
        expect(b.archetypes.length).toStrictEqual(2);
-
-       const c = Query().some(TestComponent).some(TestComponent2).from(world)
-       expect(c.archetypes.length).toStrictEqual(3);
    });
 
 
