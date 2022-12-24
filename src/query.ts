@@ -8,10 +8,12 @@ const makeComponentsMask = (...components: Component<any>[]) => components.reduc
         return mask
     }, BitSet(32))
 
+export type Matcher = (archetype: Archetype) => boolean
+
 export const Query = () => {
     const mask = BitSet(32)
     const archetypes: Archetype[] = []
-    const matchers: Array<(archetype: Archetype) => boolean> = []
+    const matchers: Array<Matcher> = []
 
     return {
         mask,
@@ -34,6 +36,10 @@ export const Query = () => {
         none(...components: Component<any>[]) {
             const mask = makeComponentsMask(...components)
             matchers.push((arch) => !arch.mask.contains(mask))
+            return this
+        },
+        match(matcher: Matcher) {
+            matchers.push(matcher)
             return this
         },
         from(world: World){

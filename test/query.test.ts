@@ -73,8 +73,8 @@ describe("Query", () => {
        const eid2 = createEntity(world)
        addComponent(TestComponent, eid2, world)
 
-       const a = Query().any(TestComponent).not(TestComponent2).from(world)
-       expect(a.archetypes.length).toStrictEqual(1);
+       const query = Query().any(TestComponent).not(TestComponent2).from(world)
+       expect(query.archetypes.length).toStrictEqual(1);
    });
    it("can exclude group of components from query", () => {
        const world = World()
@@ -98,10 +98,32 @@ describe("Query", () => {
        addComponent(TestComponent, eid2, world)
        addComponent(TestComponent2, eid, world)
 
-       const a = Query().any(TestComponent).none(TestComponent2, TestComponent3).from(world)
-       expect(a.archetypes.length).toStrictEqual(2);
+       const query = Query().any(TestComponent).none(TestComponent2, TestComponent3).from(world)
+       expect(query.archetypes.length).toStrictEqual(2);
    });
+   it("can use custom matcher", () => {
+       const world = World()
 
+       const TestComponent = Component({
+           test: Types.i8
+       }, world)
+       const TestComponent2 = Component({
+           test: Types.i32
+       }, world)
 
+       const eid = createEntity(world)
+       addComponent(TestComponent, eid, world)
+       addComponent(TestComponent2, eid, world)
+
+       const eid2 = createEntity(world)
+       addComponent(TestComponent, eid2, world)
+
+       const query = Query()
+            .any(TestComponent)
+            .match((arch) => arch.entities.count() > 10)
+            .from(world)
+
+       expect(query.archetypes.length).toStrictEqual(0);
+   });
 });
 
