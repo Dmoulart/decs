@@ -10,6 +10,8 @@ const makeComponentsMask = (...components: Component<any>[]) => components.reduc
 
 export type Matcher = (archetype: Archetype) => boolean
 
+export type Query = ReturnType<typeof Query>
+
 export const Query = () => {
     const mask = BitSet(32)
     const archetypes: Archetype[] = []
@@ -17,6 +19,7 @@ export const Query = () => {
 
     return {
         mask,
+        matchers,
         archetypes,
         all(...components: Component<any>[]) {
             const mask = makeComponentsMask(...components)
@@ -50,7 +53,10 @@ export const Query = () => {
                 archetypes.push(archetype)
             }
             return this
-        }
-
+        },
     }
+}
+
+export const registerQuery = (query: Query, world: World) => {
+    world.queries.push(query)
 }

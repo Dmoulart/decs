@@ -42,6 +42,12 @@ export const augmentArchetype = (from: Archetype, component: Component<any>, wor
 
         world.archetypes.push(archetype)
 
+        world.queries.forEach(query => {
+            if(query.matchers.every(match => match(archetype))){
+                query.archetypes.push(archetype)
+            }
+        })
+
         return archetype
     }
 }
@@ -68,6 +74,12 @@ export const diminishArchetype = (from: Archetype, component: Component<any>, wo
         from.edges.remove.set(component.id, archetype)
 
         world.archetypes.push(archetype)
+
+        world.queries.forEach(query => {
+            if(query.matchers.every(match => match(archetype))){
+                query.archetypes.push(archetype)
+            }
+        })
 
         return archetype
     }

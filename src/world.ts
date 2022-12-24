@@ -1,5 +1,6 @@
 import {Archetype} from "./archetype";
 import {Entity} from "./entity";
+import {Query} from './query'
 
 export const WORLD_MAX_SIZE = 100_000;
 
@@ -10,6 +11,7 @@ export type World = {
   entitiesArchetypes: Map<Entity, Archetype>
   rootArchetype: Archetype
   archetypes: Archetype[]
+  queries: Query[]
 };
 
 export const World = (size = WORLD_MAX_SIZE): World => {
@@ -18,6 +20,7 @@ export const World = (size = WORLD_MAX_SIZE): World => {
     nextCid: 0,
     entitiesArchetypes: new Map(),
     archetypes: [] as Archetype[],
+    queries: [] as Query[],
     size,
   } as World
 
