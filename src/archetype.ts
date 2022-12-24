@@ -47,6 +47,8 @@ export const augmentArchetype = (from: Archetype, component: Component<any>): Ar
 
         from.edges.add.set(component.id, archetype)
 
+        from.world.archetypes.push(archetype)
+
         return archetype
     }
 }
@@ -72,6 +74,8 @@ export const diminishArchetype = (from: Archetype, component: Component<any>): A
         }
 
         from.edges.remove.set(component.id, archetype)
+
+        from.world.archetypes.push(archetype)
 
         return archetype
     }
