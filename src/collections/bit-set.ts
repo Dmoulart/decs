@@ -4,6 +4,7 @@ export type Bitset = {
     or: (val:number) => void
     xor: (val:number) => void
     contains: (set: Bitset) => boolean
+    intersects: (set: Bitset) => boolean
     clone: () => Bitset
     toString: () => string
 }
@@ -44,6 +45,16 @@ export const BitSet = (size: number): Bitset => {
                 }
             }
             return true
+        },
+        intersects(other: Bitset){
+            for(let i = 0; i < mask.length; i++){
+                const thisMask = mask[i]
+                const otherMask = other.mask[i]
+                if((thisMask & otherMask) > 0){
+                    return true
+                }
+            }
+            return false
         },
         clone(){
             const clone = BitSet(size)
