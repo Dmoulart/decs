@@ -21,7 +21,7 @@ export const Query = () => {
             matchers.push((arch) => arch.mask.contains(mask))
             return this
         },
-        some(...components: Component<any>[]) {
+        any(...components: Component<any>[]) {
             const mask = makeComponentsMask(...components)
             matchers.push((arch) => arch.mask.intersects(mask))
             return this
@@ -31,14 +31,17 @@ export const Query = () => {
             matchers.push((arch) => !arch.mask.intersects(mask))
             return this
         },
+        none(...components: Component<any>[]) {
+            const mask = makeComponentsMask(...components)
+            matchers.push((arch) => !arch.mask.contains(mask))
+            return this
+        },
         from(world: World){
-            for(const archetype of world.archetypes){
+            archloop: for(const archetype of world.archetypes){
                 for(const match of matchers){
-                    if(match(archetype)){
-                        archetypes.push(archetype)
-                        break
-                    }
+                    if(!match(archetype)) continue archloop
                 }
+                archetypes.push(archetype)
             }
             return this
         }
