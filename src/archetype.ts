@@ -7,25 +7,19 @@ export type Archetype = {
     entities: SparseSet
     edges: { add: Map<Component<any>['id'], Archetype>, remove: Map<Component<any>['id'], Archetype> }
     mask: Bitset
-    world: World
 }
 
-export const Archetype = (components: Component<any>[], world: World): Archetype => {
+export const Archetype = (components: Component<any>[]): Archetype => {
     const mask = components.reduce((mask, {id}) => {
            mask.or(id)
            return mask
     }, BitSet(32))
 
-    const archetype = {
+    return {
         entities: SparseSet(),
         edges: { add: new Map(), remove: new Map() },
         mask,
-        world
     }
-
-    world.archetypes.push(archetype)
-
-    return archetype
 }
 
 export const augmentArchetype = (from: Archetype, component: Component<any>): Archetype => {
@@ -42,12 +36,9 @@ export const augmentArchetype = (from: Archetype, component: Component<any>): Ar
             entities: SparseSet(),
             edges: { add: new Map(), remove: new Map() },
             mask,
-            world: from.world
         }
 
         from.edges.add.set(component.id, archetype)
-
-        from.world.archetypes.push(archetype)
 
         return archetype
     }
@@ -70,12 +61,9 @@ export const diminishArchetype = (from: Archetype, component: Component<any>): A
                 remove: new Map()
             },
             mask,
-            world: from.world
         }
 
         from.edges.remove.set(component.id, archetype)
-
-        from.world.archetypes.push(archetype)
 
         return archetype
     }

@@ -21,7 +21,7 @@ export const World = (size = WORLD_MAX_SIZE): World => {
     size,
   } as World
 
-  world.rootArchetype = Archetype([], world)
+  world.rootArchetype = Archetype([])
 
   return world
 };
