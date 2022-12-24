@@ -58,5 +58,5 @@ export const Query = () => {
 }
 
 export const registerQuery = (query: Query, world: World) => {
-    world.queries.push(query)
+    world.queries.push(query.from(world))
 }
