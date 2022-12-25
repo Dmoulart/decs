@@ -1,4 +1,4 @@
-import {SparseSet} from "../src/sparse-set.js";
+import {SparseSet} from "../src/collections/sparse-set.js";
 import {run} from "./run/runner.js";
 
 // INSERT method
