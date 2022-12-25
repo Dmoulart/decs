@@ -6,14 +6,14 @@ import {Archetype} from "./archetype";
 const makeComponentsMask = (...components: Component<any>[]) => components.reduce((mask, comp) => {
         mask.or(comp.id)
         return mask
-    }, BitSet(32))
+    }, BitSet())
 
 export type Matcher = (archetype: Archetype) => boolean
 
 export type Query = ReturnType<typeof Query>
 
 export const Query = () => {
-    const mask = BitSet(32)
+    const mask = BitSet()
     const archetypes: Archetype[] = []
     const matchers: Array<Matcher> = []
 

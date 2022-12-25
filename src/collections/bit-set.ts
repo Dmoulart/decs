@@ -9,35 +9,45 @@ export type Bitset = {
     toString: () => string
 }
 
-export const BitSet = (size: number): Bitset => {
+export const BitSet = (size = 4): Bitset => {
     // Must we handle size ourselves or just let the array live ?
     let mask = new Uint32Array(size)
+
+    const resize = () => {
+        const newMask = new Uint32Array(size + 1)
+        newMask.set(mask)
+        mask = newMask
+    }
 
     return {
         mask,
         has(val: number){
             const index = val >>> 5
 
-            if(!mask[index]) return false
+            if(index > size){
+                resize()
+                return false
+            }
 
             return Boolean(mask[index] & 1 << (val % 32))
         },
         or(val: number){
             const index = val >>> 5
 
-            /*if(mask[index] === undefined) throw new Error('BitSet size not sufficient')*/
+            if(index > size){
+                resize()
+            }
 
             mask[index] |= 1 << (val % 32)
         },
         xor(val: number) {
             const index = val >>> 5
 
-            /*if(mask[index] === undefined) throw new Error('BitSet size not sufficient')*/
-
             mask[index] ^= 1 << (val % 32)
         },
         contains(other: Bitset){
-            for(let i = 0; i < mask.length; i++){
+            const len = Math.min(mask.length, other.mask.length)
+            for(let i = 0; i < len; i++){
                 const thisMask = mask[i]
                 const otherMask = other.mask[i]
                 if((thisMask & otherMask) !== otherMask){
@@ -47,7 +57,8 @@ export const BitSet = (size: number): Bitset => {
             return true
         },
         intersects(other: Bitset){
-            for(let i = 0; i < mask.length; i++){
+            const len = Math.min(mask.length, other.mask.length)
+            for(let i = 0; i < len; i++){
                 const thisMask = mask[i]
                 const otherMask = other.mask[i]
                 if((thisMask & otherMask) > 0){

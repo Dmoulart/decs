@@ -11,9 +11,9 @@ export type Archetype = {
 
 export const Archetype = (components: Component<any>[]): Archetype => {
     const mask = components.reduce((mask, {id}) => {
-           mask.or(id)
-           return mask
-    }, BitSet(32))
+        mask.or(id)
+        return mask
+    }, BitSet())
 
     return {
         entities: SparseSet(),
