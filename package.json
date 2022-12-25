@@ -6,8 +6,9 @@
     "type": "module",
     "main": "./dist/index.js",
     "files": [
-        "./dist/**/*"
+        "dist/**/*"
     ],
+    "types": "dist/index.d.ts",
     "author": "dmoulart",
     "scripts": {
         "clean": "rm -rf ./dist",
