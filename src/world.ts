@@ -1,5 +1,4 @@
 import {Archetype} from "./archetype";
-import {Entity} from "./entity";
 import {Query} from './query'
 
 export const WORLD_MAX_SIZE = 100_000;
