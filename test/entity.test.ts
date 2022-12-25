@@ -15,7 +15,7 @@ describe('Entity', () => {
         createEntity(world)
         createEntity(world)
 
-        expect(world.entitiesArchetypes.size).toStrictEqual(2)
+        expect(world.nextEid).toStrictEqual(2)
     })
     it('can keep track of the entities count when removing entities', () => {
         const world = World()

@@ -72,7 +72,7 @@ export const Component = <Definition extends ComponentDefinition>(
 
 
 export const addComponent = (component: Component<any>, eid: Entity, world: World) => {
-    const archetype = world.entitiesArchetypes.get(eid)!
+    const archetype = world.entitiesArchetypes[eid]!
 
     if(archetype?.mask?.has?.(component.id)) return
 
@@ -81,11 +81,11 @@ export const addComponent = (component: Component<any>, eid: Entity, world: Worl
     archetype.entities.remove(eid)
     newArchetype.entities.insert(eid)
 
-    world.entitiesArchetypes.set(eid, newArchetype)
+    world.entitiesArchetypes[eid] = newArchetype
 }
 
 export const hasComponent = (comp: Component<any>, eid: Entity, world: World) => {
-    const archetype = world.entitiesArchetypes.get(eid)
+    const archetype = world.entitiesArchetypes[eid]
 
     if(!archetype) return false
 
@@ -93,7 +93,7 @@ export const hasComponent = (comp: Component<any>, eid: Entity, world: World) =>
 }
 
 export const removeComponent = (component: Component<any>, eid: Entity, world: World) => {
-    const archetype = world.entitiesArchetypes.get(eid)!
+    const archetype = world.entitiesArchetypes[eid]!
 
     if(!archetype.mask.has(component.id)) return
 
@@ -102,5 +102,5 @@ export const removeComponent = (component: Component<any>, eid: Entity, world: W
     archetype.entities.remove(eid)
 
     newArchetype.entities.insert(eid)
-    world.entitiesArchetypes.set(eid, newArchetype)
+    world.entitiesArchetypes[eid] = newArchetype
 }
