@@ -72,11 +72,9 @@ export const Component = <Definition extends ComponentDefinition>(
 
 
 export const addComponent = (component: Component<any>, eid: Entity, world: World) => {
-    if(!hasEntity(eid, world))  throw new Error('Trying to add component on a non existant entity')
-
     const archetype = world.entitiesArchetypes.get(eid)!
 
-    if(archetype.mask.has(component.id)) return
+    if(archetype?.mask?.has?.(component.id)) return
 
     const newArchetype = augmentArchetype(archetype, component, world)
 
@@ -87,8 +85,6 @@ export const addComponent = (component: Component<any>, eid: Entity, world: Worl
 }
 
 export const hasComponent = (comp: Component<any>, eid: Entity, world: World) => {
-    if(!hasEntity(eid, world))  throw new Error('Trying to check component existence on a non existant entity')
-
     const archetype = world.entitiesArchetypes.get(eid)
 
     if(!archetype) return false
@@ -97,8 +93,6 @@ export const hasComponent = (comp: Component<any>, eid: Entity, world: World) =>
 }
 
 export const removeComponent = (component: Component<any>, eid: Entity, world: World) => {
-    if(!hasEntity(eid, world))  throw new Error('Trying to add component on a non existant entity')
-
     const archetype = world.entitiesArchetypes.get(eid)!
 
     if(!archetype.mask.has(component.id)) return

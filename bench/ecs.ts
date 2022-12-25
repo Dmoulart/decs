@@ -126,11 +126,10 @@ import {Query, registerQuery} from "../src/query";
             addComponent(Position, eid, world)
             Position.x[eid] = 100
             Position.y[eid] = 100
-            addComponent(Position, eid, world)
-            Position.x[eid] = 100
-            Position.y[eid] = 100
+            addComponent(Velocity, eid, world)
+            Velocity.x[eid] = 1.5
+            Velocity.y[eid] = 1.7
             removeEntity(eid, world)
         }
     })
 }
-
