@@ -6,6 +6,7 @@
     "type": "module",
     "scripts": {
         "bench": "ts-node-esm ./bench/sparse-set.ts && ts-node-esm ./bench/ecs.ts",
+        "bench:node": "tsc && node  --experimental-specifier-resolution=node ./dist/bench/ecs.js",
         "test": "jest --coverage ./test",
         "test:watch": "jest --watchAll"
     },
