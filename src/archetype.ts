@@ -39,21 +39,27 @@ export const augmentArchetype = (from: Archetype, component: Component<any>, wor
         }
 
         from.edges.add[component.id] = archetype
-        /*archetype.edges.remove.set(component.id, from)*/
+        archetype.edges.remove[component.id] = from
 
         world.archetypes.push(archetype)
 
-        world.queries.forEach(query => {
-            if(query.matchers.every(match => match(archetype))){
+        for(const query of world.queries){
+            let addArchetype = true
+            for(const match of query.matchers){
+                if(!match(archetype)){
+                    addArchetype = false
+                }
+            }
+            if(addArchetype){
                 query.archetypes.push(archetype)
             }
-        })
+        }
 
         return archetype
     }
 }
 
-export const diminishArchetype = (from: Archetype, component: Component<any>, world:World): Archetype => {
+export const diminishArchetype = (from: Archetype, component: Component<any>, world: World): Archetype => {
     const diminishedArchetype = from.edges.remove[component.id]
 
     if(diminishedArchetype){
@@ -73,15 +79,21 @@ export const diminishArchetype = (from: Archetype, component: Component<any>, wo
         }
 
         from.edges.remove[component.id] = archetype
-        /*archetype.edges.add.set(component.id, from)*/
+        archetype.edges.add[component.id] = from
 
         world.archetypes.push(archetype)
 
-        world.queries.forEach(query => {
-            if(query.matchers.every(match => match(archetype))){
+        for(const query of world.queries){
+            let addArchetype = true
+            for(const match of query.matchers){
+                if(!match(archetype)){
+                    addArchetype = false
+                }
+            }
+            if(addArchetype){
                 query.archetypes.push(archetype)
             }
-        })
+        }
 
         return archetype
     }
