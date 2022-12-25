@@ -1,6 +1,6 @@
 {
     "name": "@dmoulart/decs",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "license": "MIT",
     "dependencies": {},
     "type": "module",
@@ -11,13 +11,12 @@
     "types": "dist/index.d.ts",
     "author": "dmoulart",
     "scripts": {
-        "clean": "rm -rf ./dist",
         "build": "tsc -p tsconfig.json",
         "bench:node": "node  --experimental-specifier-resolution=node ./dist/bench/ecs.js",
         "bench:bun": "bun run ./dist/bench/ecs.js",
         "test": "jest --coverage ./test",
         "test:watch": "jest --watchAll",
-        "prepare": "yarn clean && yarn build && yarn test"
+        "prepare": "yarn build && yarn test"
     },
     "devDependencies": {
         "@types/jest": "^29.2.4",
