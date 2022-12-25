@@ -5,7 +5,7 @@ import {World} from "./world";
 
 export type Archetype = {
     entities: SparseSet
-    edges: { add: Map<Component<any>['id'], Archetype>, remove: Map<Component<any>['id'], Archetype> }
+    edges: { add: (Archetype|undefined)[], remove: (Archetype|undefined)[] }
     mask: Bitset
 }
 
@@ -17,13 +17,13 @@ export const Archetype = (components: Component<any>[]): Archetype => {
 
     return {
         entities: SparseSet(),
-        edges: { add: new Map(), remove: new Map() },
+        edges: { add: [], remove: [] },
         mask,
     }
 }
 
 export const augmentArchetype = (from: Archetype, component: Component<any>, world:World): Archetype => {
-    const augmentedArchetype = from.edges.add.get(component.id)
+    const augmentedArchetype = from.edges.add[component.id]
 
     if(augmentedArchetype){
         return augmentedArchetype
@@ -32,13 +32,13 @@ export const augmentArchetype = (from: Archetype, component: Component<any>, wor
         const mask = from.mask.clone()
         mask.or(component.id)
 
-        const archetype = {
+        const archetype: Archetype = {
             entities: SparseSet(),
-            edges: { add: new Map(), remove: new Map() },
+            edges: { add: [], remove: [] },
             mask,
         }
 
-        from.edges.add.set(component.id, archetype)
+        from.edges.add[component.id] = archetype
         /*archetype.edges.remove.set(component.id, from)*/
 
         world.archetypes.push(archetype)
@@ -54,7 +54,7 @@ export const augmentArchetype = (from: Archetype, component: Component<any>, wor
 }
 
 export const diminishArchetype = (from: Archetype, component: Component<any>, world:World): Archetype => {
-    const diminishedArchetype = from.edges.remove.get(component.id)
+    const diminishedArchetype = from.edges.remove[component.id]
 
     if(diminishedArchetype){
         return diminishedArchetype
@@ -63,16 +63,16 @@ export const diminishArchetype = (from: Archetype, component: Component<any>, wo
         const mask = from.mask.clone()
         mask.xor(component.id)
 
-        const archetype =  {
+        const archetype: Archetype =  {
             entities: SparseSet(),
             edges: {
-                add: new Map(),
-                remove: new Map()
+                add: [],
+                remove: []
             },
             mask,
         }
 
-        from.edges.remove.set(component.id, archetype)
+        from.edges.remove[component.id] = archetype
         /*archetype.edges.add.set(component.id, from)*/
 
         world.archetypes.push(archetype)

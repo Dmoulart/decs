@@ -67,7 +67,7 @@ describe("Archetype", () => {
 
       const augmented =  augmentArchetype(archetype, TestComponent2, world)
 
-      expect(archetype.edges.add.has(TestComponent2.id)).toBeTruthy()
+      expect(archetype.edges.add[TestComponent2.id]).toBeTruthy()
 
       const augmentedCached = augmentArchetype(archetype, TestComponent2, world)
       expect(augmentedCached).toStrictEqual(augmented)
@@ -85,7 +85,7 @@ describe("Archetype", () => {
       const archetype = Archetype([TestComponent1, TestComponent2])
       const diminished = diminishArchetype(archetype, TestComponent2, world)
 
-      expect(archetype.edges.remove.has(TestComponent2.id)).toBeTruthy()
+      expect(archetype.edges.remove[TestComponent2.id]).toBeTruthy()
 
       const diminishedCached = diminishArchetype(archetype, TestComponent2, world)
       expect(diminishedCached).toStrictEqual(diminished)
