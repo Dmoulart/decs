@@ -2,6 +2,7 @@ import {Bitset, BitSet} from "./collections";
 import {Component} from "./component";
 import {World} from "./world";
 import {Archetype} from "./archetype";
+import {Entity} from "../dist";
 
 /**
  * Create a mask from a list of components.
@@ -60,13 +61,21 @@ export type Query = {
   match: (matcher: Matcher) => Query;
   /**
    * Execute the given query with the given world.
-   * This allows you to execute the query outside of the system or world. You can therefore make one time
+   * This allows to execute the query outside of the system or world. We can therefore make one time
    * queries. If you wish to use a query regularly you should register the query with the register query method.
    * It will update automatically the query results when any archetypes is created.
    * @param world
    * @returns
    */
   from: (world: World) => Query;
+
+  /**
+   * Execute the given function for each entities.
+   * It is slower than a classic for loop.
+   * @param fn
+   * @returns nothing
+   */
+  forEachEntity: (fn: (eid: Entity) => void) => void;
 };
 /**
  * Query a list of archetypes.
@@ -112,6 +121,15 @@ export const Query = (): Query => {
       }
       return this;
     },
+    forEachEntity(fn: (eid: Entity) => void) {
+      for (let i = 0; i < archetypes.length; i++) {
+        const ents = archetypes[i].entities.dense;
+        const len = ents.length;
+        for (let j = 0; j < len; j++) {
+          fn(ents[j]);
+        }
+      }
+    },
   };
 };
 
@@ -119,7 +137,7 @@ export const Query = (): Query => {
  * Register a query in the given world.
  * The query results will be automatically updated when new archetypes are created.
  * @param query the query to register
- * @param world 
+ * @param world
  */
 export const registerQuery = (query: Query, world: World) => {
   world.queries.push(query.from(world));
