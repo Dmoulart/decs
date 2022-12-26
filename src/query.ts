@@ -2,7 +2,7 @@ import {Bitset, BitSet} from "./collections";
 import {Component} from "./component";
 import {World} from "./world";
 import {Archetype} from "./archetype";
-import {Entity} from "../dist";
+import {Entity} from "./entity";
 
 /**
  * Create a mask from a list of components.

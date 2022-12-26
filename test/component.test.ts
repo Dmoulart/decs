@@ -13,43 +13,31 @@ import {createEntity} from "../src/entity";
 describe("Component", () => {
   it("can be created", () => {
     const world = World();
-    expect(() => Component({}, world)).not.toThrowError();
-  });
-  it("is attached to world when created", () => {
-    const world = World();
-    const TestComponent = Component({}, world);
-
-    expect(TestComponent.$world).toStrictEqual(world);
+    expect(() => Component({})).not.toThrowError();
   });
   it("sees its array types fields instanciated", () => {
-    const world = World();
-    const TestComponent = Component(
-      {
-        field: Types.i8,
-      },
-      world
-    );
+    const TestComponent = Component({
+      field: Types.i8,
+    });
 
     expect(TestComponent.field).toBeInstanceOf(Int8Array);
   });
   it("sees its array types fields instanciated and preallocated", () => {
-    const world = World(1_000_000);
     const TestComponent = Component(
       {
         field: Types.i8,
       },
-      world
+      1_000_000
     );
 
     expect(TestComponent.field).toHaveLength(1_000_000);
   });
   it("can have arrays of arrays as data types", () => {
-    const world = World(1_000_000);
     const TestComponent = Component(
       {
         nested: [Types.i8, 5],
       },
-      world
+      1_000_000
     );
 
     expect(TestComponent.nested).toBeInstanceOf(Array);
@@ -58,12 +46,9 @@ describe("Component", () => {
   });
   it("can be added to entities without throwing error", () => {
     const world = World();
-    const TestComponent = Component(
-      {
-        test: Types.i8,
-      },
-      world
-    );
+    const TestComponent = Component({
+      test: Types.i8,
+    });
     const eid = createEntity(world);
 
     expect(() => addComponent(TestComponent, eid, world)).not.toThrowError();
@@ -71,24 +56,18 @@ describe("Component", () => {
   it("adding to non existant entities does throw error", () => {
     const world = World();
 
-    const TestComponent = Component(
-      {
-        test: Types.i8,
-      },
-      world
-    );
+    const TestComponent = Component({
+      test: Types.i8,
+    });
 
     expect(() => addComponent(TestComponent, 123, world)).toThrowError();
   });
   it("can be detected on an entity", () => {
     const world = World();
 
-    const TestComponent = Component(
-      {
-        test: Types.i8,
-      },
-      world
-    );
+    const TestComponent = Component({
+      test: Types.i8,
+    });
     const eid = createEntity(world);
 
     addComponent(TestComponent, eid, world);
@@ -98,12 +77,9 @@ describe("Component", () => {
   it("cannot be detected on an entity if not added", () => {
     const world = World();
 
-    const TestComponent = Component(
-      {
-        test: Types.i8,
-      },
-      world
-    );
+    const TestComponent = Component({
+      test: Types.i8,
+    });
 
     const eid = createEntity(world);
 
@@ -112,12 +88,9 @@ describe("Component", () => {
   it("can be removed", () => {
     const world = World();
 
-    const TestComponent = Component(
-      {
-        test: Types.i8,
-      },
-      world
-    );
+    const TestComponent = Component({
+      test: Types.i8,
+    });
     const eid = createEntity(world);
 
     addComponent(TestComponent, eid, world);
@@ -128,18 +101,12 @@ describe("Component", () => {
   it("can add multiple components", () => {
     const world = World();
 
-    const TestComponent = Component(
-      {
-        test: Types.i8,
-      },
-      world
-    );
-    const TestComponent2 = Component(
-      {
-        test: Types.i32,
-      },
-      world
-    );
+    const TestComponent = Component({
+      test: Types.i8,
+    });
+    const TestComponent2 = Component({
+      test: Types.i32,
+    });
 
     const eid = createEntity(world);
 
@@ -152,12 +119,9 @@ describe("Component", () => {
   it("does not throw when trying to remove a non existant component", () => {
     const world = World();
 
-    const TestComponent = Component(
-      {
-        test: Types.i8,
-      },
-      world
-    );
+    const TestComponent = Component({
+      test: Types.i8,
+    });
     const eid = createEntity(world);
 
     expect(() => removeComponent(TestComponent, eid, world)).not.toThrowError();

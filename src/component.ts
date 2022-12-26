@@ -1,12 +1,12 @@
-import {
-  ComponentDefinitionField,
-  NestedTypedArray,
-  TypedArray,
-  Types,
-} from "./types";
+import {ComponentDefinitionField, NestedTypedArray, TypedArray} from "./types";
 import {World} from "./world";
 import {Entity, NonExistantEntityError} from "./entity";
 import {augmentArchetype, diminishArchetype} from "./archetype";
+import {WORLD_MAX_SIZE} from "./world";
+
+// The next component id.
+// Components are not created in a particular world context but can be shared between worlds.
+let nextCid = 0;
 
 // The object passed into the Component factory function
 export type ComponentDefinition = {
@@ -15,7 +15,6 @@ export type ComponentDefinition = {
 
 export type Component<Def extends ComponentDefinition> = {
   id: number;
-  $world: World;
 } & {
   [key in keyof Def]: Def[key] extends TypedArray
     ? InstanceType<Def[key]>
@@ -66,18 +65,16 @@ const createComponentFields = <Definition extends ComponentDefinition>(
 /**
  * Create a new component from a component definition.
  * @param def component definition
- * @param world
+ * @param size the size of the component store. It should equal to the size of the world.
  * @returns component
  */
 export const Component = <Definition extends ComponentDefinition>(
   def: Definition,
-  world: World
+  size = WORLD_MAX_SIZE
 ) => {
-  const comp = createComponentFields(def, world.size);
+  const comp = createComponentFields(def, size);
 
-  comp.$world = world;
-
-  comp.id = ++world.nextCid;
+  comp.id = ++nextCid;
 
   return comp;
 };

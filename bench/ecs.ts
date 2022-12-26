@@ -7,20 +7,14 @@ import {Query, registerQuery} from "../src/query";
 
 {
   let world = World();
-  let Position = Component(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
-  let Velocity = Component(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
+  let Position = Component({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  let Velocity = Component({
+    x: Types.f32,
+    y: Types.f32,
+  });
   let count = 0;
   const MovementQuery = Query().all(Position, Velocity);
   registerQuery(MovementQuery, world);
@@ -52,20 +46,14 @@ import {Query, registerQuery} from "../src/query";
 
 {
   let world = World();
-  let Position = Component(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
-  let Velocity = Component(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
+  let Position = Component({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  let Velocity = Component({
+    x: Types.f32,
+    y: Types.f32,
+  });
   let count = 0;
   const MovementQuery = Query().all(Position, Velocity);
   registerQuery(MovementQuery, world);
@@ -120,20 +108,14 @@ import {Query, registerQuery} from "../src/query";
 //  Destroy 100_000; entities
 {
   let world = World();
-  let Position = Component(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
-  let Velocity = Component(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
+  let Position = Component({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  let Velocity = Component({
+    x: Types.f32,
+    y: Types.f32,
+  });
 
   const MovementQuery = Query().all(Position, Velocity);
   registerQuery(MovementQuery, world);
