@@ -5,7 +5,7 @@ import {
   Types,
 } from "./types";
 import {World} from "./world";
-import {Entity} from "./entity";
+import {Entity, NonExistantEntityError} from "./entity";
 import {augmentArchetype, diminishArchetype} from "./archetype";
 
 // The object passed into the Component factory function
@@ -87,6 +87,7 @@ export const Component = <Definition extends ComponentDefinition>(
  * @param component
  * @param eid
  * @param world
+ * @throws NonExistantEntityError
  * @returns nothing
  */
 export const addComponent = (
@@ -96,7 +97,13 @@ export const addComponent = (
 ) => {
   const archetype = world.entitiesArchetypes[eid]!;
 
-  if (!archetype || archetype?.mask?.has?.(component.id)) return;
+  if (!archetype) {
+    throw new NonExistantEntityError(
+      `Trying to add component to a non existant entity with id :${eid}`
+    );
+  }
+
+  if (archetype?.mask?.has?.(component.id)) return;
 
   const newArchetype = augmentArchetype(archetype, component, world);
 
@@ -111,6 +118,7 @@ export const addComponent = (
  * @param comp
  * @param eid
  * @param world
+ * @throws NonExistantEntityError
  * @returns entity has the specified component
  */
 export const hasComponent = (
@@ -120,7 +128,11 @@ export const hasComponent = (
 ) => {
   const archetype = world.entitiesArchetypes[eid];
 
-  if (!archetype) return false;
+  if (!archetype) {
+    throw new NonExistantEntityError(
+      `Trying to check component existence of a non existant entity with id :${eid}`
+    );
+  }
 
   return archetype.mask.has(comp.id);
 };
@@ -130,6 +142,7 @@ export const hasComponent = (
  * @param component
  * @param eid
  * @param world
+ * @throws NonExistantEntityError
  * @returns nothing
  */
 export const removeComponent = (
@@ -139,7 +152,13 @@ export const removeComponent = (
 ) => {
   const archetype = world.entitiesArchetypes[eid]!;
 
-  if (!archetype || !archetype.mask.has(component.id)) return;
+  if (!archetype) {
+    throw new NonExistantEntityError(
+      `Trying to remove component from a non existant entity with id :${eid}`
+    );
+  }
+
+  if (!archetype.mask.has(component.id)) return;
 
   const newArchetype = diminishArchetype(archetype, component, world);
 
