@@ -19,13 +19,6 @@ export type Component<Def extends ComponentDefinition> = {
     : never;
 };
 
-/*
-let c: Component<{
-    c: typeof Types.f32
-    e: [typeof Types.eid, 1]
-}>
-*/
-
 const createComponentFields = <Definition extends ComponentDefinition>(
   def: Definition,
   size: number
@@ -74,7 +67,7 @@ export const Component = <Definition extends ComponentDefinition>(
 export const addComponent = (component: Component<any>, eid: Entity, world: World) => {
     const archetype = world.entitiesArchetypes[eid]!
 
-    if(archetype?.mask?.has?.(component.id)) return
+    if(!archetype || archetype?.mask?.has?.(component.id)) return
 
     const newArchetype = augmentArchetype(archetype, component, world)
 
@@ -95,7 +88,7 @@ export const hasComponent = (comp: Component<any>, eid: Entity, world: World) =>
 export const removeComponent = (component: Component<any>, eid: Entity, world: World) => {
     const archetype = world.entitiesArchetypes[eid]!
 
-    if(!archetype.mask.has(component.id)) return
+    if(!archetype || !archetype.mask.has(component.id)) return
 
     const newArchetype = diminishArchetype(archetype, component, world)
 

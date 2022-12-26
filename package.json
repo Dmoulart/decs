@@ -12,8 +12,8 @@
     "author": "dmoulart",
     "scripts": {
         "build": "tsc -p tsconfig.json",
-        "bench:node": "node  --experimental-specifier-resolution=node ./dist/bench/ecs.js",
-        "bench:bun": "bun run ./dist/bench/ecs.js",
+        "bench:node": "node  --experimental-specifier-resolution=node ./bench/ecs.ts",
+        "bench:bun": "bun run ./bench/ecs.ts",
         "test": "jest --coverage ./test",
         "test:watch": "jest --watchAll",
         "prepare": "yarn build && yarn test"

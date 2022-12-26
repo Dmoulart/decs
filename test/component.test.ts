@@ -60,14 +60,14 @@ describe("Component", () => {
 
       expect(() => addComponent(TestComponent, eid, world)).not.toThrowError()
   });
-  it("cannot be added to non existant entities", () => {
+  it("adding to non existant entities does not throw error", () => {
       const world = World();
 
       const TestComponent = Component({
           test: Types.i8
       }, world)
 
-      expect(() => addComponent(TestComponent, 123, world)).toThrowError()
+      expect(() => addComponent(TestComponent, 123, world)).not.toThrowError()
   });
   it("can be detected on an entity", () => {
       const world = World();

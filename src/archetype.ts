@@ -1,6 +1,5 @@
-import {SparseSet} from "./collections/sparse-set";
 import {Component} from "./component";
-import {BitSet, Bitset} from "./collections/bit-set";
+import {BitSet, Bitset, SparseSet} from "./collections";
 import {World} from "./world";
 
 export type Archetype = {
