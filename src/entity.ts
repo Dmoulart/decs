@@ -15,11 +15,14 @@ export const createEntity = (world: World): Entity => {
     ? world.deletedEntities.shift()!
     : ++world.nextEid;
 
-  if (eid >= world.size) {
-    throw new ExceedWorldMaximumCapacityError(
+  // We start creating entities id from 1
+  if (eid > world.size) {
+    // todo: resize world automatically ?
+    throw new ExceededWorldCapacityError(
       `World maximum capacity of ${world.size} exceeded`
     );
   }
+
   world.rootArchetype.entities.insert(eid);
   world.entitiesArchetypes[eid] = world.rootArchetype;
   return eid;
@@ -56,4 +59,4 @@ export const hasEntity = (eid: Entity, world: World) => {
 };
 
 export class NonExistantEntityError extends Error {}
-export class ExceedWorldMaximumCapacityError extends Error {}
+export class ExceededWorldCapacityError extends Error {}
