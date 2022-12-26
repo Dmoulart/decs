@@ -21,7 +21,7 @@ export const Types = Object.freeze({
 export type TypedArrays = typeof Types;
 export type TypedArray = TypedArrays[keyof TypedArrays];
 
-// The nested arrays fields will be defined like in bitEcs : a typed array constructor and the length of the array
+// The nested arrays fields will be defined like in bitECS : a typed array constructor and the length of the array
 export type NestedTypedArray = [TypedArray, number];
 
 // A component definition field will consists in simple numeric arrays or nested arrays.
