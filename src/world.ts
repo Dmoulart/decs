@@ -1,3 +1,4 @@
+import {Entity, SparseSet} from "../dist";
 import {Archetype} from "./archetype";
 import {Query} from "./query";
 
@@ -8,6 +9,10 @@ export type World = {
    * The next entity id
    */
   nextEid: number;
+  /**
+   * The removed entities
+   */
+  deletedEntities: Array<Entity>;
   /**
    * The next component id
    */
@@ -42,6 +47,7 @@ export type World = {
 export const World = (size = WORLD_MAX_SIZE): World => {
   const world = {
     nextEid: 0,
+    deletedEntities: [] as Entity[],
     nextCid: 0,
     entitiesArchetypes: [] as Archetype[],
     archetypes: [] as Archetype[],

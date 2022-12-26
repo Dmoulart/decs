@@ -17,7 +17,7 @@ describe("Entity", () => {
 
     expect(world.nextEid).toStrictEqual(2);
   });
-  it("can keep track of the entities count when removing entities", () => {
+  it("recycle deleted entities", () => {
     const world = World();
 
     createEntity(world);
@@ -27,7 +27,7 @@ describe("Entity", () => {
 
     const eid = createEntity(world);
 
-    expect(eid).toStrictEqual(3);
+    expect(eid).toStrictEqual(eidToRemove);
   });
   it("can verify an entity exists", () => {
     const world = World();

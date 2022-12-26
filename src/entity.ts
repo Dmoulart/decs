@@ -11,7 +11,15 @@ export type Entity = number;
  * @returns new entity's id
  */
 export const createEntity = (world: World): Entity => {
-  const eid = ++world.nextEid;
+  const eid = world.deletedEntities.length
+    ? world.deletedEntities.shift()!
+    : ++world.nextEid;
+
+  if (eid >= world.size) {
+    throw new ExceedWorldMaximumCapacityError(
+      `World maximum capacity of ${world.size} exceeded`
+    );
+  }
   world.rootArchetype.entities.insert(eid);
   world.entitiesArchetypes[eid] = world.rootArchetype;
   return eid;
@@ -33,6 +41,7 @@ export const removeEntity = (eid: Entity, world: World) => {
   }
   archetype.entities.remove(eid);
   world.entitiesArchetypes[eid] = undefined;
+  world.deletedEntities.push(eid);
 };
 
 /**
@@ -47,3 +56,4 @@ export const hasEntity = (eid: Entity, world: World) => {
 };
 
 export class NonExistantEntityError extends Error {}
+export class ExceedWorldMaximumCapacityError extends Error {}
