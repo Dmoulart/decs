@@ -3,11 +3,12 @@ import {World} from "../src/world";
 
 import {Component} from "../src/component";
 import Types from "../src/types";
-import {Archetype, augmentArchetype, diminishArchetype} from "../src/archetype";
+import {Archetype, transformArchetype} from "../src/archetype";
+import {makeComponentsMask} from "../src/query";
 
 describe("Archetype", () => {
   it("can be created without component", () => {
-    expect(() => Archetype([])).not.toThrowError();
+    expect(() => Archetype()).not.toThrowError();
   });
   it("can be created with component", () => {
     const world = World();
@@ -16,7 +17,7 @@ describe("Archetype", () => {
       test: Types.i8,
     });
 
-    const archetype = Archetype([TestComponent]);
+    const archetype = Archetype(makeComponentsMask(TestComponent));
 
     expect(archetype.mask.has(TestComponent.id)).toBeTruthy();
   });
@@ -30,9 +31,9 @@ describe("Archetype", () => {
       test: Types.i8,
     });
 
-    const archetype = Archetype([TestComponent1]);
+    const archetype = Archetype(makeComponentsMask(TestComponent1));
 
-    const augmentedArchetype = augmentArchetype(
+    const augmentedArchetype = transformArchetype(
       archetype,
       TestComponent2,
       world
@@ -51,8 +52,10 @@ describe("Archetype", () => {
       test: Types.i8,
     });
 
-    const archetype = Archetype([TestComponent1, TestComponent2]);
-    const diminishedArchetype = diminishArchetype(
+    const archetype = Archetype(
+      makeComponentsMask(TestComponent1, TestComponent2)
+    );
+    const diminishedArchetype = transformArchetype(
       archetype,
       TestComponent2,
       world
@@ -71,13 +74,13 @@ describe("Archetype", () => {
       test: Types.i8,
     });
 
-    const archetype = Archetype([TestComponent1]);
+    const archetype = Archetype(makeComponentsMask(TestComponent1));
 
-    const augmented = augmentArchetype(archetype, TestComponent2, world);
+    const augmented = transformArchetype(archetype, TestComponent2, world);
 
-    expect(archetype.edges.add[TestComponent2.id]).toBeTruthy();
+    expect(archetype.edge[TestComponent2.id]).toBeTruthy();
 
-    const augmentedCached = augmentArchetype(archetype, TestComponent2, world);
+    const augmentedCached = transformArchetype(archetype, TestComponent2, world);
     expect(augmentedCached).toStrictEqual(augmented);
   });
   it("can cache diminished archetype", () => {
@@ -90,12 +93,12 @@ describe("Archetype", () => {
       test: Types.i8,
     });
 
-    const archetype = Archetype([TestComponent1, TestComponent2]);
-    const diminished = diminishArchetype(archetype, TestComponent2, world);
+    const archetype = Archetype(makeComponentsMask(TestComponent1, TestComponent2));
+    const diminished = transformArchetype(archetype, TestComponent2, world);
 
-    expect(archetype.edges.remove[TestComponent2.id]).toBeTruthy();
+    expect(archetype.edge[TestComponent2.id]).toBeTruthy();
 
-    const diminishedCached = diminishArchetype(
+    const diminishedCached = transformArchetype(
       archetype,
       TestComponent2,
       world

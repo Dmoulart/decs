@@ -9,7 +9,7 @@ import {Entity} from "./entity";
  * @param components
  * @returns mask
  */
-const makeComponentsMask = (...components: Component<any>[]) =>
+export const makeComponentsMask = (...components: Component<any>[]) =>
   components.reduce((mask, comp) => {
     mask.or(comp.id);
     return mask;

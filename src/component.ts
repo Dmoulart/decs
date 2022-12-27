@@ -1,8 +1,8 @@
 import {ComponentDefinitionField, NestedTypedArray, TypedArray} from "./types";
 import {World} from "./world";
 import {Entity, NonExistantEntityError} from "./entity";
-import {augmentArchetype, diminishArchetype} from "./archetype";
 import {WORLD_MAX_SIZE} from "./world";
+import { transformArchetype } from "./archetype";
 
 // The next component id.
 // Components are not created in a particular world context but can be shared between worlds.
@@ -102,7 +102,7 @@ export const addComponent = (
 
   if (archetype?.mask?.has?.(component.id)) return;
 
-  const newArchetype = augmentArchetype(archetype, component, world);
+  const newArchetype = transformArchetype(archetype, component, world);
 
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
@@ -157,7 +157,7 @@ export const removeComponent = (
 
   if (!archetype.mask.has(component.id)) return;
 
-  const newArchetype = diminishArchetype(archetype, component, world);
+  const newArchetype = transformArchetype(archetype, component, world);
 
   archetype.entities.remove(eid);
 
