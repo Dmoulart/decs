@@ -1,6 +1,7 @@
 import {Component} from "./component";
 import {BitSet, Bitset, SparseSet} from "./collections";
 import {World} from "./world";
+import {archetypeMatchesQuery} from "./query";
 
 export type Archetype = {
   /**
@@ -66,15 +67,10 @@ export const transformArchetype = (
 
   world.archetypes.push(archetype);
 
-  queryloop: for (const query of world.queries) {
-    let addArchetype = true;
-    for (const match of query.matchers) {
-      if (!match(archetype)) {
-        addArchetype = false;
-        continue queryloop;
-      }
-    }
-    if (addArchetype) {
+  for (const query of world.queries) {
+    if (!archetypeMatchesQuery(query, archetype)) {
+      continue;
+    } else {
       query.archetypes.push(archetype);
     }
   }

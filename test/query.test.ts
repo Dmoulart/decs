@@ -1,7 +1,7 @@
 import "jest";
 import {Query, registerQuery} from "../src/query";
 import {World} from "../src/world";
-import {addComponent, Component, removeComponent} from "../src/component";
+import {addComponent, removeComponent, Component} from "../src/component";
 import {Types} from "../src/types";
 import {createEntity} from "../src/entity";
 

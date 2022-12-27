@@ -142,3 +142,21 @@ export const Query = (): Query => {
 export const registerQuery = (query: Query, world: World) => {
   world.queries.push(query.from(world));
 };
+
+/**
+ * Returns true if an archetype is matched by a given query.
+ * @param query
+ * @param archetype
+ * @returns archetype matches query
+ */
+export const archetypeMatchesQuery = (
+  query: Query,
+  archetype: Archetype
+): boolean => {
+  for (const match of query.matchers) {
+    if (!match(archetype)) {
+      return false;
+    }
+  }
+  return true;
+};
