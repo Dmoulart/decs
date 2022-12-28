@@ -20,10 +20,10 @@ export type Archetype = {
 
 /**
  * Creates a new archetype with the specified list of components.
- * @param components
+ * @param mask
  * @returns new archetype
  */
-export const Archetype = (mask: Bitset = BitSet(2)): Archetype => {
+export const Archetype = (mask = BitSet(2)): Archetype => {
   return {
     entities: SparseSet(),
     edge: [],
@@ -68,9 +68,7 @@ export const transformArchetype = (
   world.archetypes.push(archetype);
 
   for (const query of world.queries) {
-    if (!archetypeMatchesQuery(query, archetype)) {
-      continue;
-    } else {
+    if (archetypeMatchesQuery(query, archetype)) {
       query.archetypes.push(archetype);
     }
   }

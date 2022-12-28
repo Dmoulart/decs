@@ -2,10 +2,10 @@ import "jest";
 import {World} from "../src/world";
 
 import {
-  addComponent,
+  attachComponent,
   Component,
   hasComponent,
-  removeComponent,
+  detachComponent,
 } from "../src/component";
 import Types from "../src/types";
 import {createEntity} from "../src/entity";
@@ -51,7 +51,7 @@ describe("Component", () => {
     });
     const eid = createEntity(world);
 
-    expect(() => addComponent(TestComponent, eid, world)).not.toThrowError();
+    expect(() => attachComponent(TestComponent, eid, world)).not.toThrowError();
   });
   it("adding to non existant entities does throw error", () => {
     const world = World();
@@ -60,7 +60,7 @@ describe("Component", () => {
       test: Types.i8,
     });
 
-    expect(() => addComponent(TestComponent, 123, world)).toThrowError();
+    expect(() => attachComponent(TestComponent, 123, world)).toThrowError();
   });
   it("can be detected on an entity", () => {
     const world = World();
@@ -70,7 +70,7 @@ describe("Component", () => {
     });
     const eid = createEntity(world);
 
-    addComponent(TestComponent, eid, world);
+    attachComponent(TestComponent, eid, world);
 
     expect(hasComponent(TestComponent, eid, world)).toStrictEqual(true);
   });
@@ -93,8 +93,8 @@ describe("Component", () => {
     });
     const eid = createEntity(world);
 
-    addComponent(TestComponent, eid, world);
-    removeComponent(TestComponent, eid, world);
+    attachComponent(TestComponent, eid, world);
+    detachComponent(TestComponent, eid, world);
 
     expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false);
   });
@@ -110,8 +110,8 @@ describe("Component", () => {
 
     const eid = createEntity(world);
 
-    addComponent(TestComponent, eid, world);
-    addComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent, eid, world);
+    attachComponent(TestComponent2, eid, world);
 
     expect(hasComponent(TestComponent, eid, world)).toStrictEqual(true);
     expect(hasComponent(TestComponent2, eid, world)).toStrictEqual(true);
@@ -124,6 +124,6 @@ describe("Component", () => {
     });
     const eid = createEntity(world);
 
-    expect(() => removeComponent(TestComponent, eid, world)).not.toThrowError();
+    expect(() => detachComponent(TestComponent, eid, world)).not.toThrowError();
   });
 });

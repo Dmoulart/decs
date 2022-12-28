@@ -1,7 +1,7 @@
 import {run} from "./run/runner";
 import {World} from "../src/world";
 import {createEntity, removeEntity} from "../src/entity";
-import {addComponent, Component, removeComponent} from "../src/component";
+import {attachComponent, Component, detachComponent} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
 
@@ -24,10 +24,10 @@ import {Query, registerQuery} from "../src/query";
     for (let i = 0; i <= 2000; i++) {
       const eid1 = createEntity(world);
 
-      addComponent(Position, eid1, world);
+      attachComponent(Position, eid1, world);
       Position.x[eid1] = 100;
       Position.y[eid1] = 100;
-      addComponent(Velocity, eid1, world);
+      attachComponent(Velocity, eid1, world);
       Velocity.x[eid1] = 1.2;
       Velocity.y[eid1] = 1.7;
 
@@ -64,17 +64,17 @@ import {Query, registerQuery} from "../src/query";
       const eid1 = createEntity(world);
       const eid2 = createEntity(world);
 
-      addComponent(Position, eid1, world);
+      attachComponent(Position, eid1, world);
       Position.x[eid1] = 100;
       Position.y[eid1] = 100;
-      addComponent(Velocity, eid1, world);
+      attachComponent(Velocity, eid1, world);
       Velocity.x[eid1] = 1.2;
       Velocity.y[eid1] = 1.7;
 
-      addComponent(Position, eid2, world);
+      attachComponent(Position, eid2, world);
       Position.x[eid2] = 100;
       Position.y[eid2] = 100;
-      addComponent(Velocity, eid2, world);
+      attachComponent(Velocity, eid2, world);
       Velocity.x[eid2] = 1.2;
       Velocity.y[eid2] = 1.7;
 
@@ -88,7 +88,7 @@ import {Query, registerQuery} from "../src/query";
         }
       }
 
-      removeComponent(Position, eid1, world);
+      detachComponent(Position, eid1, world);
 
       //update mvmt system
       for (let i = 0; i < MovementQuery.archetypes.length; i++) {
@@ -123,10 +123,10 @@ import {Query, registerQuery} from "../src/query";
   run("World : Destroy 100_000; entities", () => {
     for (let i = 0; i <= 100_000; i++) {
       const eid = createEntity(world);
-      addComponent(Position, eid, world);
+      attachComponent(Position, eid, world);
       Position.x[eid] = 100;
       Position.y[eid] = 100;
-      addComponent(Velocity, eid, world);
+      attachComponent(Velocity, eid, world);
       Velocity.x[eid] = 1.5;
       Velocity.y[eid] = 1.7;
       removeEntity(eid, world);

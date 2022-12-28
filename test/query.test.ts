@@ -1,7 +1,7 @@
 import "jest";
 import {Query, registerQuery} from "../src/query";
 import {World} from "../src/world";
-import {addComponent, removeComponent, Component} from "../src/component";
+import {attachComponent, detachComponent, Component} from "../src/component";
 import {Types} from "../src/types";
 import {createEntity} from "../src/entity";
 
@@ -20,11 +20,11 @@ describe("Query", () => {
     });
 
     const eid = createEntity(world);
-    addComponent(TestComponent, eid, world);
-    addComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent, eid, world);
+    attachComponent(TestComponent2, eid, world);
 
     const eid2 = createEntity(world);
-    addComponent(TestComponent, eid2, world);
+    attachComponent(TestComponent, eid2, world);
 
     const a = Query().all(TestComponent, TestComponent2).from(world);
     expect(a.archetypes.length).toStrictEqual(1);
@@ -43,11 +43,11 @@ describe("Query", () => {
     });
 
     const eid = createEntity(world);
-    addComponent(TestComponent, eid, world);
-    addComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent, eid, world);
+    attachComponent(TestComponent2, eid, world);
 
     const eid2 = createEntity(world);
-    addComponent(TestComponent, eid2, world);
+    attachComponent(TestComponent, eid2, world);
 
     const a = Query().any(TestComponent, TestComponent2).from(world);
     expect(a.archetypes.length).toStrictEqual(2);
@@ -66,11 +66,11 @@ describe("Query", () => {
     });
 
     const eid = createEntity(world);
-    addComponent(TestComponent, eid, world);
-    addComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent, eid, world);
+    attachComponent(TestComponent2, eid, world);
 
     const eid2 = createEntity(world);
-    addComponent(TestComponent, eid2, world);
+    attachComponent(TestComponent, eid2, world);
 
     const query = Query().any(TestComponent).not(TestComponent2).from(world);
     expect(query.archetypes.length).toStrictEqual(1);
@@ -89,13 +89,13 @@ describe("Query", () => {
     });
 
     const eid = createEntity(world);
-    addComponent(TestComponent, eid, world);
-    addComponent(TestComponent2, eid, world);
-    addComponent(TestComponent3, eid, world);
+    attachComponent(TestComponent, eid, world);
+    attachComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent3, eid, world);
 
     const eid2 = createEntity(world);
-    addComponent(TestComponent, eid2, world);
-    addComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent, eid2, world);
+    attachComponent(TestComponent2, eid, world);
 
     const query = Query()
       .any(TestComponent)
@@ -114,11 +114,11 @@ describe("Query", () => {
     });
 
     const eid = createEntity(world);
-    addComponent(TestComponent, eid, world);
-    addComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent, eid, world);
+    attachComponent(TestComponent2, eid, world);
 
     const eid2 = createEntity(world);
-    addComponent(TestComponent, eid2, world);
+    attachComponent(TestComponent, eid2, world);
 
     const query = Query()
       .any(TestComponent)
@@ -138,7 +138,7 @@ describe("Query", () => {
     });
 
     const eid = createEntity(world);
-    addComponent(TestComponent2, eid, world);
+    attachComponent(TestComponent2, eid, world);
 
     const query = Query().any(TestComponent, TestComponent2);
 
@@ -148,12 +148,12 @@ describe("Query", () => {
     expect(query.archetypes[0].entities.count()).toStrictEqual(1);
 
     const eid2 = createEntity(world);
-    addComponent(TestComponent, eid2, world);
+    attachComponent(TestComponent, eid2, world);
 
     expect(query.archetypes.length).toStrictEqual(2);
     expect(query.archetypes[1].entities.count()).toStrictEqual(1);
 
-    removeComponent(TestComponent, eid2, world);
+    detachComponent(TestComponent, eid2, world);
     expect(query.archetypes[1].entities.count()).toStrictEqual(0);
   });
 });

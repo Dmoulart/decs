@@ -70,7 +70,7 @@ export const BitSet = (size = 4): Bitset => {
         return false;
       }
 
-      return Boolean(mask[index] & (1 << val % 32));
+      return Boolean(mask[index] & (1 << (val & 31)));
     },
     or(val: number) {
       const index = val >>> 5;
@@ -79,12 +79,12 @@ export const BitSet = (size = 4): Bitset => {
         resize();
       }
 
-      mask[index] |= 1 << val % 32;
+      mask[index] |= 1 << (val & 31);
     },
     xor(val: number) {
       const index = val >>> 5;
 
-      mask[index] ^= 1 << val % 32;
+      mask[index] ^= 1 << (val & 31);
     },
     contains(other: Bitset) {
       const len = Math.min(mask.length, other.mask.length);
