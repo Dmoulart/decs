@@ -1,9 +1,6 @@
 import "jest";
-import {Query, registerQuery} from "../src/query";
-import {World} from "../src/world";
-import {attachComponent, detachComponent, Component} from "../src/component";
+import {Query, registerQuery, World, attach, detach, Component, Entity} from "../src";
 import {Types} from "../src/types";
-import {createEntity} from "../src/entity";
 
 describe("Query", () => {
   it("can be created ", () => {
@@ -19,12 +16,12 @@ describe("Query", () => {
       test: Types.i32,
     });
 
-    const eid = createEntity(world);
-    attachComponent(TestComponent, eid, world);
-    attachComponent(TestComponent2, eid, world);
+    const eid = Entity(world);
+    attach(TestComponent, eid, world);
+    attach(TestComponent2, eid, world);
 
-    const eid2 = createEntity(world);
-    attachComponent(TestComponent, eid2, world);
+    const eid2 = Entity(world);
+    attach(TestComponent, eid2, world);
 
     const a = Query().all(TestComponent, TestComponent2).from(world);
     expect(a.archetypes.length).toStrictEqual(1);
@@ -42,12 +39,12 @@ describe("Query", () => {
       test: Types.i32,
     });
 
-    const eid = createEntity(world);
-    attachComponent(TestComponent, eid, world);
-    attachComponent(TestComponent2, eid, world);
+    const eid = Entity(world);
+    attach(TestComponent, eid, world);
+    attach(TestComponent2, eid, world);
 
-    const eid2 = createEntity(world);
-    attachComponent(TestComponent, eid2, world);
+    const eid2 = Entity(world);
+    attach(TestComponent, eid2, world);
 
     const a = Query().any(TestComponent, TestComponent2).from(world);
     expect(a.archetypes.length).toStrictEqual(2);
@@ -65,12 +62,12 @@ describe("Query", () => {
       test: Types.i32,
     });
 
-    const eid = createEntity(world);
-    attachComponent(TestComponent, eid, world);
-    attachComponent(TestComponent2, eid, world);
+    const eid = Entity(world);
+    attach(TestComponent, eid, world);
+    attach(TestComponent2, eid, world);
 
-    const eid2 = createEntity(world);
-    attachComponent(TestComponent, eid2, world);
+    const eid2 = Entity(world);
+    attach(TestComponent, eid2, world);
 
     const query = Query().any(TestComponent).not(TestComponent2).from(world);
     expect(query.archetypes.length).toStrictEqual(1);
@@ -88,14 +85,14 @@ describe("Query", () => {
       test: Types.i32,
     });
 
-    const eid = createEntity(world);
-    attachComponent(TestComponent, eid, world);
-    attachComponent(TestComponent2, eid, world);
-    attachComponent(TestComponent3, eid, world);
+    const eid = Entity(world);
+    attach(TestComponent, eid, world);
+    attach(TestComponent2, eid, world);
+    attach(TestComponent3, eid, world);
 
-    const eid2 = createEntity(world);
-    attachComponent(TestComponent, eid2, world);
-    attachComponent(TestComponent2, eid, world);
+    const eid2 = Entity(world);
+    attach(TestComponent, eid2, world);
+    attach(TestComponent2, eid, world);
 
     const query = Query()
       .any(TestComponent)
@@ -113,12 +110,12 @@ describe("Query", () => {
       test: Types.i32,
     });
 
-    const eid = createEntity(world);
-    attachComponent(TestComponent, eid, world);
-    attachComponent(TestComponent2, eid, world);
+    const eid = Entity(world);
+    attach(TestComponent, eid, world);
+    attach(TestComponent2, eid, world);
 
-    const eid2 = createEntity(world);
-    attachComponent(TestComponent, eid2, world);
+    const eid2 = Entity(world);
+    attach(TestComponent, eid2, world);
 
     const query = Query()
       .any(TestComponent)
@@ -137,8 +134,8 @@ describe("Query", () => {
       test: Types.i32,
     });
 
-    const eid = createEntity(world);
-    attachComponent(TestComponent2, eid, world);
+    const eid = Entity(world);
+    attach(TestComponent2, eid, world);
 
     const query = Query().any(TestComponent, TestComponent2);
 
@@ -147,13 +144,13 @@ describe("Query", () => {
     expect(query.archetypes.length).toStrictEqual(1);
     expect(query.archetypes[0].entities.count()).toStrictEqual(1);
 
-    const eid2 = createEntity(world);
-    attachComponent(TestComponent, eid2, world);
+    const eid2 = Entity(world);
+    attach(TestComponent, eid2, world);
 
     expect(query.archetypes.length).toStrictEqual(2);
     expect(query.archetypes[1].entities.count()).toStrictEqual(1);
 
-    detachComponent(TestComponent, eid2, world);
+    detach(TestComponent, eid2, world);
     expect(query.archetypes[1].entities.count()).toStrictEqual(0);
   });
 });

@@ -1,7 +1,7 @@
 import {run} from "./run/runner";
 import {World} from "../src/world";
-import {createEntity, removeEntity} from "../src/entity";
-import {attachComponent, Component, detachComponent} from "../src/component";
+import {Entity, removeEntity} from "../src/entity";
+import {attach, Component, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
 
@@ -22,12 +22,12 @@ import {Query, registerQuery} from "../src/query";
   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
   run("World : Velocity 2000 Iterations", () => {
     for (let i = 0; i <= 2000; i++) {
-      const eid1 = createEntity(world);
+      const eid1 = Entity(world);
 
-      attachComponent(Position, eid1, world);
+      attach(Position, eid1, world);
       Position.x[eid1] = 100;
       Position.y[eid1] = 100;
-      attachComponent(Velocity, eid1, world);
+      attach(Velocity, eid1, world);
       Velocity.x[eid1] = 1.2;
       Velocity.y[eid1] = 1.7;
 
@@ -61,20 +61,20 @@ import {Query, registerQuery} from "../src/query";
   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
   run("World : Add/Remove 5000 Iterations", () => {
     for (let i = 0; i <= 5000; i++) {
-      const eid1 = createEntity(world);
-      const eid2 = createEntity(world);
+      const eid1 = Entity(world);
+      const eid2 = Entity(world);
 
-      attachComponent(Position, eid1, world);
+      attach(Position, eid1, world);
       Position.x[eid1] = 100;
       Position.y[eid1] = 100;
-      attachComponent(Velocity, eid1, world);
+      attach(Velocity, eid1, world);
       Velocity.x[eid1] = 1.2;
       Velocity.y[eid1] = 1.7;
 
-      attachComponent(Position, eid2, world);
+      attach(Position, eid2, world);
       Position.x[eid2] = 100;
       Position.y[eid2] = 100;
-      attachComponent(Velocity, eid2, world);
+      attach(Velocity, eid2, world);
       Velocity.x[eid2] = 1.2;
       Velocity.y[eid2] = 1.7;
 
@@ -88,7 +88,7 @@ import {Query, registerQuery} from "../src/query";
         }
       }
 
-      detachComponent(Position, eid1, world);
+      detach(Position, eid1, world);
 
       //update mvmt system
       for (let i = 0; i < MovementQuery.archetypes.length; i++) {
@@ -122,11 +122,11 @@ import {Query, registerQuery} from "../src/query";
 
   run("World : Destroy 100_000; entities", () => {
     for (let i = 0; i <= 100_000; i++) {
-      const eid = createEntity(world);
-      attachComponent(Position, eid, world);
+      const eid = Entity(world);
+      attach(Position, eid, world);
       Position.x[eid] = 100;
       Position.y[eid] = 100;
-      attachComponent(Velocity, eid, world);
+      attach(Velocity, eid, world);
       Velocity.x[eid] = 1.5;
       Velocity.y[eid] = 1.7;
       removeEntity(eid, world);

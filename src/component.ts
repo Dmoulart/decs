@@ -87,7 +87,7 @@ export const Component = <Definition extends ComponentDefinition>(
  * @throws NonExistantEntityError
  * @returns nothing
  */
-export const attachComponent = (
+export const attach = (
   component: Component<any>,
   eid: Entity,
   world: World
@@ -142,7 +142,7 @@ export const hasComponent = (
  * @throws NonExistantEntityError
  * @returns nothing
  */
-export const detachComponent = (
+export const detach = (
   component: Component<any>,
   eid: Entity,
   world: World

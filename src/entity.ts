@@ -6,11 +6,11 @@ import {World} from "./world";
 export type Entity = number;
 
 /**
- * Create an entity for the given world.
+ * Creates an entity, add it in the given world and returns it.
  * @param world
  * @returns new entity's id
  */
-export const createEntity = (world: World): Entity => {
+export const Entity = (world: World): Entity => {
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
     : ++world.nextEid;
@@ -39,7 +39,7 @@ export const removeEntity = (eid: Entity, world: World) => {
   const archetype = world.entitiesArchetypes[eid];
   if (!archetype) {
     throw new NonExistantEntityError(
-      `Trying to remove an non existant entity with id ${eid}`
+      `Trying to remove a non existant entity with id : ${eid}`
     );
   }
   archetype.entities.remove(eid);
@@ -48,7 +48,7 @@ export const removeEntity = (eid: Entity, world: World) => {
 };
 
 /**
- * Returns true if the world has the given entity
+ * Returns true if the world has the given entity.
  * @param eid
  * @param world
  * @throws NonExistantEntityError

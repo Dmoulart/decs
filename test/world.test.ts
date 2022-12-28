@@ -1,6 +1,6 @@
 import "jest";
-import {createEntity} from "../src/entity";
-import {World} from "../src/world";
+import {Entity, World} from "../src";
+
 
 describe("World", () => {
   it("can be created", () => {
@@ -8,8 +8,8 @@ describe("World", () => {
   });
   it("throws when world capacity exceeded", () => {
     const world = World(2);
-    createEntity(world);
-    createEntity(world);
-    expect(() => createEntity(world)).toThrowError();
+    Entity(world);
+    Entity(world);
+    expect(() => Entity(world)).toThrowError();
   });
 });

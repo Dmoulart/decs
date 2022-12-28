@@ -1,18 +1,16 @@
 import "jest";
-import {World} from "../src/world";
-
 import {
-  attachComponent,
+  attach,
   Component,
   hasComponent,
-  detachComponent,
-} from "../src/component";
+  detach,
+  Entity,
+  World
+} from "../src";
 import Types from "../src/types";
-import {createEntity} from "../src/entity";
 
 describe("Component", () => {
   it("can be created", () => {
-    const world = World();
     expect(() => Component({})).not.toThrowError();
   });
   it("sees its array types fields instanciated", () => {
@@ -49,9 +47,9 @@ describe("Component", () => {
     const TestComponent = Component({
       test: Types.i8,
     });
-    const eid = createEntity(world);
+    const eid = Entity(world);
 
-    expect(() => attachComponent(TestComponent, eid, world)).not.toThrowError();
+    expect(() => attach(TestComponent, eid, world)).not.toThrowError();
   });
   it("adding to non existant entities does throw error", () => {
     const world = World();
@@ -60,7 +58,7 @@ describe("Component", () => {
       test: Types.i8,
     });
 
-    expect(() => attachComponent(TestComponent, 123, world)).toThrowError();
+    expect(() => attach(TestComponent, 123, world)).toThrowError();
   });
   it("can be detected on an entity", () => {
     const world = World();
@@ -68,9 +66,9 @@ describe("Component", () => {
     const TestComponent = Component({
       test: Types.i8,
     });
-    const eid = createEntity(world);
+    const eid = Entity(world);
 
-    attachComponent(TestComponent, eid, world);
+    attach(TestComponent, eid, world);
 
     expect(hasComponent(TestComponent, eid, world)).toStrictEqual(true);
   });
@@ -81,7 +79,7 @@ describe("Component", () => {
       test: Types.i8,
     });
 
-    const eid = createEntity(world);
+    const eid = Entity(world);
 
     expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false);
   });
@@ -91,10 +89,10 @@ describe("Component", () => {
     const TestComponent = Component({
       test: Types.i8,
     });
-    const eid = createEntity(world);
+    const eid = Entity(world);
 
-    attachComponent(TestComponent, eid, world);
-    detachComponent(TestComponent, eid, world);
+    attach(TestComponent, eid, world);
+    detach(TestComponent, eid, world);
 
     expect(hasComponent(TestComponent, eid, world)).toStrictEqual(false);
   });
@@ -108,10 +106,10 @@ describe("Component", () => {
       test: Types.i32,
     });
 
-    const eid = createEntity(world);
+    const eid = Entity(world);
 
-    attachComponent(TestComponent, eid, world);
-    attachComponent(TestComponent2, eid, world);
+    attach(TestComponent, eid, world);
+    attach(TestComponent2, eid, world);
 
     expect(hasComponent(TestComponent, eid, world)).toStrictEqual(true);
     expect(hasComponent(TestComponent2, eid, world)).toStrictEqual(true);
@@ -122,8 +120,8 @@ describe("Component", () => {
     const TestComponent = Component({
       test: Types.i8,
     });
-    const eid = createEntity(world);
+    const eid = Entity(world);
 
-    expect(() => detachComponent(TestComponent, eid, world)).not.toThrowError();
+    expect(() => detach(TestComponent, eid, world)).not.toThrowError();
   });
 });

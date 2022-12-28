@@ -1,4 +1,4 @@
-import {Bitset, BitSet} from "./collections";
+import {BitSet} from "./collections";
 import {Component} from "./component";
 import {World} from "./world";
 import {Archetype} from "./archetype";

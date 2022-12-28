@@ -1,18 +1,13 @@
 import "jest";
-import {World} from "../src/world";
-
-import {Component} from "../src/component";
 import Types from "../src/types";
 import {Archetype, transformArchetype} from "../src/archetype";
-import {makeComponentsMask} from "../src/query";
+import {makeComponentsMask, Component, World } from "../src";
 
 describe("Archetype", () => {
   it("can be created without component", () => {
     expect(() => Archetype()).not.toThrowError();
   });
   it("can be created with component", () => {
-    const world = World();
-
     const TestComponent = Component({
       test: Types.i8,
     });
