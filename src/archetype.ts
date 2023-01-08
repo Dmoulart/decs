@@ -1,7 +1,9 @@
 import {Component} from "./component";
 import {BitSet, Bitset, SparseSet} from "./collections";
 import {World} from "./world";
-import {archetypeMatchesQuery} from "./query";
+import {archetypeMatchesQuery, makeComponentsMask} from "./query";
+import Types from "./types";
+import {Entity} from "./entity";
 
 export type Archetype = {
   /**
@@ -75,3 +77,4 @@ export const transformArchetype = (
 
   return archetype;
 };
+

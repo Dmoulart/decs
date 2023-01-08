@@ -8,9 +8,10 @@ export type Entity = number;
 /**
  * Creates an entity, add it in the given world and returns it.
  * @param world
+ * @param archetype
  * @returns new entity's id
  */
-export const Entity = (world: World): Entity => {
+export const Entity = (world: World, archetype = world.rootArchetype): Entity => {
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
     : ++world.nextEid;
@@ -23,8 +24,8 @@ export const Entity = (world: World): Entity => {
     );
   }
 
-  world.rootArchetype.entities.insert(eid);
-  world.entitiesArchetypes[eid] = world.rootArchetype;
+  archetype.entities.insert(eid);
+  world.entitiesArchetypes[eid] = archetype;
   return eid;
 };
 

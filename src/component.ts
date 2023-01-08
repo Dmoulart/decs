@@ -1,27 +1,41 @@
-import {ComponentDefinitionField, NestedTypedArray, TypedArray} from "./types";
+import {NestedTypedArray, TypedArray} from "./types";
 import {World} from "./world";
 import {Entity, NonExistantEntityError} from "./entity";
 import {WORLD_MAX_SIZE} from "./world";
 import {transformArchetype} from "./archetype";
 
-// The next component id.
-// Components are not created in a particular world context but can be shared between worlds.
-let nextCid = 0;
-
-// The object passed into the Component factory function
-export type ComponentDefinition = {
-  [key: string]: ComponentDefinitionField;
-};
-
+// The component type
 export type Component<Def extends ComponentDefinition> = {
-  id: number;
+    id: number;
 } & {
-  [key in keyof Def]: Def[key] extends TypedArray
+    [key in keyof Def]: Def[key] extends TypedArray
     ? InstanceType<Def[key]>
     : Def[key] extends NestedTypedArray
     ? Array<InstanceType<Def[key][0]>>
     : never;
 };
+
+export type ComponentField<Type extends TypedArray> = Type extends TypedArray
+    ? InstanceType<Type>
+    : Type extends NestedTypedArray
+    ? Array<InstanceType<Type[0]>>
+    : never;
+
+// The component schema.
+// It describes the object passed into the Component factory function.
+export type ComponentDefinition = {
+    [key: string]: ComponentDefinitionField;
+};
+
+// A component definition field will consists in simple numeric arrays or nested arrays.
+export type ComponentDefinitionField = TypedArray | NestedTypedArray;
+
+// Get the component definition from a component type.
+export type InferComponentDefinition<Comp> = Comp extends Component<infer Definition> ? Definition: never
+
+// The next component id.
+// Components are not created in a particular world context but can be shared between worlds.
+let nextCid = 0;
 
 /**
  * Create a component store from a component definition.
