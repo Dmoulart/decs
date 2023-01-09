@@ -4,17 +4,9 @@ import {transformArchetype} from "./archetype";
 import {Entity} from "./entity";
 import Types, {NestedTypedArray, TypedArray} from "./types";
 
-// export type FactoryB<Components extends Component<any>[]> = {
-//   [key in keyof Components[number]]: InferComponentDefinition<
-//     Components[number]
-//   >[key] extends infer Field
-//     ? Field extends TypedArray
-//       ? ComponentField<Field>[0]
-//       : Field extends NestedTypedArray
-//       ? ComponentField<Field>[0]
-//       : never
-//     : never;
-// };
+// This produces a nested array but we're only interested in the second level. I don't know how to get rid of this level yet
+type Factory<Components extends Readonly<Component<any>[]>> = Map<Components, ComponentsFactoryFields<Components>>[0];
+
 export type FactoryFields<C extends Component<any>> = {
   [key in keyof C]: InferComponentDefinition<C>[key] extends infer Field
     ? Field extends TypedArray
@@ -24,24 +16,13 @@ export type FactoryFields<C extends Component<any>> = {
       : never
     : never;
 };
-// // How to loop ?
-// export type Factory<Components extends Readonly<Component<any>[]>> = [
-//   Components[0] extends undefined ? never : FactoryFields<Components[0]>,
-//   Components[1] extends undefined ? never : FactoryFields<Components[1]>,
-//   Components[2] extends undefined ? never : FactoryFields<Components[2]>,
-//   Components[3] extends undefined ? never : FactoryFields<Components[3]>
-// ];
 
-// How to loop ?
-// export type Factory<Components extends Readonly<Component<any>[]>> = [
-//   FactoryFields<Components[0]>,
+type ComponentsFactoryFields<T extends Readonly<Component<any>[]>> = {
+  [K in keyof T]: FactoryFields<T[K]>
+};
 
-// ];
-// export type Factory<Components extends Readonly<Component<any>[]>> = [
-//   FactoryFields<Components[0]>
-// ];
-
-export type Factory<Components extends Readonly<Readonly<Component<any>>[]>> = FactoryFields<Components[number]>[]
+// Map function utility
+type Map<T, U> = { [K in keyof T]: U };
 
 const c1 = Component({
   x: Types.i32,
@@ -54,9 +35,10 @@ const c2 = Component({
 });
 
 const f = [c1, c2] as const; // necessary
+let tt: Factory<(typeof f)>
 
 let t: Factory<typeof f>;
-t.0
+t[1
 // t;
 
 

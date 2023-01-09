@@ -5,13 +5,14 @@ import {WORLD_MAX_SIZE} from "./world";
 import {transformArchetype} from "./archetype";
 
 export type Component<Definition extends ComponentDefinition> = {
-    id: number;
+  id: number;
 } & {
-    [key in keyof Definition]: ComponentField<Definition[key]>
+  [key in keyof Definition]: ComponentField<Definition[key]>;
 };
 
 // A component field is a typed array or an array of typed array.
-export type ComponentField<Type extends ComponentDefinitionField> = Type extends TypedArray
+export type ComponentField<Type extends ComponentDefinitionField> =
+  Type extends TypedArray
     ? InstanceType<Type>
     : Type extends NestedTypedArray
     ? Array<InstanceType<Type[0]>>
@@ -19,15 +20,16 @@ export type ComponentField<Type extends ComponentDefinitionField> = Type extends
 
 // The component schema.
 // It describes the object passed into the Component factory function.
-export type ComponentDefinition = {
-    [key: string]: ComponentDefinitionField;
-};
+export type ComponentDefinition = Readonly<{
+  [key: string]: ComponentDefinitionField;
+}>;
 
 // A component definition field will consists in simple numeric arrays or nested arrays.
 export type ComponentDefinitionField = TypedArray | NestedTypedArray;
 
 // Get the component definition from a component type.
-export type InferComponentDefinition<Comp extends Component<any>> = Comp extends Component<infer Definition> ? Definition: never
+export type InferComponentDefinition<Comp extends Component<any>> =
+  Comp extends Component<infer Definition> ? Definition : never;
 
 // The next component id.
 // Components are not created in a particular world context but can be shared between worlds.
