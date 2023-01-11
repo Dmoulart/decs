@@ -1,5 +1,5 @@
 import "jest";
-import {Component, f32, Query, registerQuery, Types, World} from "../src";
+import {Component, f32, Query, registerQuery, Types, ui8, World} from "../src";
 import {prefab} from "../src/prefab";
 
 describe("Prefab", () => {
@@ -51,17 +51,17 @@ describe("Prefab", () => {
       x: f32,
       y: f32,
     });
-    const Velocity = Component({
-      x: f32,
-      y: f32,
+    const Stats = Component({
+      strength: ui8,
+      intelligence: ui8,
     });
 
     const world = World();
-    const query = Query().all(Position, Velocity);
+    const query = Query().all(Position, Stats);
     registerQuery(query, world);
 
-    const actor = prefab(world, Position, Velocity);
-    actor({x: 10, y: 10}, {y: 10, x: 10});
+    const actor = prefab(world, Position, Stats);
+    actor({x: 10, y: 10}, {strength: 10, intelligence: 10});
 
     expect(query.archetypes.length === 1).toBeTruthy();
     expect(query.archetypes[0].entities.count() === 1).toBeTruthy();
