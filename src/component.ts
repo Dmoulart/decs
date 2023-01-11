@@ -2,7 +2,7 @@ import {NestedTypedArray, TypedArray} from "./types";
 import {World} from "./world";
 import {Entity, NonExistantEntityError} from "./entity";
 import {WORLD_MAX_SIZE} from "./world";
-import {transformArchetype} from "./archetype";
+import {deriveArchetype} from "./archetype";
 
 export type Component<Definition extends ComponentDefinition> = {
   id: number;
@@ -114,7 +114,7 @@ export const attach = (
 
   if (archetype.mask.has(component.id)) return;
 
-  const newArchetype = transformArchetype(archetype, component, world);
+  const newArchetype = deriveArchetype(archetype, component, world);
 
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
@@ -169,7 +169,7 @@ export const detach = (
 
   if (!archetype.mask.has(component.id)) return;
 
-  const newArchetype = transformArchetype(archetype, component, world);
+  const newArchetype = deriveArchetype(archetype, component, world);
 
   archetype.entities.remove(eid);
 

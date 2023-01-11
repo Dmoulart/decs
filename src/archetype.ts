@@ -43,7 +43,7 @@ export const Archetype = (mask = BitSet(2)): Archetype => {
  * @param world
  * @returns transformed archetype
  */
-export const transformArchetype = (
+export const deriveArchetype = (
   base: Archetype,
   component: Component<any>,
   world: World
@@ -77,4 +77,3 @@ export const transformArchetype = (
 
   return archetype;
 };
-
