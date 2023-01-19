@@ -55,9 +55,7 @@ export const removeEntity = (eid: Entity, world: World) => {
  * @throws NonExistantEntityError
  * @returns world has the given entity
  */
-export const hasEntity = (eid: Entity, world: World) => {
-  return Boolean(world.entitiesArchetypes[eid]);
-};
+export const hasEntity = (eid: Entity, world: World) => Boolean(world.entitiesArchetypes[eid]);
 
 export class NonExistantEntityError extends Error {}
 export class ExceededWorldCapacityError extends Error {}
