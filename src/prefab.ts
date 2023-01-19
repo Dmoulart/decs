@@ -1,8 +1,8 @@
-import {Component, ComponentField, InferComponentDefinition} from "./component";
-import {World} from "./world";
-import {deriveArchetype} from "./archetype";
-import {Entity} from "./entity";
-import {NestedTypedArray, TypedArray} from "./types";
+import { Component, ComponentField, InferComponentDefinition } from "./component";
+import { World } from "./world";
+import { deriveArchetype } from "./archetype";
+import { Entity } from "./entity";
+import { NestedTypedArray, TypedArray } from "./types";
 
 // This produces a nested array but we're only interested in the second level. I don't know how to get rid of this level yet
 export type PrefabOptions<Components extends Readonly<Component<any>[]>> = Map<

@@ -1,4 +1,4 @@
-import {World} from "./world";
+import { World } from "./world";
 
 /**
  * An entity is basically just an identifier, an unsigned integer.

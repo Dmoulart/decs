@@ -1,9 +1,7 @@
-import {Component} from "./component";
-import {BitSet, Bitset, SparseSet} from "./collections";
-import {World} from "./world";
-import {archetypeMatchesQuery, makeComponentsMask} from "./query";
-import Types from "./types";
-import {Entity} from "./entity";
+import { Component } from "./component";
+import { BitSet, Bitset, SparseSet } from "./collections";
+import { World } from "./world";
+import { archetypeMatchesQuery } from "./query";
 
 export type Archetype = {
   /**

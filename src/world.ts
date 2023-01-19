@@ -1,6 +1,6 @@
-import {Entity} from "./entity";
-import {Archetype} from "./archetype";
-import {Query} from "./query";
+import { Entity } from "./entity";
+import { Archetype } from "./archetype";
+import { Query } from "./query";
 
 export const WORLD_MAX_SIZE = 100_000;
 

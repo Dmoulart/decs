@@ -1,8 +1,8 @@
-import {NestedTypedArray, TypedArray} from "./types";
-import {World} from "./world";
-import {Entity, NonExistantEntityError} from "./entity";
-import {WORLD_MAX_SIZE} from "./world";
-import {deriveArchetype} from "./archetype";
+import { NestedTypedArray, TypedArray } from "./types";
+import { World } from "./world";
+import { Entity, NonExistantEntityError } from "./entity";
+import { WORLD_MAX_SIZE } from "./world";
+import { deriveArchetype } from "./archetype";
 
 export type Component<Definition extends ComponentDefinition> = {
   id: number;
