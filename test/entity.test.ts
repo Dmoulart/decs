@@ -1,6 +1,5 @@
 import "jest";
-import {World} from "../src/world";
-import {Entity, hasEntity, removeEntity} from "../src/entity";
+import { Entity, hasEntity, removeEntity, World } from "../src";
 
 describe("Entity", () => {
   it("can create a new entity", () => {

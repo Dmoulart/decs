@@ -1,5 +1,5 @@
 import "jest";
-import {Entity, World} from "../src";
+import { Entity, World } from "../src";
 
 
 describe("World", () => {

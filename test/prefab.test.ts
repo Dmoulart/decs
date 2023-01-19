@@ -1,6 +1,5 @@
 import "jest";
-import {Component, f32, Query, registerQuery, Types, ui8, World} from "../src";
-import {prefab} from "../src/prefab";
+import { Component, f32, Query, registerQuery, Types, ui8, World, prefab } from "../src";
 
 describe("Prefab", () => {
   it("can be created without throwing", () => {

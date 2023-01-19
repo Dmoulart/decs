@@ -1,156 +1,156 @@
 import "jest";
-import {Query, registerQuery, World, attach, detach, Component, Entity} from "../src";
-import {Types} from "../src/types";
+import { Query, registerQuery, World, attach, detach, Component, Entity } from "../src";
+import { Types } from "../src/types";
 
 describe("Query", () => {
-  it("can be created ", () => {
-    expect(() => Query()).not.toThrowError();
-  });
-  it("can query complete sets of components", () => {
-    const world = World();
-
-    const TestComponent = Component({
-      test: Types.i8,
+    it("can be created ", () => {
+        expect(() => Query()).not.toThrowError();
     });
-    const TestComponent2 = Component({
-      test: Types.i32,
+    it("can query complete sets of components", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const eid = Entity(world);
+        attach(TestComponent, eid, world);
+        attach(TestComponent2, eid, world);
+
+        const eid2 = Entity(world);
+        attach(TestComponent, eid2, world);
+
+        const a = Query().all(TestComponent, TestComponent2).from(world);
+        expect(a.archetypes.length).toStrictEqual(1);
+
+        const b = Query().all(TestComponent).from(world);
+        expect(b.archetypes.length).toStrictEqual(2);
     });
+    it("can query some components", () => {
+        const world = World();
 
-    const eid = Entity(world);
-    attach(TestComponent, eid, world);
-    attach(TestComponent2, eid, world);
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
 
-    const eid2 = Entity(world);
-    attach(TestComponent, eid2, world);
+        const eid = Entity(world);
+        attach(TestComponent, eid, world);
+        attach(TestComponent2, eid, world);
 
-    const a = Query().all(TestComponent, TestComponent2).from(world);
-    expect(a.archetypes.length).toStrictEqual(1);
+        const eid2 = Entity(world);
+        attach(TestComponent, eid2, world);
 
-    const b = Query().all(TestComponent).from(world);
-    expect(b.archetypes.length).toStrictEqual(2);
-  });
-  it("can query some components", () => {
-    const world = World();
+        const a = Query().any(TestComponent, TestComponent2).from(world);
+        expect(a.archetypes.length).toStrictEqual(2);
 
-    const TestComponent = Component({
-      test: Types.i8,
+        const b = Query().any(TestComponent).from(world);
+        expect(b.archetypes.length).toStrictEqual(2);
     });
-    const TestComponent2 = Component({
-      test: Types.i32,
+    it("can exclude some components from query", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const eid = Entity(world);
+        attach(TestComponent, eid, world);
+        attach(TestComponent2, eid, world);
+
+        const eid2 = Entity(world);
+        attach(TestComponent, eid2, world);
+
+        const query = Query().any(TestComponent).not(TestComponent2).from(world);
+        expect(query.archetypes.length).toStrictEqual(1);
     });
+    it("can exclude group of components from query", () => {
+        const world = World();
 
-    const eid = Entity(world);
-    attach(TestComponent, eid, world);
-    attach(TestComponent2, eid, world);
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+        const TestComponent3 = Component({
+            test: Types.i32,
+        });
 
-    const eid2 = Entity(world);
-    attach(TestComponent, eid2, world);
+        const eid = Entity(world);
+        attach(TestComponent, eid, world);
+        attach(TestComponent2, eid, world);
+        attach(TestComponent3, eid, world);
 
-    const a = Query().any(TestComponent, TestComponent2).from(world);
-    expect(a.archetypes.length).toStrictEqual(2);
+        const eid2 = Entity(world);
+        attach(TestComponent, eid2, world);
+        attach(TestComponent2, eid, world);
 
-    const b = Query().any(TestComponent).from(world);
-    expect(b.archetypes.length).toStrictEqual(2);
-  });
-  it("can exclude some components from query", () => {
-    const world = World();
-
-    const TestComponent = Component({
-      test: Types.i8,
-    });
-    const TestComponent2 = Component({
-      test: Types.i32,
-    });
-
-    const eid = Entity(world);
-    attach(TestComponent, eid, world);
-    attach(TestComponent2, eid, world);
-
-    const eid2 = Entity(world);
-    attach(TestComponent, eid2, world);
-
-    const query = Query().any(TestComponent).not(TestComponent2).from(world);
-    expect(query.archetypes.length).toStrictEqual(1);
-  });
-  it("can exclude group of components from query", () => {
-    const world = World();
-
-    const TestComponent = Component({
-      test: Types.i8,
-    });
-    const TestComponent2 = Component({
-      test: Types.i32,
-    });
-    const TestComponent3 = Component({
-      test: Types.i32,
-    });
-
-    const eid = Entity(world);
-    attach(TestComponent, eid, world);
-    attach(TestComponent2, eid, world);
-    attach(TestComponent3, eid, world);
-
-    const eid2 = Entity(world);
-    attach(TestComponent, eid2, world);
-    attach(TestComponent2, eid, world);
-
-    const query = Query()
+        const query = Query()
       .any(TestComponent)
       .none(TestComponent2, TestComponent3)
       .from(world);
-    expect(query.archetypes.length).toStrictEqual(2);
-  });
-  it("can use custom matcher", () => {
-    const world = World();
-
-    const TestComponent = Component({
-      test: Types.i8,
+        expect(query.archetypes.length).toStrictEqual(2);
     });
-    const TestComponent2 = Component({
-      test: Types.i32,
+    it("can use custom matcher", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const eid = Entity(world);
+        attach(TestComponent, eid, world);
+        attach(TestComponent2, eid, world);
+
+        const eid2 = Entity(world);
+        attach(TestComponent, eid2, world);
+
+        const query = Query()
+            .any(TestComponent)
+            .match((arch) => arch.entities.count() > 10)
+            .from(world);
+
+        expect(query.archetypes.length).toStrictEqual(0);
     });
+    it("can be added to world and update automatically", () => {
+        const world = World();
 
-    const eid = Entity(world);
-    attach(TestComponent, eid, world);
-    attach(TestComponent2, eid, world);
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
 
-    const eid2 = Entity(world);
-    attach(TestComponent, eid2, world);
+        const eid = Entity(world);
+        attach(TestComponent2, eid, world);
 
-    const query = Query()
-      .any(TestComponent)
-      .match((arch) => arch.entities.count() > 10)
-      .from(world);
+        const query = Query().any(TestComponent, TestComponent2);
 
-    expect(query.archetypes.length).toStrictEqual(0);
-  });
-  it("can be added to world and update automatically", () => {
-    const world = World();
+        registerQuery(query, world);
 
-    const TestComponent = Component({
-      test: Types.i8,
+        expect(query.archetypes.length).toStrictEqual(1);
+        expect(query.archetypes[0].entities.count()).toStrictEqual(1);
+
+        const eid2 = Entity(world);
+        attach(TestComponent, eid2, world);
+
+        expect(query.archetypes.length).toStrictEqual(2);
+        expect(query.archetypes[1].entities.count()).toStrictEqual(1);
+
+        detach(TestComponent, eid2, world);
+        expect(query.archetypes[1].entities.count()).toStrictEqual(0);
     });
-    const TestComponent2 = Component({
-      test: Types.i32,
-    });
-
-    const eid = Entity(world);
-    attach(TestComponent2, eid, world);
-
-    const query = Query().any(TestComponent, TestComponent2);
-
-    registerQuery(query, world);
-
-    expect(query.archetypes.length).toStrictEqual(1);
-    expect(query.archetypes[0].entities.count()).toStrictEqual(1);
-
-    const eid2 = Entity(world);
-    attach(TestComponent, eid2, world);
-
-    expect(query.archetypes.length).toStrictEqual(2);
-    expect(query.archetypes[1].entities.count()).toStrictEqual(1);
-
-    detach(TestComponent, eid2, world);
-    expect(query.archetypes[1].entities.count()).toStrictEqual(0);
-  });
 });

@@ -1,5 +1,5 @@
 import 'jest';
-import {SparseSet} from "../src";
+import { SparseSet } from "../src";
 
 describe('SparseSet', () => {
     it('can be created', () => {
