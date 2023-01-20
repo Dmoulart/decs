@@ -2,7 +2,7 @@ import { Entity } from "./entity";
 import { Archetype } from "./archetype";
 import {Query, QueryHandler} from "./query";
 
-export const WORLD_MAX_SIZE = 100_000;
+export const DEFAULT_WORLD_MAX_SIZE = 100_000;
 
 export type World = {
   /**
@@ -44,19 +44,20 @@ export type World = {
  * @param size
  * @returns new world
  */
-export const World = (size = WORLD_MAX_SIZE): World => {
-  const world = {
+export const World = (size = DEFAULT_WORLD_MAX_SIZE): World => {
+  const rootArchetype = Archetype()
+
+  return {
     nextEid: 0,
+    rootArchetype,
+    archetypes: [rootArchetype],
     deletedEntities: [] as Entity[],
     entitiesArchetypes: [] as Archetype[],
-    archetypes: [] as Archetype[],
     queries: [] as Query[],
-    handlers: { enter: [] as Array<QueryHandler[]>, exit: [] as Array<QueryHandler[]> },
+    handlers: {
+        enter: [] as Array<QueryHandler[]>,
+        exit: [] as Array<QueryHandler[]>
+    },
     size,
-  } as World;
-
-  world.rootArchetype = Archetype();
-  world.archetypes.push(world.rootArchetype);
-
-  return world;
+  }
 };

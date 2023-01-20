@@ -191,7 +191,6 @@ export const registerQueryHandlers = (query: Query, world: World) => {
 */
 
 export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
-    console.log('query.archetypes.length', query.archetypes.length)
     for(const archetype of query.archetypes){
         if(!world.handlers.enter[archetype.id]){
             world.handlers.enter[archetype.id] = []
@@ -201,7 +200,7 @@ export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, w
 }
 
 
-export const registerQueryHandlersForArchetype = ( archetype: Archetype, query: Query, world: World) => {
+export const registerQueryHandlersForArchetype = (archetype: Archetype, query: Query, world: World) => {
     if(query.handlers.enter.length > 0){
         if(!world.handlers.enter[archetype.id]){
             world.handlers.enter[archetype.id] = []

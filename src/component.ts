@@ -1,7 +1,7 @@
 import { NestedTypedArray, TypedArray } from "./types";
 import { World } from "./world";
 import { Entity, NonExistantEntityError } from "./entity";
-import { WORLD_MAX_SIZE } from "./world";
+import { DEFAULT_WORLD_MAX_SIZE } from "./world";
 import { deriveArchetype } from "./archetype";
 
 export type Component<Definition extends ComponentDefinition> = {
@@ -82,7 +82,7 @@ const createComponentFields = <Definition extends ComponentDefinition>(
  */
 export const Component = <Definition extends ComponentDefinition>(
   def: Definition,
-  size = WORLD_MAX_SIZE
+  size = DEFAULT_WORLD_MAX_SIZE
 ) => {
   const comp = createComponentFields(def, size);
 
