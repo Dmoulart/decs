@@ -85,7 +85,7 @@ export type Query = {
    * @param fn
    * @returns nothing
    */
-  forEachEntity: (fn: (eid: Entity) => void) => void;
+  forEachEntity: (fn: (eid: Entity, index: number) => void) => void;
 };
 /**
  * Query a list of archetypes.
@@ -94,7 +94,7 @@ export type Query = {
 export const Query = (): Query => {
   const archetypes: Archetype[] = [];
   const matchers: Array<Matcher> = [];
-  const handlers = {enter: [], exit: []};
+  const handlers = { enter: [], exit: [] };
   let world: World | null = null;
 
   return {
@@ -135,12 +135,12 @@ export const Query = (): Query => {
       }
       return this;
     },
-    forEachEntity(fn: (eid: Entity) => void) {
+    forEachEntity(fn: (eid: Entity, index: number) => void) {
       for (let i = 0; i < archetypes.length; i++) {
         const ents = archetypes[i].entities.dense;
         const len = ents.length;
         for (let j = 0; j < len; j++) {
-          fn(ents[j]);
+          fn(ents[j], j);
         }
       }
     },
@@ -229,6 +229,7 @@ export const registerExitQueryHandler = (handler: QueryHandler, query: Query, wo
 export const onEnterQuery = (query: Query) => {
     return (fn: QueryHandler) => {
         query.handlers.enter.push(fn)
+        // @todo: make world/query relationship more clear
         if(query.world){
             registerEnterQueryHandler(fn, query, query.world)
         }
@@ -238,6 +239,7 @@ export const onEnterQuery = (query: Query) => {
 export const onExitQuery = (query: Query) => {
     return (fn: QueryHandler) => {
         query.handlers.exit.push(fn)
+        // @todo: make world/query relationship more clear
         if(query.world){
             registerExitQueryHandler(fn, query, query.world)
         }

@@ -148,8 +148,8 @@ export const detach = (
 
     if (!archetype) {
         throw new NonExistantEntityError(
-                `Trying to remove component from a non existant entity with id :${eid}`
-                );
+          `Trying to remove component from a non existant entity with id :${eid}`
+        );
     }
 
     if (!archetype.mask.has(component.id)) return;
@@ -188,7 +188,7 @@ export const hasComponent = (
 
   if (!archetype) {
     throw new NonExistantEntityError(
-      `Trying to check component existence of a non existant entity with id :${eid}`
+      `Trying to check component existence of a non existant entity with id : ${eid}`
     );
   }
 

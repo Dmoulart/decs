@@ -167,6 +167,7 @@ describe("Query", () => {
         registerQuery(query, world)
 
         let added = 0;
+
         const onEnter = onEnterQuery(query)
         onEnter((entities: Array<Entity>) => {
             added += entities.length
@@ -199,6 +200,7 @@ describe("Query", () => {
         attach(TestComponent2, eid, world);
 
         let removed = 0;
+
         const onExit = onExitQuery(query)
         onExit((entities: Array<Entity>) => {
             removed += entities.length
