@@ -1,4 +1,4 @@
-import { BitSet } from "./collections";
+import {BitSet, SparseSet} from "./collections";
 import { Component } from "./component";
 import { World } from "./world";
 import { Archetype } from "./archetype";
@@ -20,6 +20,8 @@ export const makeComponentsMask = (...components: Component<any>[]) =>
  */
 export type Matcher = (archetype: Archetype) => boolean;
 
+export type QueryHandler = (entities:Array<Entity>) => void
+
 export type Query = {
   /**
    * The archetypes matching the query
@@ -29,6 +31,14 @@ export type Query = {
    * The query matchers
    */
   matchers: Array<Matcher>;
+  /**
+   * The world this query is attached to
+   */
+  world: World | null;
+  /**
+   * The callback to execute when entities enter the query or exit the query
+   */
+  handlers: { enter: Array<QueryHandler>, exit: Array<QueryHandler> }
   /**
    * Get all archetypes that have the given set of components.
    * @param components
@@ -84,10 +94,14 @@ export type Query = {
 export const Query = (): Query => {
   const archetypes: Archetype[] = [];
   const matchers: Array<Matcher> = [];
+  const handlers = {enter: [], exit: []};
+  let world: World | null = null;
 
   return {
     matchers,
     archetypes,
+    world,
+    handlers,
     all(...components: Component<any>[]) {
       const mask = makeComponentsMask(...components);
       matchers.push((arch) => arch.mask.contains(mask));
@@ -112,8 +126,8 @@ export const Query = (): Query => {
       matchers.push(matcher);
       return this;
     },
-    from(world: World) {
-      archloop: for (const archetype of world.archetypes) {
+    from(target: World) {
+      archloop: for (const archetype of target.archetypes) {
         for (const match of matchers) {
           if (!match(archetype)) continue archloop;
         }
@@ -140,6 +154,7 @@ export const Query = (): Query => {
  * @param world
  */
 export const registerQuery = (query: Query, world: World) => {
+  query.world = world
   world.queries.push(query.from(world));
 };
 
@@ -147,7 +162,7 @@ export const registerQuery = (query: Query, world: World) => {
  * Returns true if an archetype is matched by a given query.
  * @param query
  * @param archetype
- * @returns archetype matches query
+ * @returns true if archetype components match query
  */
 export const archetypeMatchesQuery = (
   query: Query,
@@ -160,3 +175,71 @@ export const archetypeMatchesQuery = (
   }
   return true;
 };
+
+/*
+export const registerQueryHandlers = (query: Query, world: World) => {
+    if(query.handlers.enter.length === 0 && query.handlers.exit.length === 0 ) return
+    for(const archetype of query.archetypes){
+        const id = archetype.id
+        world.handlers.enter[id] ??= []
+        world.handlers.enter[id].push(...query.handlers.enter)
+
+        world.handlers.exit[id] ??= []
+        world.handlers.exit[id].push(...query.handlers.exit)
+    }
+}
+*/
+
+export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
+    console.log('query.archetypes.length', query.archetypes.length)
+    for(const archetype of query.archetypes){
+        if(!world.handlers.enter[archetype.id]){
+            world.handlers.enter[archetype.id] = []
+        }
+        world.handlers.enter[archetype.id].push(handler)
+    }
+}
+
+
+export const registerQueryHandlersForArchetype = ( archetype: Archetype, query: Query, world: World) => {
+    if(query.handlers.enter.length > 0){
+        if(!world.handlers.enter[archetype.id]){
+            world.handlers.enter[archetype.id] = []
+        }
+        world.handlers.enter[archetype.id].push(...query.handlers.enter)
+    }
+    if(query.handlers.exit.length > 0){
+        if(!world.handlers.exit[archetype.id]){
+            world.handlers.exit[archetype.id] = []
+        }
+        world.handlers.exit[archetype.id].push(...query.handlers.exit)
+    }
+
+}
+
+export const registerExitQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
+    for(const archetype of query.archetypes){
+        if(!world.handlers.exit[archetype.id]){
+            world.handlers.exit[archetype.id] = []
+        }
+        world.handlers.exit[archetype.id].push(handler)
+    }
+}
+
+export const onEnterQuery = (query: Query) => {
+    return (fn: QueryHandler) => {
+        query.handlers.enter.push(fn)
+        if(query.world){
+            registerEnterQueryHandler(fn, query, query.world)
+        }
+    }
+}
+
+export const onExitQuery = (query: Query) => {
+    return (fn: QueryHandler) => {
+        query.handlers.exit.push(fn)
+        if(query.world){
+            registerExitQueryHandler(fn, query, query.world)
+        }
+    }
+}

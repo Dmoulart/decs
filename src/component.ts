@@ -108,7 +108,7 @@ export const attach = (
 
   if (!archetype) {
     throw new NonExistantEntityError(
-      `Trying to add component to a non existant entity with id :${eid}`
+      `Trying to add component to a non existant entity with id : ${eid}`
     );
   }
 
@@ -119,8 +119,57 @@ export const attach = (
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
+  if(world.handlers.enter[newArchetype.id]?.length){
+      const handlers = world.handlers.enter[newArchetype.id]
+      const entity = [eid]
+      for (const fn of handlers){
+        fn(entity)
+      }
+  }
+
   world.entitiesArchetypes[eid] = newArchetype;
 };
+
+
+/**
+* Remove a component from the given entity.
+* @param component
+* @param eid
+* @param world
+* @throws NonExistantEntityError
+* @returns nothing
+*/
+export const detach = (
+        component: Component<any>,
+        eid: Entity,
+        world: World
+        ) => {
+    const archetype = world.entitiesArchetypes[eid]!;
+
+    if (!archetype) {
+        throw new NonExistantEntityError(
+                `Trying to remove component from a non existant entity with id :${eid}`
+                );
+    }
+
+    if (!archetype.mask.has(component.id)) return;
+
+    const newArchetype = deriveArchetype(archetype, component, world);
+
+    archetype.entities.remove(eid);
+    newArchetype.entities.insert(eid);
+
+    if(world.handlers.exit[archetype.id]?.length){
+        const handlers = world.handlers.exit[archetype.id]
+        const entity = [eid]
+        for (const fn of handlers){
+            fn(entity)
+        }
+    }
+
+    world.entitiesArchetypes[eid] = newArchetype;
+};
+
 
 /**
  * Returns true if the entity possess the specified component.
@@ -144,35 +193,4 @@ export const hasComponent = (
   }
 
   return archetype.mask.has(comp.id);
-};
-
-/**
- * Remove a component from the given entity.
- * @param component
- * @param eid
- * @param world
- * @throws NonExistantEntityError
- * @returns nothing
- */
-export const detach = (
-  component: Component<any>,
-  eid: Entity,
-  world: World
-) => {
-  const archetype = world.entitiesArchetypes[eid]!;
-
-  if (!archetype) {
-    throw new NonExistantEntityError(
-      `Trying to remove component from a non existant entity with id :${eid}`
-    );
-  }
-
-  if (!archetype.mask.has(component.id)) return;
-
-  const newArchetype = deriveArchetype(archetype, component, world);
-
-  archetype.entities.remove(eid);
-
-  newArchetype.entities.insert(eid);
-  world.entitiesArchetypes[eid] = newArchetype;
 };

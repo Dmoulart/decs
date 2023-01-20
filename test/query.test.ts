@@ -1,5 +1,5 @@
 import "jest";
-import { Query, registerQuery, World, attach, detach, Component, Entity } from "../src";
+import {Query, registerQuery, World, attach, detach, Component, Entity, onEnterQuery, onExitQuery} from "../src";
 import { Types } from "../src/types";
 
 describe("Query", () => {
@@ -152,5 +152,61 @@ describe("Query", () => {
 
         detach(TestComponent, eid2, world);
         expect(query.archetypes[1].entities.count()).toStrictEqual(0);
+    });
+    it("can track whenever entities enter the query", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const query =  Query().all(TestComponent, TestComponent2);
+        registerQuery(query, world)
+
+        let added = 0;
+        const onEnter = onEnterQuery(query)
+        onEnter((entities: Array<Entity>) => {
+            added += entities.length
+        })
+
+        const eid = Entity(world);
+
+        attach(TestComponent, eid, world);
+        expect(added).toStrictEqual(0)
+
+        attach(TestComponent2, eid, world);
+        expect(added).toStrictEqual(1)
+    });
+    it("can track whenever entities exit the query", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const query =  Query().all(TestComponent, TestComponent2);
+        registerQuery(query, world)
+
+        const eid = Entity(world);
+
+        attach(TestComponent, eid, world);
+        attach(TestComponent2, eid, world);
+
+        let removed = 0;
+        const onExit = onExitQuery(query)
+        onExit((entities: Array<Entity>) => {
+            removed += entities.length
+        })
+
+        expect(removed).toStrictEqual(0)
+
+        detach(TestComponent2, eid, world);
+        expect(removed).toStrictEqual(1)
     });
 });

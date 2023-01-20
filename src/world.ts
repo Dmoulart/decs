@@ -1,6 +1,6 @@
 import { Entity } from "./entity";
 import { Archetype } from "./archetype";
-import { Query } from "./query";
+import {Query, QueryHandler} from "./query";
 
 export const WORLD_MAX_SIZE = 100_000;
 
@@ -33,6 +33,10 @@ export type World = {
    * The registerd queries
    */
   queries: Query[];
+  /**
+   * The callback to execute when entities enter the query or exit the query
+   */
+  handlers: { enter: Array<QueryHandler[]>, exit: Array<QueryHandler[]> }
 };
 
 /**
@@ -47,6 +51,7 @@ export const World = (size = WORLD_MAX_SIZE): World => {
     entitiesArchetypes: [] as Archetype[],
     archetypes: [] as Archetype[],
     queries: [] as Query[],
+    handlers: { enter: [] as Array<QueryHandler[]>, exit: [] as Array<QueryHandler[]> },
     size,
   } as World;
 
