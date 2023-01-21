@@ -6,6 +6,18 @@ import { World } from "./world";
 export type Entity = number;
 
 /**
+* The global next entity id.
+*/
+export let nextEid = 0;
+
+/**
+ * Reset the global entities id count to 0.
+ */
+export const resetEntityCursor = () => {
+    nextEid = 0
+}
+
+/**
  * Creates an entity, add it in the given world and returns it.
  * @param world
  * @param archetype
@@ -14,7 +26,7 @@ export type Entity = number;
 export const Entity = (world: World, archetype = world.rootArchetype): Entity => {
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
-    : ++world.nextEid;
+    : ++nextEid;
 
   // We start creating entities id from 1
   if (eid > world.size) {

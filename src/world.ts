@@ -6,10 +6,6 @@ export const DEFAULT_WORLD_MAX_SIZE = 100_000;
 
 export type World = {
   /**
-   * The next entity id
-   */
-  nextEid: number;
-  /**
    * The removed entities
    */
   deletedEntities: Array<Entity>;
@@ -48,7 +44,6 @@ export const World = (size = DEFAULT_WORLD_MAX_SIZE): World => {
   const rootArchetype = Archetype()
 
   return {
-    nextEid: 0,
     rootArchetype,
     archetypes: [rootArchetype],
     deletedEntities: [] as Entity[],

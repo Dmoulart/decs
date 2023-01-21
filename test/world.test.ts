@@ -12,4 +12,9 @@ describe("World", () => {
     Entity(world);
     expect(() => Entity(world)).toThrowError();
   });
+  it("can create multiple world", () => {
+      const worldA = World(100_000);
+      const worldB = World(100_000);
+      expect(() => World(100_000)).not.toThrowError();
+  });
 });

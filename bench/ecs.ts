@@ -1,11 +1,12 @@
 import {run} from "./run/runner";
 import {World} from "../src/world";
-import {Entity, removeEntity} from "../src/entity";
+import {Entity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, Component, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
 
 {
+  resetEntityCursor()
   let world = World();
   let Position = Component({
     x: Types.f32,
@@ -45,6 +46,7 @@ import {Query, registerQuery} from "../src/query";
 }
 
 {
+  resetEntityCursor()
   let world = World();
   let Position = Component({
     x: Types.f32,
@@ -107,6 +109,7 @@ import {Query, registerQuery} from "../src/query";
 
 //  Destroy 100_000; entities
 {
+  resetEntityCursor()
   let world = World();
   let Position = Component({
     x: Types.f32,
