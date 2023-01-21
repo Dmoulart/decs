@@ -270,5 +270,20 @@ describe("Query", () => {
         detach(TestComponent2, eid, world);
         expect(removed).toStrictEqual(1)
     });
+    it("can cannot be registered to multiple worlds", () => {
+        const worldA = World();
+        const worldB = World();
 
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const query =  Query().all(TestComponent, TestComponent2);
+        registerQuery(query, worldA)
+        
+        expect(() => registerQuery(query, worldB)).toThrowError()
+    });
 });

@@ -1,5 +1,5 @@
 import "jest";
-import { Entity, hasEntity, removeEntity, World } from "../src";
+import {Entity, hasEntity, nextEid, removeEntity, World} from "../src";
 
 describe("Entity", () => {
   it("can create a new entity", () => {
@@ -8,13 +8,13 @@ describe("Entity", () => {
 
     expect(eid).toStrictEqual(1);
   });
-  it("can keep track of the entities count", () => {
+  it("can keep track of the entities count, starting from 1", () => {
     const world = World();
 
     Entity(world);
     Entity(world);
 
-    expect(world.nextEid).toStrictEqual(2);
+    expect(nextEid).toStrictEqual(3);
   });
   it("recycle deleted entities", () => {
     const world = World();
