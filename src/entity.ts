@@ -23,7 +23,7 @@ export const resetEntityCursor = () => {
  * @param archetype
  * @returns new entity's id
  */
-export const Entity = (world: World, archetype = world.rootArchetype): Entity => {
+export const createEntity = (world: World, archetype = world.rootArchetype): Entity => {
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
     : ++nextEid;
@@ -67,7 +67,7 @@ export const removeEntity = (eid: Entity, world: World) => {
  * @throws NonExistantEntityError
  * @returns world has the given entity
  */
-export const hasEntity = (eid: Entity, world: World) => Boolean(world.entitiesArchetypes[eid]);
+export const existsEntity = (eid: Entity, world: World) => Boolean(world.entitiesArchetypes[eid]);
 
 export class NonExistantEntityError extends Error {}
 export class ExceededWorldCapacityError extends Error {}

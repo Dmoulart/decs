@@ -1,7 +1,7 @@
-import { Component, ComponentField, InferComponentDefinition } from "./component";
-import { World } from "./world";
+import {defineComponent, ComponentField, InferComponentDefinition, Component} from "./component";
+import {createWorld, World} from "./world";
 import { deriveArchetype } from "./archetype";
-import { Entity } from "./entity";
+import { createEntity } from "./entity";
 import { NestedTypedArray, TypedArray } from "./types";
 
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
@@ -49,7 +49,7 @@ export const prefab = <Components extends Readonly<Component<any>[]>>(
   }
 
   return (...options: PrefabOptions<Components>) => {
-    const eid = Entity(world, archetype);
+    const eid = createEntity(world, archetype);
 
     const len = options.length
     for (let i = 0; i < len; i++) {

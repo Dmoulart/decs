@@ -1,32 +1,32 @@
 import "jest";
 import Types from "../src/types";
-import {Archetype, deriveArchetype} from "../src/archetype";
-import {makeComponentsMask, Component, World } from "../src";
+import {createArchetype, deriveArchetype} from "../src/archetype";
+import {makeComponentsMask, defineComponent, createWorld } from "../src";
 
 describe("Archetype", () => {
   it("can be created without component", () => {
-    expect(() => Archetype()).not.toThrowError();
+    expect(() => createArchetype()).not.toThrowError();
   });
   it("can be created with component", () => {
-    const TestComponent = Component({
+    const TestComponent = defineComponent({
       test: Types.i8,
     });
 
-    const archetype = Archetype(makeComponentsMask(TestComponent));
+    const archetype = createArchetype(makeComponentsMask(TestComponent));
 
     expect(archetype.mask.has(TestComponent.id)).toBeTruthy();
   });
   it("can be augmented", () => {
-    const world = World();
+    const world = createWorld();
 
-    const TestComponent1 = Component({
+    const TestComponent1 = defineComponent({
       test: Types.i8,
     });
-    const TestComponent2 = Component({
+    const TestComponent2 = defineComponent({
       test: Types.i8,
     });
 
-    const archetype = Archetype(makeComponentsMask(TestComponent1));
+    const archetype = createArchetype(makeComponentsMask(TestComponent1));
 
     const augmentedArchetype = deriveArchetype(
       archetype,
@@ -38,16 +38,16 @@ describe("Archetype", () => {
     expect(augmentedArchetype.mask.has(TestComponent2.id)).toBeTruthy();
   });
   it("can be diminished", () => {
-    const world = World();
+    const world = createWorld();
 
-    const TestComponent1 = Component({
+    const TestComponent1 = defineComponent({
       test: Types.i8,
     });
-    const TestComponent2 = Component({
+    const TestComponent2 = defineComponent({
       test: Types.i8,
     });
 
-    const archetype = Archetype(
+    const archetype = createArchetype(
       makeComponentsMask(TestComponent1, TestComponent2)
     );
     const diminishedArchetype = deriveArchetype(
@@ -60,16 +60,16 @@ describe("Archetype", () => {
     expect(diminishedArchetype.mask.has(TestComponent2.id)).toBeFalsy();
   });
   it("can cache augmented archetype", () => {
-    const world = World();
+    const world = createWorld();
 
-    const TestComponent1 = Component({
+    const TestComponent1 = defineComponent({
       test: Types.i8,
     });
-    const TestComponent2 = Component({
+    const TestComponent2 = defineComponent({
       test: Types.i8,
     });
 
-    const archetype = Archetype(makeComponentsMask(TestComponent1));
+    const archetype = createArchetype(makeComponentsMask(TestComponent1));
 
     const augmented = deriveArchetype(archetype, TestComponent2, world);
 
@@ -79,16 +79,16 @@ describe("Archetype", () => {
     expect(augmentedCached).toStrictEqual(augmented);
   });
   it("can cache diminished archetype", () => {
-    const world = World();
+    const world = createWorld();
 
-    const TestComponent1 = Component({
+    const TestComponent1 = defineComponent({
       test: Types.i8,
     });
-    const TestComponent2 = Component({
+    const TestComponent2 = defineComponent({
       test: Types.i8,
     });
 
-    const archetype = Archetype(makeComponentsMask(TestComponent1, TestComponent2));
+    const archetype = createArchetype(makeComponentsMask(TestComponent1, TestComponent2));
     const diminished = deriveArchetype(archetype, TestComponent2, world);
 
     expect(archetype.edge[TestComponent2.id]).toBeTruthy();
