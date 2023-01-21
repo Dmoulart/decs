@@ -49,11 +49,11 @@ export const createWorld = (size = DEFAULT_WORLD_MAX_SIZE): World => {
     rootArchetype,
     archetypes: [rootArchetype],
     deletedEntities: [] as Entity[],
-      entitiesArchetypes: [] as Archetype[],
+    entitiesArchetypes: [] as Archetype[],
     queries: [] as Query[],
     handlers: {
-        enter: [] as Array<QueryHandler[]>,
-        exit: [] as Array<QueryHandler[]>
+    enter: [] as Array<QueryHandler[]>,
+    exit: [] as Array<QueryHandler[]>
     },
     size,
   }
