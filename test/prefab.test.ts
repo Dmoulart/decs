@@ -40,10 +40,10 @@ describe("Prefab", () => {
 
     actor({x: 10, y: 10}, {y: 10, x: 10});
 
-    const query = Query().all(Position, Velocity).from(world);
+    const archetypes = Query().all(Position, Velocity).from(world);
 
-    expect(query.archetypes.length === 1).toBeTruthy();
-    expect(query.archetypes[0].entities.count() === 1).toBeTruthy();
+    expect(archetypes.length === 1).toBeTruthy();
+    expect(archetypes[0].entities.count() === 1).toBeTruthy();
   });
   it("can register to existing query", () => {
     const Position = Component({

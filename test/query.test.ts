@@ -23,11 +23,11 @@ describe("Query", () => {
         const eid2 = Entity(world);
         attach(TestComponent, eid2, world);
 
-        const a = Query().all(TestComponent, TestComponent2).from(world);
-        expect(a.archetypes.length).toStrictEqual(1);
+        const archetypesA = Query().all(TestComponent, TestComponent2).from(world);
+        expect(archetypesA.length).toStrictEqual(1);
 
-        const b = Query().all(TestComponent).from(world);
-        expect(b.archetypes.length).toStrictEqual(2);
+        const archetypesB = Query().all(TestComponent).from(world);
+        expect(archetypesB.length).toStrictEqual(2);
     });
     it("can query some components", () => {
         const world = World();
@@ -46,11 +46,11 @@ describe("Query", () => {
         const eid2 = Entity(world);
         attach(TestComponent, eid2, world);
 
-        const a = Query().any(TestComponent, TestComponent2).from(world);
-        expect(a.archetypes.length).toStrictEqual(2);
+        const archetypesA = Query().any(TestComponent, TestComponent2).from(world);
+        expect(archetypesA.length).toStrictEqual(2);
 
-        const b = Query().any(TestComponent).from(world);
-        expect(b.archetypes.length).toStrictEqual(2);
+        const archetypesB = Query().any(TestComponent).from(world);
+        expect(archetypesB.length).toStrictEqual(2);
     });
     it("can exclude some components from query", () => {
         const world = World();
@@ -69,8 +69,8 @@ describe("Query", () => {
         const eid2 = Entity(world);
         attach(TestComponent, eid2, world);
 
-        const query = Query().any(TestComponent).not(TestComponent2).from(world);
-        expect(query.archetypes.length).toStrictEqual(1);
+        const archetypes = Query().any(TestComponent).not(TestComponent2).from(world);
+        expect(archetypes.length).toStrictEqual(1);
     });
     it("can exclude group of components from query", () => {
         const world = World();
@@ -94,11 +94,11 @@ describe("Query", () => {
         attach(TestComponent, eid2, world);
         attach(TestComponent2, eid, world);
 
-        const query = Query()
-      .any(TestComponent)
-      .none(TestComponent2, TestComponent3)
-      .from(world);
-        expect(query.archetypes.length).toStrictEqual(2);
+        const archetypes = Query()
+            .any(TestComponent)
+            .none(TestComponent2, TestComponent3)
+            .from(world);
+        expect(archetypes.length).toStrictEqual(2);
     });
     it("can use custom matcher", () => {
         const world = World();
@@ -117,12 +117,12 @@ describe("Query", () => {
         const eid2 = Entity(world);
         attach(TestComponent, eid2, world);
 
-        const query = Query()
+        const archetypes = Query()
             .any(TestComponent)
             .match((arch) => arch.entities.count() > 10)
             .from(world);
 
-        expect(query.archetypes.length).toStrictEqual(0);
+        expect(archetypes.length).toStrictEqual(0);
     });
     it("can be added to world and update automatically", () => {
         const world = World();

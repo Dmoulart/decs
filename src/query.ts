@@ -24,19 +24,19 @@ export type QueryHandler = (entities:Array<Entity>) => void
 
 export type Query = {
   /**
-   * The archetypes matching the query
+   * The archetypes matching the query.
    */
   archetypes: Archetype[];
   /**
-   * The query matchers
+   * The query matchers.
    */
   matchers: Array<Matcher>;
   /**
-   * The world this query is attached to
+   * The world this query is attached to.
    */
   world: World | null;
   /**
-   * The callback to execute when entities enter the query or exit the query
+   * The callback to execute when entities enter the query or exit the query.
    */
   handlers: { enter: Array<QueryHandler>, exit: Array<QueryHandler> }
   /**
@@ -46,7 +46,7 @@ export type Query = {
    */
   all: (...components: Component<any>[]) => Query;
   /**
-   * Get all archetypes that contains at leaast one of the given components
+   * Get all archetypes that contains at leaast one of the given components.
    * @param components
    * @returns query
    */
@@ -69,15 +69,13 @@ export type Query = {
    * @returns query
    */
   match: (matcher: Matcher) => Query;
+
   /**
    * Execute the given query with the given world.
-   * This allows to execute the query outside of the system or world. We can therefore make one time
-   * queries. If you wish to use a query regularly you should register the query with the register query method.
-   * It will update automatically the query results when any archetypes is created.
-   * @param world
+   * Returns matching archetypes.
    * @returns
    */
-  from: (world: World) => Query;
+  from: (world: World) => Archetype[];
 
   /**
    * Execute the given function for each entities.
@@ -133,7 +131,7 @@ export const Query = (): Query => {
         }
         archetypes.push(archetype);
       }
-      return this;
+      return archetypes;
     },
     forEachEntity(fn: (eid: Entity, index: number) => void) {
       for (let i = 0; i < archetypes.length; i++) {
@@ -160,8 +158,8 @@ export const registerQuery = (query: Query, world: World) => {
   }
   query.world = world
 
-  // Execute the query
-  query.from(world)
+  // Execute the query, register the results in the query.
+  query.archetypes = query.from(world)
   world.queries.push(query);
 
   // Register the handlers
@@ -227,7 +225,8 @@ export const registerExitQueryHandler = (handler: QueryHandler, query: Query, wo
 export const onEnterQuery = (query: Query) => {
     return (fn: QueryHandler) => {
         query.handlers.enter.push(fn)
-        // @todo: make world/query relationship more clear
+        // If query is not tied to any world, the registration of the handlers will take
+        // place during the registration of the query
         if(query.world){
             registerEnterQueryHandler(fn, query, query.world)
         }
@@ -237,7 +236,8 @@ export const onEnterQuery = (query: Query) => {
 export const onExitQuery = (query: Query) => {
     return (fn: QueryHandler) => {
         query.handlers.exit.push(fn)
-        // @todo: make world/query relationship more clear
+        // If query is not tied to any world, the registration of the handlers will take
+        // place during the registration of the query
         if(query.world){
             registerExitQueryHandler(fn, query, query.world)
         }
