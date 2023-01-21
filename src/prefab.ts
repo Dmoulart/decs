@@ -1,5 +1,5 @@
 import {defineComponent, ComponentField, InferComponentDefinition, Component} from "./component";
-import {createWorld, World} from "./world";
+import { World } from "./world";
 import { deriveArchetype } from "./archetype";
 import { createEntity } from "./entity";
 import { NestedTypedArray, TypedArray } from "./types";
