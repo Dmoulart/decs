@@ -4,7 +4,7 @@ import { deriveArchetype } from "./archetype";
 import { Entity } from "./entity";
 import { NestedTypedArray, TypedArray } from "./types";
 
-// This produces a nested array but we're only interested in the second level. I don't know how to get rid of this level yet
+// @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
 export type PrefabOptions<Components extends Readonly<Component<any>[]>> = Map<
   Components,
   ComponentsPrefabFields<Components>
@@ -27,7 +27,13 @@ type ComponentsPrefabFields<T extends Readonly<Component<any>[]>> = {
 // Map function utility
 type Map<T, U> = {[K in keyof T]: U};
 
-
+/**
+ * Creates a factory function to generate entities of a certain type by using
+ * objects to initialize its components values.
+ * @param world
+ * @param components
+ * @returns entity factory function
+*/
 export const prefab = <Components extends Readonly<Component<any>[]>>(
   world: World,
   ...components: Components

@@ -7,9 +7,9 @@ import { Entity } from "./entity";
 /**
  * A matcher represents the conditional expression used for every query operators.
  */
-export type Matcher = (archetype: Archetype) => boolean;
+export type Matcher = (archetype: Archetype) => boolean
 
-export type QueryHandler = (entities:Array<Entity>) => void
+export type QueryHandler = (entities: Array<Entity>) => void
 
 export type Query = {
   /**
