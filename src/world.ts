@@ -1,6 +1,8 @@
-import { Entity } from "./entity";
+import {Entity, hasEntity, removeEntity} from "./entity";
 import { Archetype } from "./archetype";
 import { Query, QueryHandler } from "./query";
+import {attach, Component, detach, hasComponent} from "./component";
+import {prefab} from "./prefab";
 
 export const DEFAULT_WORLD_MAX_SIZE = 100_000;
 
@@ -56,3 +58,16 @@ export const World = (size = DEFAULT_WORLD_MAX_SIZE): World => {
     size,
   }
 };
+
+export const useWorld = (world: World = World()) => {
+    return {
+        world,
+        create: (archetype?: Archetype) => Entity(world, archetype),
+        delete: (eid: Entity) => removeEntity(eid, world),
+        exists: (eid: Entity) => hasEntity(eid, world),
+        hasComponent: (component: Component<any>, eid: Entity) => hasComponent(component, eid, world),
+        prefab: (...components: Component<any>[]) => prefab(world, ...components),
+        attach: (component: Component<any>, eid: Entity) => attach(component, eid, world),
+        detach: (component: Component<any>, eid: Entity) => detach(component, eid, world),
+    }
+}

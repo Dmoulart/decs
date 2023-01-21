@@ -9,7 +9,7 @@ import {
     Entity,
     onEnterQuery,
     onExitQuery,
-    AlreadyRegisteredQueryError, removeQuery, RemoveQueryError
+    AlreadyRegisteredQueryError, removeQuery, RemoveQueryError, all
 } from "../src";
 import { Types } from "../src/types";
 
@@ -350,5 +350,18 @@ describe("Query", () => {
 
         expect(world.handlers.enter[arch.id].find(fn => fn === enterHandler)).toBeFalsy()
         expect(world.handlers.exit[arch.id].find(fn => fn === exitHandler)).toBeFalsy()
+    });
+    it("api", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const query = all(TestComponent).any(TestComponent2)
+        registerQuery(query, world)
     });
 });
