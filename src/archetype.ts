@@ -3,6 +3,7 @@ import { BitSet, Bitset, SparseSet } from "./collections";
 import { World } from "./world";
 import {archetypeMatchesQuery, registerQueryHandlersForArchetype} from "./query";
 
+
 export type Archetype = {
  /**
   * The archetype id.
@@ -22,7 +23,9 @@ export type Archetype = {
   mask: Bitset;
 };
 
-let archetypeCursor = 0
+// The next archetype id.
+let nextAid = 0
+
 /**
  * Creates a new archetype with the specified list of components.
  * @param mask
@@ -30,7 +33,7 @@ let archetypeCursor = 0
  */
 export const Archetype = (mask = BitSet(2)): Archetype => {
   return {
-    id: ++archetypeCursor,
+    id: ++nextAid,
     entities: SparseSet(),
     edge: [],
     mask,
@@ -62,7 +65,7 @@ export const deriveArchetype = (
   mask.xor(component.id);
 
   const archetype: Archetype = {
-    id: ++archetypeCursor,
+    id: ++nextAid,
     entities: SparseSet(),
     edge: [],
     mask,
@@ -83,14 +86,3 @@ export const deriveArchetype = (
 
   return archetype;
 };
-
-/*
-export const changeArchetype = (eid: Entity, newArchetype: Archetype, world: World, oldArchetype?: Archetype) => {
-    for(const watcher of world.queryWatchers){
-        for(const [archetype, fns] of watcher.query.archetypes){
-            if(archetype === newArchetype){
-                fns.forEach(fn => fn(eid))
-            }
-        }
-    }
-}*/
