@@ -1,7 +1,7 @@
 import {run} from "./run/runner";
-import {createWorld} from "../src/createWorld";
-import {createEntity, removeEntity, resetEntityCursor} from "../src/createEntity";
-import {attach, defineComponent, detach} from "../src/defineComponent";
+import {createWorld} from "../src/world";
+import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
+import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
 

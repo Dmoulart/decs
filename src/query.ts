@@ -94,7 +94,7 @@ export const Query = (): Query => {
   const archetypes: Archetype[] = [];
   const matchers: Array<Matcher> = [];
   const handlers = { enter: [], exit: [] };
-  let world: World | null = null;
+  let world: World | null = null
 
   return {
     matchers,
