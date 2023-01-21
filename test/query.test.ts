@@ -2,14 +2,14 @@ import "jest";
 import {
     Query,
     registerQuery,
-    World,
+    createWorld,
     attach,
     detach,
-    Component,
-    Entity,
+    defineComponent,
+    createEntity,
     onEnterQuery,
     onExitQuery,
-    AlreadyRegisteredQueryError, removeQuery, RemoveQueryError
+    AlreadyRegisteredQueryError, removeQuery, RemoveQueryError, all, Entity
 } from "../src";
 import { Types } from "../src/types";
 
@@ -18,20 +18,20 @@ describe("Query", () => {
         expect(() => Query()).not.toThrowError();
     });
     it("can query complete sets of components", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         attach(TestComponent, eid, world);
         attach(TestComponent2, eid, world);
 
-        const eid2 = Entity(world);
+        const eid2 = createEntity(world);
         attach(TestComponent, eid2, world);
 
         const archetypesA = Query().all(TestComponent, TestComponent2).from(world);
@@ -41,20 +41,20 @@ describe("Query", () => {
         expect(archetypesB.length).toStrictEqual(2);
     });
     it("can query some components", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         attach(TestComponent, eid, world);
         attach(TestComponent2, eid, world);
 
-        const eid2 = Entity(world);
+        const eid2 = createEntity(world);
         attach(TestComponent, eid2, world);
 
         const archetypesA = Query().any(TestComponent, TestComponent2).from(world);
@@ -64,44 +64,44 @@ describe("Query", () => {
         expect(archetypesB.length).toStrictEqual(2);
     });
     it("can exclude some components from query", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         attach(TestComponent, eid, world);
         attach(TestComponent2, eid, world);
 
-        const eid2 = Entity(world);
+        const eid2 = createEntity(world);
         attach(TestComponent, eid2, world);
 
         const archetypes = Query().any(TestComponent).not(TestComponent2).from(world);
         expect(archetypes.length).toStrictEqual(1);
     });
     it("can exclude group of components from query", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
-        const TestComponent3 = Component({
+        const TestComponent3 = defineComponent({
             test: Types.i32,
         });
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         attach(TestComponent, eid, world);
         attach(TestComponent2, eid, world);
         attach(TestComponent3, eid, world);
 
-        const eid2 = Entity(world);
+        const eid2 = createEntity(world);
         attach(TestComponent, eid2, world);
         attach(TestComponent2, eid, world);
 
@@ -112,20 +112,20 @@ describe("Query", () => {
         expect(archetypes.length).toStrictEqual(2);
     });
     it("can use custom matcher", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         attach(TestComponent, eid, world);
         attach(TestComponent2, eid, world);
 
-        const eid2 = Entity(world);
+        const eid2 = createEntity(world);
         attach(TestComponent, eid2, world);
 
         const archetypes = Query()
@@ -136,16 +136,16 @@ describe("Query", () => {
         expect(archetypes.length).toStrictEqual(0);
     });
     it("can be added to world and update automatically", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         attach(TestComponent2, eid, world);
 
         const query = Query().any(TestComponent, TestComponent2);
@@ -155,7 +155,7 @@ describe("Query", () => {
         expect(query.archetypes.length).toStrictEqual(1);
         expect(query.archetypes[0].entities.count()).toStrictEqual(1);
 
-        const eid2 = Entity(world);
+        const eid2 = createEntity(world);
         attach(TestComponent, eid2, world);
 
         expect(query.archetypes.length).toStrictEqual(2);
@@ -165,12 +165,12 @@ describe("Query", () => {
         expect(query.archetypes[1].entities.count()).toStrictEqual(0);
     });
     it("can track whenever entities enter the query", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
@@ -184,7 +184,7 @@ describe("Query", () => {
             added += entities.length
         })
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
 
         attach(TestComponent, eid, world);
         expect(added).toStrictEqual(0)
@@ -193,19 +193,19 @@ describe("Query", () => {
         expect(added).toStrictEqual(1)
     });
     it("can track whenever entities exit the query", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
         const query =  Query().all(TestComponent, TestComponent2);
         registerQuery(query, world)
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
 
         attach(TestComponent, eid, world);
         attach(TestComponent2, eid, world);
@@ -223,12 +223,12 @@ describe("Query", () => {
         expect(removed).toStrictEqual(1)
     });
     it("can track whenever entities enter the query even if handlers have been defined before the query has been registered", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
@@ -242,7 +242,7 @@ describe("Query", () => {
             added += entities.length
         })
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         registerQuery(query, world)
 
         attach(TestComponent, eid, world);
@@ -252,18 +252,18 @@ describe("Query", () => {
         expect(added).toStrictEqual(1)
     });
     it("can track whenever entities exit the query even if handlers have been defined before the query has been registered", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
-        const query =  Query().all(TestComponent, TestComponent2);
+        const query = Query().all(TestComponent, TestComponent2);
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
 
         attach(TestComponent, eid, world);
         attach(TestComponent2, eid, world);
@@ -282,13 +282,13 @@ describe("Query", () => {
         expect(removed).toStrictEqual(1)
     });
     it("can cannot be registered to multiple worlds", () => {
-        const worldA = World();
-        const worldB = World();
+        const worldA = createWorld();
+        const worldB = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
-        const TestComponent2 = Component({
+        const TestComponent2 = defineComponent({
             test: Types.i32,
         });
 
@@ -298,9 +298,9 @@ describe("Query", () => {
         expect(() => registerQuery(query, worldB)).toThrowError(AlreadyRegisteredQueryError)
     });
     it("can be removed", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
 
@@ -311,10 +311,10 @@ describe("Query", () => {
         expect(world.queries).not.toContain(query)
     });
     it("throw an error when trying to remove a query from the wrong world", () => {
-        const world = World();
-        const worldB = World();
+        const world = createWorld();
+        const worldB = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
 
@@ -324,9 +324,9 @@ describe("Query", () => {
         expect(() => removeQuery(query, worldB)).toThrowError(RemoveQueryError)
     });
     it("clears its query handlers when query is removed from world", () => {
-        const world = World();
+        const world = createWorld();
 
-        const TestComponent = Component({
+        const TestComponent = defineComponent({
             test: Types.i8,
         });
 
@@ -341,7 +341,7 @@ describe("Query", () => {
         const exitHandler = () => {}
         onExit(exitHandler)
 
-        const eid = Entity(world);
+        const eid = createEntity(world);
         attach(TestComponent, eid, world)
 
         removeQuery(query, world)
@@ -350,5 +350,18 @@ describe("Query", () => {
 
         expect(world.handlers.enter[arch.id].find(fn => fn === enterHandler)).toBeFalsy()
         expect(world.handlers.exit[arch.id].find(fn => fn === exitHandler)).toBeFalsy()
+    });
+    it("api", () => {
+        const world = createWorld();
+
+        const TestComponent = defineComponent({
+            test: Types.i8,
+        });
+        const TestComponent2 = defineComponent({
+            test: Types.i32,
+        });
+
+        const query = all(TestComponent).any(TestComponent2)
+        registerQuery(query, world)
     });
 });

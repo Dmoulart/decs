@@ -1,50 +1,50 @@
 import "jest";
-import {Entity, hasEntity, nextEid, removeEntity, World} from "../src";
+import {createEntity, existsEntity, nextEid, removeEntity, createWorld} from "../src";
 
 describe("Entity", () => {
   it("can create a new entity", () => {
-    const world = World();
-    const eid = Entity(world);
+    const world = createWorld();
+    const eid = createEntity(world);
 
     expect(eid).toStrictEqual(1);
   });
   it("can keep track of the entities count, starting from 1", () => {
-    const world = World();
+    const world = createWorld();
 
-    Entity(world);
-    Entity(world);
+    createEntity(world);
+    createEntity(world);
 
     expect(nextEid).toStrictEqual(3);
   });
   it("recycle deleted entities", () => {
-    const world = World();
+    const world = createWorld();
 
-    Entity(world);
+    createEntity(world);
 
-    const eidToRemove = Entity(world);
+    const eidToRemove = createEntity(world);
     removeEntity(eidToRemove, world);
 
-    const eid = Entity(world);
+    const eid = createEntity(world);
 
     expect(eid).toStrictEqual(eidToRemove);
   });
   it("can verify an entity exists", () => {
-    const world = World();
+    const world = createWorld();
 
-    const eid = Entity(world);
+    const eid = createEntity(world);
 
-    expect(hasEntity(eid, world)).toStrictEqual(true);
+    expect(existsEntity(eid, world)).toStrictEqual(true);
   });
   it("can remove an entity", () => {
-    const world = World();
+    const world = createWorld();
 
-    const eid = Entity(world);
+    const eid = createEntity(world);
     removeEntity(eid, world);
 
-    expect(hasEntity(eid, world)).toStrictEqual(false);
+    expect(existsEntity(eid, world)).toStrictEqual(false);
   });
   it("throws an error when trying to remove a non existant entity", () => {
-    const world = World();
+    const world = createWorld();
     expect(() => removeEntity(123, world)).toThrow();
   });
 });

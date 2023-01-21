@@ -26,6 +26,7 @@ describe('BitSet', () => {
         other.or(5)
 
         expect(set.contains(other)).toBeTruthy()
+        expect(other.contains(set)).toBeFalsy()
     })
 });
 

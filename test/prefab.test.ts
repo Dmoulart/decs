@@ -1,21 +1,21 @@
 import "jest";
-import { Component, f32, Query, registerQuery, Types, ui8, World, prefab } from "../src";
+import { defineComponent, f32, Query, registerQuery, Types, ui8, createWorld, prefab } from "../src";
 
 describe("Prefab", () => {
   it("can be created without throwing", () => {
-    expect(() => prefab(World())).not.toThrowError();
+    expect(() => prefab(createWorld())).not.toThrowError();
   });
   it("can be created", () => {
-    const Position = Component({
+    const Position = defineComponent({
       x: Types.f32,
       y: Types.f32,
     });
-    const Velocity = Component({
+    const Velocity = defineComponent({
       x: Types.f32,
       y: Types.f32,
     });
 
-    const actor = prefab(World(), Position, Velocity);
+    const actor = prefab(createWorld(), Position, Velocity);
     const ent = actor({x: 10, y: 10}, {y: 10, x: 10});
 
     expect(
@@ -26,16 +26,16 @@ describe("Prefab", () => {
     ).toBeTruthy();
   });
   it("can be queried", () => {
-    const Position = Component({
+    const Position = defineComponent({
       x: Types.f32,
       y: Types.f32,
     });
-    const Velocity = Component({
+    const Velocity = defineComponent({
       x: Types.f32,
       y: Types.f32,
     });
 
-    const world = World();
+    const world = createWorld();
     const actor = prefab(world, Position, Velocity);
 
     actor({x: 10, y: 10}, {y: 10, x: 10});
@@ -46,16 +46,16 @@ describe("Prefab", () => {
     expect(archetypes[0].entities.count() === 1).toBeTruthy();
   });
   it("can register to existing query", () => {
-    const Position = Component({
+    const Position = defineComponent({
       x: f32,
       y: f32,
     });
-    const Stats = Component({
+    const Stats = defineComponent({
       strength: ui8,
       intelligence: ui8,
     });
 
-    const world = World();
+    const world = createWorld();
     const query = Query().all(Position, Stats);
     registerQuery(query, world);
 

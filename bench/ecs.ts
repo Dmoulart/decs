@@ -1,18 +1,18 @@
 import {run} from "./run/runner";
-import {World} from "../src/world";
-import {Entity, removeEntity, resetEntityCursor} from "../src/entity";
-import {attach, Component, detach} from "../src/component";
+import {createWorld} from "../src/world";
+import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
+import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
 
 {
   resetEntityCursor()
-  let world = World();
-  let Position = Component({
+  let world = createWorld();
+  let Position = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
-  let Velocity = Component({
+  let Velocity = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
@@ -23,7 +23,7 @@ import {Query, registerQuery} from "../src/query";
   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
   run("World : Velocity 2000 Iterations", () => {
     for (let i = 0; i <= 2000; i++) {
-      const eid1 = Entity(world);
+      const eid1 = createEntity(world);
 
       attach(Position, eid1, world);
       Position.x[eid1] = 100;
@@ -47,12 +47,12 @@ import {Query, registerQuery} from "../src/query";
 
 {
   resetEntityCursor()
-  let world = World();
-  let Position = Component({
+  let world = createWorld();
+  let Position = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
-  let Velocity = Component({
+  let Velocity = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
@@ -63,8 +63,8 @@ import {Query, registerQuery} from "../src/query";
   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
   run("World : Add/Remove 5000 Iterations", () => {
     for (let i = 0; i <= 5000; i++) {
-      const eid1 = Entity(world);
-      const eid2 = Entity(world);
+      const eid1 = createEntity(world);
+      const eid2 = createEntity(world);
 
       attach(Position, eid1, world);
       Position.x[eid1] = 100;
@@ -110,12 +110,12 @@ import {Query, registerQuery} from "../src/query";
 //  Destroy 100_000; entities
 {
   resetEntityCursor()
-  let world = World();
-  let Position = Component({
+  let world = createWorld();
+  let Position = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
-  let Velocity = Component({
+  let Velocity = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
@@ -125,7 +125,7 @@ import {Query, registerQuery} from "../src/query";
 
   run("World : Destroy 100_000; entities", () => {
     for (let i = 0; i <= 100_000; i++) {
-      const eid = Entity(world);
+      const eid = createEntity(world);
       attach(Position, eid, world);
       Position.x[eid] = 100;
       Position.y[eid] = 100;

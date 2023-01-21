@@ -1,7 +1,7 @@
 import { Component } from "./component";
 import { BitSet, Bitset, SparseSet } from "./collections";
 import { World } from "./world";
-import {archetypeMatchesQuery, registerQueryHandlersForArchetype} from "./query";
+import { archetypeMatchesQuery, registerQueryHandlersForArchetype } from "./query";
 
 
 export type Archetype = {
@@ -31,7 +31,7 @@ let nextAid = 0
  * @param mask
  * @returns new archetype
  */
-export const Archetype = (mask = BitSet(2)): Archetype => {
+export const createArchetype = (mask = BitSet(2)): Archetype => {
   return {
     id: ++nextAid,
     entities: SparseSet(),

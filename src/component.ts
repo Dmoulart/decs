@@ -1,8 +1,9 @@
 import { NestedTypedArray, TypedArray } from "./types";
-import { World } from "./world";
-import { Entity, NonExistantEntityError } from "./entity";
+import {createWorld, World} from "./world";
+import { createEntity, NonExistantEntityError } from "./entity";
 import { DEFAULT_WORLD_MAX_SIZE } from "./world";
 import { deriveArchetype } from "./archetype";
+import {Entity} from "./entity";
 
 export type Component<Definition extends ComponentDefinition> = {
   id: number;
@@ -80,7 +81,7 @@ const createComponentFields = <Definition extends ComponentDefinition>(
  * @param size the size of the component store. It should equal to the size of the world.
  * @returns component
  */
-export const Component = <Definition extends ComponentDefinition>(
+export const defineComponent = <Definition extends ComponentDefinition>(
   def: Definition,
   size = DEFAULT_WORLD_MAX_SIZE
 ) => {
