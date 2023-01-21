@@ -1,4 +1,4 @@
-import {BitSet, SparseSet} from "./collections";
+import { BitSet } from "./collections";
 import { Component } from "./component";
 import { World } from "./world";
 import { Archetype } from "./archetype";
@@ -154,8 +154,23 @@ export const Query = (): Query => {
  * @param world
  */
 export const registerQuery = (query: Query, world: World) => {
+  // Throw an error if query is already registered
+  if(query.world){
+    throw new Error('Trying to register an already registered query.')
+  }
   query.world = world
-  world.queries.push(query.from(world));
+
+  // Execute the query
+  query.from(world)
+  world.queries.push(query);
+
+  // Register the handlers
+  if(query.handlers.enter.length > 0){
+      query.handlers.enter.forEach(handler => registerEnterQueryHandler(handler, query, world))
+  }
+  if(query.handlers.exit.length > 0){
+      query.handlers.exit.forEach(handler => registerExitQueryHandler(handler, query, world))
+  }
 };
 
 /**
@@ -176,20 +191,6 @@ export const archetypeMatchesQuery = (
   return true;
 };
 
-/*
-export const registerQueryHandlers = (query: Query, world: World) => {
-    if(query.handlers.enter.length === 0 && query.handlers.exit.length === 0 ) return
-    for(const archetype of query.archetypes){
-        const id = archetype.id
-        world.handlers.enter[id] ??= []
-        world.handlers.enter[id].push(...query.handlers.enter)
-
-        world.handlers.exit[id] ??= []
-        world.handlers.exit[id].push(...query.handlers.exit)
-    }
-}
-*/
-
 export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
     for(const archetype of query.archetypes){
         if(!world.handlers.enter[archetype.id]){
@@ -198,7 +199,6 @@ export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, w
         world.handlers.enter[archetype.id].push(handler)
     }
 }
-
 
 export const registerQueryHandlersForArchetype = (archetype: Archetype, query: Query, world: World) => {
     if(query.handlers.enter.length > 0){
@@ -213,7 +213,6 @@ export const registerQueryHandlersForArchetype = (archetype: Archetype, query: Q
         }
         world.handlers.exit[archetype.id].push(...query.handlers.exit)
     }
-
 }
 
 export const registerExitQueryHandler = (handler: QueryHandler, query: Query, world: World) => {

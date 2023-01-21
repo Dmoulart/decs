@@ -211,4 +211,64 @@ describe("Query", () => {
         detach(TestComponent2, eid, world);
         expect(removed).toStrictEqual(1)
     });
+    it("can track whenever entities enter the query even if handlers have been defined before the query has been registered", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const query =  Query().all(TestComponent, TestComponent2);
+
+
+        let added = 0;
+
+        const onEnter = onEnterQuery(query)
+        onEnter((entities: Array<Entity>) => {
+            added += entities.length
+        })
+
+        const eid = Entity(world);
+        registerQuery(query, world)
+
+        attach(TestComponent, eid, world);
+        expect(added).toStrictEqual(0)
+
+        attach(TestComponent2, eid, world);
+        expect(added).toStrictEqual(1)
+    });
+    it("can track whenever entities exit the query even if handlers have been defined before the query has been registered", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+        const TestComponent2 = Component({
+            test: Types.i32,
+        });
+
+        const query =  Query().all(TestComponent, TestComponent2);
+
+        const eid = Entity(world);
+
+        attach(TestComponent, eid, world);
+        attach(TestComponent2, eid, world);
+
+        let removed = 0;
+
+        const onExit = onExitQuery(query)
+        onExit((entities: Array<Entity>) => {
+            removed += entities.length
+        })
+        registerQuery(query, world)
+
+        expect(removed).toStrictEqual(0)
+
+        detach(TestComponent2, eid, world);
+        expect(removed).toStrictEqual(1)
+    });
+
 });
