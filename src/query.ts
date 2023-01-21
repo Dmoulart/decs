@@ -5,17 +5,6 @@ import { Archetype } from "./archetype";
 import { Entity } from "./entity";
 
 /**
- * Create a mask from a list of components.
- * @param components
- * @returns mask
- */
-export const makeComponentsMask = (...components: Component<any>[]) =>
-  components.reduce((mask, comp) => {
-    mask.or(comp.id);
-    return mask;
-  }, BitSet());
-
-/**
  * A matcher represents the conditional expression used for every query operators.
  */
 export type Matcher = (archetype: Archetype) => boolean;
@@ -85,6 +74,18 @@ export type Query = {
    */
   forEachEntity: (fn: (eid: Entity, index: number) => void) => void;
 };
+
+/**
+* Create a mask from a list of components.
+* @param components
+* @returns mask
+*/
+export const makeComponentsMask = (...components: Component<any>[]) =>
+  components.reduce((mask, comp) => {
+      mask.or(comp.id);
+      return mask;
+      }, BitSet());
+
 /**
  * Query a list of archetypes.
  * @returns query object
@@ -189,16 +190,12 @@ export const archetypeMatchesQuery = (
   return true;
 };
 
-export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
-    for(const archetype of query.archetypes){
-        // @todo: jest not letting us use the ??= operator
-        if(!world.handlers.enter[archetype.id]){
-            world.handlers.enter[archetype.id] = []
-        }
-        world.handlers.enter[archetype.id].push(handler)
-    }
-}
-
+/**
+ * Attach to the given archetypes a set of enter and exit query callbacks.
+ * @param archetype
+ * @param query
+ * @param world
+*/
 export const registerQueryHandlersForArchetype = (archetype: Archetype, query: Query, world: World) => {
     if(query.handlers.enter.length > 0){
         // @todo: jest not letting us use the ??= operator
@@ -216,6 +213,28 @@ export const registerQueryHandlersForArchetype = (archetype: Archetype, query: Q
     }
 }
 
+/**
+ * Register the enter query callbacks of the given query for the given world.
+ * @param handler the callback function
+ * @param query
+ * @param world
+ */
+export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
+    for(const archetype of query.archetypes){
+        // @todo: jest not letting us use the ??= operator
+        if(!world.handlers.enter[archetype.id]){
+            world.handlers.enter[archetype.id] = []
+        }
+        world.handlers.enter[archetype.id].push(handler)
+    }
+}
+
+/**
+ * Register the exit query callbacks of the given query for the given world.
+ * @param handler the callback function
+ * @param query
+ * @param world
+*/
 export const registerExitQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
     for(const archetype of query.archetypes){
         // @todo: jest not letting us use the ??= operator
@@ -226,6 +245,11 @@ export const registerExitQueryHandler = (handler: QueryHandler, query: Query, wo
     }
 }
 
+/**
+ * Generates a factory function that will be used to create callbacks that will execute when one or multiple entities
+ * start to match the given query.
+ * @param query
+*/
 export const onEnterQuery = (query: Query) => {
     return (fn: QueryHandler) => {
         query.handlers.enter.push(fn)
@@ -237,6 +261,11 @@ export const onEnterQuery = (query: Query) => {
     }
 }
 
+/**
+ * Generates a factory function that will be used to create callbacks that will execute when one or multiple entities
+ * no longer match the given query.
+ * @param query
+*/
 export const onExitQuery = (query: Query) => {
     return (fn: QueryHandler) => {
         query.handlers.exit.push(fn)
