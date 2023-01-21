@@ -1,5 +1,16 @@
 import "jest";
-import {Query, registerQuery, World, attach, detach, Component, Entity, onEnterQuery, onExitQuery} from "../src";
+import {
+    Query,
+    registerQuery,
+    World,
+    attach,
+    detach,
+    Component,
+    Entity,
+    onEnterQuery,
+    onExitQuery,
+    AlreadyRegisteredQueryError
+} from "../src";
 import { Types } from "../src/types";
 
 describe("Query", () => {
@@ -284,6 +295,6 @@ describe("Query", () => {
         const query =  Query().all(TestComponent, TestComponent2);
         registerQuery(query, worldA)
         
-        expect(() => registerQuery(query, worldB)).toThrowError()
+        expect(() => registerQuery(query, worldB)).toThrowError(AlreadyRegisteredQueryError)
     });
 });
