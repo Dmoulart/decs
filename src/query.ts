@@ -72,7 +72,7 @@ export type Query = {
    * @param fn
    * @returns nothing
    */
-  forEachEntity: (fn: (eid: Entity, index: number) => void) => void;
+  each: (fn: (eid: Entity, index: number) => void) => void;
 };
 
 /**
@@ -94,7 +94,7 @@ export const Query = (): Query => {
   const archetypes: Archetype[] = [];
   const matchers: Array<Matcher> = [];
   const handlers = { enter: [], exit: [] };
-  let world: World | null = null;
+  let world: World | null = null
 
   return {
     matchers,
@@ -134,7 +134,7 @@ export const Query = (): Query => {
       }
       return archetypes;
     },
-    forEachEntity(fn: (eid: Entity, index: number) => void) {
+    each(fn: (eid: Entity, index: number) => void) {
       for (let i = 0; i < archetypes.length; i++) {
         const ents = archetypes[i].entities.dense;
         const len = ents.length;
@@ -316,6 +316,26 @@ export const onExitQuery = (query: Query) => {
             registerExitQueryHandler(fn, query, query.world)
         }
     }
+}
+
+export const all = (...components: Component<any>[]) => {
+    return Query().all(...components)
+}
+
+export const any = (...components: Component<any>[]) => {
+    return Query().any(...components)
+}
+
+export const not = (...components: Component<any>[]) => {
+    return Query().not(...components)
+}
+
+export const none = (...components: Component<any>[]) => {
+    return Query().none(...components)
+}
+
+export const match = (matcher: Matcher) => {
+    return Query().match(matcher)
 }
 
 export class AlreadyRegisteredQueryError extends Error {}
