@@ -191,6 +191,7 @@ export const archetypeMatchesQuery = (
 
 export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
     for(const archetype of query.archetypes){
+        // @todo: jest not letting us use the ??= operator
         if(!world.handlers.enter[archetype.id]){
             world.handlers.enter[archetype.id] = []
         }
@@ -200,12 +201,14 @@ export const registerEnterQueryHandler = (handler: QueryHandler, query: Query, w
 
 export const registerQueryHandlersForArchetype = (archetype: Archetype, query: Query, world: World) => {
     if(query.handlers.enter.length > 0){
+        // @todo: jest not letting us use the ??= operator
         if(!world.handlers.enter[archetype.id]){
             world.handlers.enter[archetype.id] = []
         }
         world.handlers.enter[archetype.id].push(...query.handlers.enter)
     }
     if(query.handlers.exit.length > 0){
+        // @todo: jest not letting us use the ??= operator
         if(!world.handlers.exit[archetype.id]){
             world.handlers.exit[archetype.id] = []
         }
@@ -215,6 +218,7 @@ export const registerQueryHandlersForArchetype = (archetype: Archetype, query: Q
 
 export const registerExitQueryHandler = (handler: QueryHandler, query: Query, world: World) => {
     for(const archetype of query.archetypes){
+        // @todo: jest not letting us use the ??= operator
         if(!world.handlers.exit[archetype.id]){
             world.handlers.exit[archetype.id] = []
         }
