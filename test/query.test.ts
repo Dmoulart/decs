@@ -297,4 +297,17 @@ describe("Query", () => {
         
         expect(() => registerQuery(query, worldB)).toThrowError(AlreadyRegisteredQueryError)
     });
+    it("can be removed", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+
+        const query =  Query().all(TestComponent);
+        registerQuery(query, world)
+        removeQuery(query, world)
+
+        expect(world.queries).not.toContain(query)
+    });
 });
