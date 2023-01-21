@@ -9,7 +9,7 @@ import {
     Entity,
     onEnterQuery,
     onExitQuery,
-    AlreadyRegisteredQueryError
+    AlreadyRegisteredQueryError, removeQuery, RemoveQueryError
 } from "../src";
 import { Types } from "../src/types";
 
@@ -309,5 +309,46 @@ describe("Query", () => {
         removeQuery(query, world)
 
         expect(world.queries).not.toContain(query)
+    });
+    it("throw an error when trying to remove a query from the wrong world", () => {
+        const world = World();
+        const worldB = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+
+        const query =  Query().all(TestComponent);
+        registerQuery(query, world)
+
+        expect(() => removeQuery(query, worldB)).toThrowError(RemoveQueryError)
+    });
+    it("clears its query handlers when query is removed from world", () => {
+        const world = World();
+
+        const TestComponent = Component({
+            test: Types.i8,
+        });
+
+        const query =  Query().all(TestComponent);
+        registerQuery(query, world)
+
+        const onEnter = onEnterQuery(query)
+        const enterHandler = () => {}
+        onEnter(enterHandler)
+
+        const onExit = onExitQuery(query)
+        const exitHandler = () => {}
+        onExit(exitHandler)
+
+        const eid = Entity(world);
+        attach(TestComponent, eid, world)
+
+        removeQuery(query, world)
+
+        const arch = world.entitiesArchetypes[eid]!
+
+        expect(world.handlers.enter[arch.id].find(fn => fn === enterHandler)).toBeFalsy()
+        expect(world.handlers.exit[arch.id].find(fn => fn === exitHandler)).toBeFalsy()
     });
 });

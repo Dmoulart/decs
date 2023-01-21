@@ -173,6 +173,47 @@ export const registerQuery = (query: Query, world: World) => {
 };
 
 /**
+* Unregister the query from the given world.
+* The query results will be automatically updated when new archetypes are created.
+* @param query the query to register
+* @param world
+*/
+export const removeQuery = (query: Query, world: World) => {
+    if(query.world !== world){
+        throw new RemoveQueryError('Trying to remove a query from a world it not belongs to.')
+    }
+    query.world = null
+
+    const index = world.queries.indexOf(query)
+    if(index === -1) return
+    world.queries.splice(index)
+
+    // Delete the enter handlers
+    if(query.handlers.enter.length > 0){
+        for(const archetype of query.archetypes){
+            for(const handler of query.handlers.enter){
+                const index = world.handlers.enter[archetype.id].indexOf(handler)
+                if(index === -1) continue
+                world.handlers.enter[archetype.id].splice(index)
+            }
+        }
+    }
+
+    // Delete the exit handlers
+    if(query.handlers.exit.length > 0){
+        for(const archetype of query.archetypes){
+            for(const handler of query.handlers.exit){
+                const index = world.handlers.exit[archetype.id].indexOf(handler)
+                if(index === -1) continue
+                world.handlers.exit[archetype.id].splice(index)
+            }
+        }
+    }
+
+    query.archetypes = []
+}
+
+/**
  * Returns true if an archetype is matched by a given query.
  * @param query
  * @param archetype
@@ -278,3 +319,4 @@ export const onExitQuery = (query: Query) => {
 }
 
 export class AlreadyRegisteredQueryError extends Error {}
+export class RemoveQueryError extends Error {}
