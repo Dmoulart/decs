@@ -154,7 +154,7 @@ export const Query = (): Query => {
 export const registerQuery = (query: Query, world: World) => {
   // Throw an error if query is already registered
   if(query.world){
-    throw new Error('Trying to register an already registered query.')
+     throw new AlreadyRegisteredQueryError('Trying to register an already registered query.')
   }
   query.world = world
 
@@ -247,3 +247,5 @@ export const onExitQuery = (query: Query) => {
         }
     }
 }
+
+export class AlreadyRegisteredQueryError extends Error {}
