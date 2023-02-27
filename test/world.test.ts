@@ -17,11 +17,6 @@ describe("World", () => {
       const worldB = createWorld(100_000);
       expect(() => createWorld(100_000)).not.toThrowError();
   });
-  it("can create multiple world", () => {
-      const worldA = createWorld(100_000);
-      const worldB = createWorld(100_000);
-      expect(() => createWorld(100_000)).not.toThrowError();
-  });
   it("can use world API", () => {
       const { attach, detach, exists, hasComponent, prefab } = useWorld()
 
