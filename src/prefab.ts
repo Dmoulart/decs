@@ -1,9 +1,4 @@
-import {
-  defineComponent,
-  ComponentField,
-  InferComponentDefinition,
-  Component,
-} from "./component";
+import {ComponentField, InferComponentDefinition, Component} from "./component";
 import {World} from "./world";
 import {deriveArchetype} from "./archetype";
 import {createEntity} from "./entity";

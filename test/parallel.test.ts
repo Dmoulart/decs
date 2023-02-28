@@ -1,9 +1,12 @@
 import "jest";
 import {defineComponent, f64, i8, useWorld} from "../src";
-const {Worker} = require("node:worker_threads");
+import {Worker} from "node:worker_threads";
+// const {Worker} = require("node:worker_threads");
+const sleep = async (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("Parallelism", () => {
-  it("can mutate components", () => {
+  it("can mutate components", async () => {
     expect(true);
     const {attach, detach, exists, hasComponent, create} = useWorld();
 
@@ -15,14 +18,21 @@ describe("Parallelism", () => {
     const player = create();
 
     attach(Position, player);
+    Position.x[0] = 20;
+    console.log("before", Position.x[0]);
 
     const worker = new Worker("./worker.js");
-    worker.on("message", (msg: any) => {
-      console.log(msg);
-    });
+    // let messageFromWorker = "";
+    // worker.on("message", (msg: any) => {
+    //   messageFromWorker = msg;
+    // });
+    worker.postMessage({Position});
 
-    worker.postMessage(Position.data);
+    await sleep(500);
+    await worker.terminate();
 
-    expect(true);
+    console.log("after", Position.x[0]);
+
+    expect(Position.x[0]).toEqual(40);
   });
 });

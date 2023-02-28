@@ -48,6 +48,8 @@ const createComponentFields = <Definition extends ComponentDefinition>(
   def: Definition,
   size: number
 ): Component<Definition> => {
+  const data = new SharedArrayBuffer(1024);
+
   const comp = {data: {}} as Component<Definition>;
 
   const isNestedArray = (field: unknown): field is NestedTypedArray => {
