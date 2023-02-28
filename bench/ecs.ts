@@ -198,8 +198,8 @@ import {createSpawnFunction, factory} from "../src/factory";
     Position.x[eid] += Velocity.x[eid];
     Position.y[eid] += Velocity.y[eid];
   };
-  run("World : Create 10_000 entities ", () => {
-    for (let i = 0; i <= 10_000; i++) {
+  run("World : Create 100_000 entities ", () => {
+    for (let i = 0; i <= 100_000; i++) {
       const eid = createEntity(world);
       attach(Position, eid, world);
       Position.x[eid] = 100;
@@ -236,8 +236,8 @@ import {createSpawnFunction, factory} from "../src/factory";
     Position.x[eid] += Velocity.x[eid];
     Position.y[eid] += Velocity.y[eid];
   };
-  run("World : Create 10_000 entities with prefabs ", () => {
-    for (let i = 0; i <= 10_000; i++) {
+  run("World : Create 100_000 entities with prefabs ", () => {
+    for (let i = 0; i <= 100_000; i++) {
       actor(
         {
           x: 100,
@@ -294,8 +294,8 @@ import {createSpawnFunction, factory} from "../src/factory";
     Position.x[eid] += Velocity.x[eid];
     Position.y[eid] += Velocity.y[eid];
   };
-  run("World : Create 10_000 entities with factory API ", () => {
-    for (let i = 0; i < 10_000; i++) {
+  run("World : Create 100_000 entities with factory API ", () => {
+    for (let i = 0; i < 100_000; i++) {
       // make(...actor);
       try {
         Spawn(
@@ -339,28 +339,23 @@ import {createSpawnFunction, factory} from "../src/factory";
     Position.x[eid] += Velocity.x[eid];
     Position.y[eid] += Velocity.y[eid];
   };
-  run("World : Create 10_000 entities with new prefab API ", () => {
-    for (let i = 0; i < 10_000; i++) {
-      // make(...actor);
+  run("World : Create 100_000 entities with new prefab API ", () => {
+    for (let i = 0; i < 100_000; i++) {
       try {
-        actor({
+        const eid = actor({
           Position: {
-            x: 10,
-            y: 10,
+            x: 100,
+            y: 100,
           },
           Velocity: {
-            x: 10,
-            y: 10,
+            x: 1.5,
+            y: 1.7,
           },
         });
       } catch (e) {
         console.error(e);
       }
     }
-
-    // for (let j = 0; j < 1000; j++) {
-    //   MovementQuery.each(move);
-    // }
   });
   console.log(world.entitiesArchetypes.length);
 }
