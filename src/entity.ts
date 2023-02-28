@@ -1,4 +1,4 @@
-import { World } from "./world";
+import {World} from "./world";
 
 /**
  * An entity is basically just an identifier, an unsigned integer.
@@ -6,16 +6,16 @@ import { World } from "./world";
 export type Entity = number;
 
 /**
-* The global next entity id.
-*/
+ * The global next entity id.
+ */
 export let nextEid = 0;
 
 /**
  * Reset the global entities id count to 0.
  */
 export const resetEntityCursor = () => {
-    nextEid = 0
-}
+  nextEid = 0;
+};
 
 /**
  * Creates an entity, add it in the given world and returns it.
@@ -23,7 +23,10 @@ export const resetEntityCursor = () => {
  * @param archetype
  * @returns new entity's id
  */
-export const createEntity = (world: World, archetype = world.rootArchetype): Entity => {
+export const createEntity = (
+  world: World,
+  archetype = world.rootArchetype
+): Entity => {
   const eid = world.deletedEntities.length
     ? world.deletedEntities.shift()!
     : ++nextEid;
@@ -67,7 +70,8 @@ export const removeEntity = (eid: Entity, world: World) => {
  * @throws NonExistantEntityError
  * @returns world has the given entity
  */
-export const existsEntity = (eid: Entity, world: World) => Boolean(world.entitiesArchetypes[eid]);
+export const existsEntity = (eid: Entity, world: World) =>
+  Boolean(world.entitiesArchetypes[eid]);
 
 export class NonExistantEntityError extends Error {}
 export class ExceededWorldCapacityError extends Error {}

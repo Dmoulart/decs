@@ -4,7 +4,7 @@ import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
-import {prefab} from "../src";
+import {Prefab, prefab} from "../src";
 import {createSpawnFunction, factory} from "../src/factory";
 
 {
@@ -286,7 +286,7 @@ import {createSpawnFunction, factory} from "../src/factory";
     }),
   ];
 
-  const spawn = createSpawnFunction(world);
+  const Spawn = createSpawnFunction(world);
 
   const MovementQuery = Query().all(Position, Velocity);
   registerQuery(MovementQuery, world);
@@ -296,7 +296,66 @@ import {createSpawnFunction, factory} from "../src/factory";
   };
   run("World : Create 10_000 entities with factory API ", () => {
     for (let i = 0; i < 10_000; i++) {
-      spawn(actor);
+      // make(...actor);
+      try {
+        Spawn(
+          position({
+            x: 100,
+            y: 100,
+          }),
+          velocity({
+            x: 1.5,
+            y: 1.7,
+          })
+        );
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // for (let j = 0; j < 1000; j++) {
+    //   MovementQuery.each(move);
+    // }
+  });
+  console.log(world.entitiesArchetypes.length);
+}
+
+//  Create 100_000; entities with new prefab api
+{
+  resetEntityCursor();
+  let world = createWorld();
+  const Position = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  const Velocity = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  const actor = Prefab(world, {Position, Velocity});
+  const MovementQuery = Query().all(Position, Velocity);
+  registerQuery(MovementQuery, world);
+  const move = (eid: number) => {
+    Position.x[eid] += Velocity.x[eid];
+    Position.y[eid] += Velocity.y[eid];
+  };
+  run("World : Create 10_000 entities with new prefab API ", () => {
+    for (let i = 0; i < 10_000; i++) {
+      // make(...actor);
+      try {
+        actor({
+          Position: {
+            x: 10,
+            y: 10,
+          },
+          Velocity: {
+            x: 10,
+            y: 10,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     // for (let j = 0; j < 1000; j++) {

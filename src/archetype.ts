@@ -1,14 +1,16 @@
-import { Component } from "./component";
-import { BitSet, Bitset, SparseSet } from "./collections";
-import { World } from "./world";
-import { archetypeMatchesQuery, registerQueryHandlersForArchetype } from "./query";
-
+import {Component} from "./component";
+import {BitSet, Bitset, SparseSet} from "./collections";
+import {World} from "./world";
+import {
+  archetypeMatchesQuery,
+  registerQueryHandlersForArchetype,
+} from "./query";
 
 export type Archetype = {
- /**
-  * The archetype id.
-  */
-  id: number
+  /**
+   * The archetype id.
+   */
+  id: number;
   /**
    * The set of entities belonging to this archetype
    */
@@ -24,7 +26,7 @@ export type Archetype = {
 };
 
 // The next archetype id.
-let nextAid = 0
+let nextAid = 0;
 
 /**
  * Creates a new archetype with the specified list of components.
@@ -80,9 +82,30 @@ export const deriveArchetype = (
   for (const query of world.queries) {
     if (archetypeMatchesQuery(query, archetype)) {
       query.archetypes.push(archetype);
-      registerQueryHandlersForArchetype(archetype, query, world)
+      registerQueryHandlersForArchetype(archetype, query, world);
     }
   }
 
+  return archetype;
+};
+
+/**
+ * Compose an archetype from an array of components.
+ * It will also register all the intermediate archetypes in the world archetype graph.
+ * @param components
+ * @param world
+ */
+export const composeArchetype = (
+  components: Component<any>[],
+  world: World
+) => {
+  let archetype = world.rootArchetype;
+  for (const component of components) {
+    if (archetype.edge[component.id]) {
+      archetype = archetype.edge[component.id]!;
+    } else {
+      archetype = deriveArchetype(archetype, component, world);
+    }
+  }
   return archetype;
 };
