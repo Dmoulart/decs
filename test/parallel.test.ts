@@ -19,7 +19,8 @@ describe("Parallelism", () => {
 
     attach(Position, player);
     Position.x[0] = 20;
-    console.log("before", Position.x[0]);
+
+    // console.log("before", Position.x[0]);
 
     const worker = new Worker("./worker.js");
     // let messageFromWorker = "";
@@ -31,7 +32,7 @@ describe("Parallelism", () => {
     await sleep(500);
     await worker.terminate();
 
-    console.log("after", Position.x[0]);
+    // console.log("after", Position.x[0]);
 
     expect(Position.x[0]).toEqual(40);
   });

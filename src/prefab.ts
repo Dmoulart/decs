@@ -23,7 +23,7 @@ export type PrefabField<C extends Component<any>> = Omit<
   "id" | "data"
 >;
 
-type ComponentsPrefabFields<T extends Readonly<Component<any>[]>> = {
+export type ComponentsPrefabFields<T extends Readonly<Component<any>[]>> = {
   [K in keyof T]: PrefabField<T[K]>;
 };
 

@@ -94,7 +94,7 @@ describe("Prefab", () => {
         intelligence: 10,
       },
     });
-    console.log(query.archetypes.length);
+
     expect(query.archetypes.length).toEqual(1);
     expect(query.archetypes[0].entities.count()).toEqual(1);
   });

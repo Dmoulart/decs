@@ -4,7 +4,7 @@ import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
-import {prefab} from "../src";
+import {prefab, set} from "../src";
 
 {
   resetEntityCursor();
@@ -151,12 +151,6 @@ import {prefab} from "../src";
     y: Types.f32,
   });
 
-  const MovementQuery = Query().all(Position, Velocity);
-  registerQuery(MovementQuery, world);
-  const move = (eid: number) => {
-    Position.x[eid] += Velocity.x[eid];
-    Position.y[eid] += Velocity.y[eid];
-  };
   run("World : Create 100_000 entities ", () => {
     for (let i = 0; i <= 100_000; i++) {
       const eid = createEntity(world);
@@ -167,10 +161,33 @@ import {prefab} from "../src";
       Velocity.x[eid] = 1.5;
       Velocity.y[eid] = 1.7;
     }
+  });
+}
 
-    // for (let j = 0; j < 1000; j++) {
-    //   MovementQuery.each(move);
-    // }
+//  Create 100_000; entities and set components values
+{
+  resetEntityCursor();
+  let world = createWorld();
+  let Position = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  let Velocity = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+
+  run("World : Create 100_000 entities ", () => {
+    for (let i = 0; i <= 100_000; i++) {
+      const eid = createEntity(world);
+      attach(Position, eid, world);
+      // set()
+      Position.x[eid] = 100;
+      Position.y[eid] = 100;
+      attach(Velocity, eid, world);
+      Velocity.x[eid] = 1.5;
+      Velocity.y[eid] = 1.7;
+    }
   });
 }
 
@@ -187,12 +204,7 @@ import {prefab} from "../src";
     y: Types.f32,
   });
   const actor = prefab(world, {position, velocity});
-  const MovementQuery = Query().all(position, velocity);
-  registerQuery(MovementQuery, world);
-  const move = (eid: number) => {
-    position.x[eid] += velocity.x[eid];
-    position.y[eid] += velocity.y[eid];
-  };
+
   run("World : Create 100_000 entities with new prefab API ", () => {
     for (let i = 0; i < 100_000; i++) {
       try {
@@ -211,5 +223,4 @@ import {prefab} from "../src";
       }
     }
   });
-  console.log(world.entitiesArchetypes.length);
 }
