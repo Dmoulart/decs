@@ -90,15 +90,12 @@ export const deriveArchetype = (
 };
 
 /**
- * Compose an archetype from an array of components.
+ * Composes an archetype from an array of components.
  * It will also register all the intermediate archetypes in the world archetype graph.
  * @param components
  * @param world
  */
-export const composeArchetype = (
-  components: Component<any>[],
-  world: World
-) => {
+export const buildArchetype = (components: Component<any>[], world: World) => {
   let archetype = world.rootArchetype;
   for (const component of components) {
     if (archetype.edge[component.id]) {

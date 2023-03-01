@@ -1,9 +1,8 @@
 import {ComponentField, InferComponentDefinition, Component} from "./component";
 import {World} from "./world";
-import {composeArchetype, deriveArchetype} from "./archetype";
+import {buildArchetype} from "./archetype";
 import {createEntity} from "./entity";
 import {NestedTypedArray, TypedArray} from "./types";
-import {createWorld, defineComponent} from ".";
 
 // @todo: This produces a nested array but we're only interested in the second level. Get rid of this level
 export type PrefabOptions<Components extends Readonly<Component<any>[]>> = Map<
@@ -32,44 +31,16 @@ type ComponentsPrefabFields<T extends Readonly<Component<any>[]>> = {
 type Map<T, U> = {[K in keyof T]: U};
 
 /**
- * Creates a factory function to generate entities of a certain type by using
- * objects to initialize its components values.
- * @param world
- * @param components
- * @returns entity factory function
+ * The prefab definition is an object grouping the prefab's specific set of components.
+ * @example const definition: PrefabDefinition = { sprite, velocity, health }
  */
-export const prefab = <Components extends Component<any>[]>(
-  world: World,
-  ...components: Components
-) => {
-  const archetype = composeArchetype(components, world);
-
-  return (...options: PrefabOptions<Components>) => {
-    const eid = createEntity(world, archetype);
-
-    const len = options.length;
-    for (let i = 0; i < len; i++) {
-      const option = options[i];
-      const component = components[i];
-
-      for (const prop in option) {
-        component[prop][eid] = option[prop];
-      }
-    }
-
-    return eid;
-  };
-};
-
-/**
- * New prefab API
- */
-
-type PrefabDefinition = {
+export type PrefabDefinition = Readonly<{
   [key: string]: Component<any>;
-};
-
-type PrefabInstanceOptions<Options extends PrefabDefinition> = {
+}>;
+/**
+ * The prefab instance options is describing the possible parameters for the given prefab definition.
+ */
+export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
   [ComponentName in keyof Options]?: Partial<
     PrefabField<Options[ComponentName]>
   >;
@@ -81,22 +52,25 @@ type PrefabInstanceOptions<Options extends PrefabDefinition> = {
  * @param components
  * @returns entity factory function
  */
-export const Prefab = <Definition extends Readonly<PrefabDefinition>>(
+export const prefab = <Definition extends PrefabDefinition>(
   world: World,
   definition: Definition
 ) => {
   const components = Object.values(definition);
-  const archetype = composeArchetype(components, world);
+  const archetype = buildArchetype(components, world);
 
   return (options: PrefabInstanceOptions<Definition>) => {
     const eid = createEntity(world, archetype);
+
     for (const componentName in options) {
       const component = definition[componentName];
       const props = options[componentName];
+
       for (const prop in props) {
         component[prop][eid] = props![prop];
       }
     }
+
     return eid;
   };
 };

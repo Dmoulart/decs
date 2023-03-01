@@ -4,8 +4,7 @@ import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
-import {Prefab, prefab} from "../src";
-import {createSpawnFunction, factory} from "../src/factory";
+import {prefab} from "../src";
 
 {
   resetEntityCursor();
@@ -175,111 +174,6 @@ import {createSpawnFunction, factory} from "../src/factory";
   });
 }
 
-//  Create 100_000; entities with prefabs
-{
-  resetEntityCursor();
-  let world = createWorld();
-  let Position = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
-  let Velocity = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
-
-  const actor = prefab(world, Position, Velocity);
-
-  const MovementQuery = Query().all(Position, Velocity);
-  registerQuery(MovementQuery, world);
-  const move = (eid: number) => {
-    Position.x[eid] += Velocity.x[eid];
-    Position.y[eid] += Velocity.y[eid];
-  };
-  run("World : Create 100_000 entities with prefabs ", () => {
-    for (let i = 0; i <= 100_000; i++) {
-      actor(
-        {
-          x: 100,
-          y: 100,
-        },
-        {
-          x: 1.5,
-          y: 1.7,
-        }
-      );
-    }
-
-    // for (let j = 0; j < 1000; j++) {
-    //   MovementQuery.each(move);
-    // }
-  });
-}
-
-//  Create 100_000; entities with factory api
-{
-  resetEntityCursor();
-  let world = createWorld();
-  let [Position, position] = factory(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
-  let [Velocity, velocity] = factory(
-    {
-      x: Types.f32,
-      y: Types.f32,
-    },
-    world
-  );
-
-  const actor = [
-    position({
-      x: 100,
-      y: 100,
-    }),
-    velocity({
-      x: 1.5,
-      y: 1.7,
-    }),
-  ];
-
-  const Spawn = createSpawnFunction(world);
-
-  const MovementQuery = Query().all(Position, Velocity);
-  registerQuery(MovementQuery, world);
-  const move = (eid: number) => {
-    Position.x[eid] += Velocity.x[eid];
-    Position.y[eid] += Velocity.y[eid];
-  };
-  run("World : Create 100_000 entities with factory API ", () => {
-    for (let i = 0; i < 100_000; i++) {
-      // make(...actor);
-      try {
-        Spawn(
-          position({
-            x: 100,
-            y: 100,
-          }),
-          velocity({
-            x: 1.5,
-            y: 1.7,
-          })
-        );
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // for (let j = 0; j < 1000; j++) {
-    //   MovementQuery.each(move);
-    // }
-  });
-  console.log(world.entitiesArchetypes.length);
-}
-
 //  Create 100_000; entities with new prefab api
 {
   resetEntityCursor();
@@ -292,7 +186,7 @@ import {createSpawnFunction, factory} from "../src/factory";
     x: Types.f32,
     y: Types.f32,
   });
-  const actor = Prefab(world, {position, velocity});
+  const actor = prefab(world, {position, velocity});
   const MovementQuery = Query().all(position, velocity);
   registerQuery(MovementQuery, world);
   const move = (eid: number) => {
@@ -302,7 +196,7 @@ import {createSpawnFunction, factory} from "../src/factory";
   run("World : Create 100_000 entities with new prefab API ", () => {
     for (let i = 0; i < 100_000; i++) {
       try {
-        const eid = actor({
+        actor({
           position: {
             x: 100,
             y: 100,
