@@ -92,8 +92,9 @@ export const Prefab = <Definition extends Readonly<PrefabDefinition>>(
     const eid = createEntity(world, archetype);
     for (const componentName in options) {
       const component = definition[componentName];
-      for (const prop in options[componentName]) {
-        component[prop][eid] = options[componentName]![prop];
+      const props = options[componentName];
+      for (const prop in props) {
+        component[prop][eid] = props![prop];
       }
     }
     return eid;

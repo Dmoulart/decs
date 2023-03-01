@@ -63,46 +63,6 @@ import {createSpawnFunction, factory} from "../src/factory";
   registerQuery(MovementQuery, world);
 
   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
-  run("World : Velocity 2000 Iterations", () => {
-    for (let i = 0; i <= 2000; i++) {
-      const eid1 = createEntity(world);
-
-      attach(Position, eid1, world);
-      Position.x[eid1] = 100;
-      Position.y[eid1] = 100;
-      attach(Velocity, eid1, world);
-      Velocity.x[eid1] = 1.2;
-      Velocity.y[eid1] = 1.7;
-
-      // update mvmt system
-      for (let i = 0; i < MovementQuery.archetypes.length; i++) {
-        const arch = MovementQuery.archetypes[i];
-        for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
-          const id = arch.entities.dense[j];
-          Position.x[id] += Velocity.x[id];
-          Position.y[id] += Velocity.y[id];
-        }
-      }
-    }
-  });
-}
-
-{
-  resetEntityCursor();
-  let world = createWorld();
-  let Position = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
-  let Velocity = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
-  let count = 0;
-  const MovementQuery = Query().all(Position, Velocity);
-  registerQuery(MovementQuery, world);
-
-  //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
   run("World : Add/Remove 5000 Iterations", () => {
     for (let i = 0; i <= 5000; i++) {
       const eid1 = createEntity(world);
@@ -324,30 +284,30 @@ import {createSpawnFunction, factory} from "../src/factory";
 {
   resetEntityCursor();
   let world = createWorld();
-  const Position = defineComponent({
+  const position = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
-  const Velocity = defineComponent({
+  const velocity = defineComponent({
     x: Types.f32,
     y: Types.f32,
   });
-  const actor = Prefab(world, {Position, Velocity});
-  const MovementQuery = Query().all(Position, Velocity);
+  const actor = Prefab(world, {position, velocity});
+  const MovementQuery = Query().all(position, velocity);
   registerQuery(MovementQuery, world);
   const move = (eid: number) => {
-    Position.x[eid] += Velocity.x[eid];
-    Position.y[eid] += Velocity.y[eid];
+    position.x[eid] += velocity.x[eid];
+    position.y[eid] += velocity.y[eid];
   };
   run("World : Create 100_000 entities with new prefab API ", () => {
     for (let i = 0; i < 100_000; i++) {
       try {
         const eid = actor({
-          Position: {
+          position: {
             x: 100,
             y: 100,
           },
-          Velocity: {
+          velocity: {
             x: 1.5,
             y: 1.7,
           },

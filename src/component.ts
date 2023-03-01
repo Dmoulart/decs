@@ -138,45 +138,6 @@ export const attach = (
 };
 
 /**
- * Add a component to the given entity.
- * @param component
- * @param eid
- * @param world
- * @throws NonExistantEntityError
- * @returns nothing
- */
-export const __unsafe_attach__ = (
-  component: Component<any>,
-  eid: Entity,
-  world: World
-) => {
-  const archetype = world.entitiesArchetypes[eid]!;
-
-  if (!archetype) {
-    throw new NonExistantEntityError(
-      `Trying to add component to a non existant entity with id : ${eid}`
-    );
-  }
-
-  if (archetype.mask.has(component.id)) return;
-
-  const newArchetype = deriveArchetype(archetype, component, world);
-
-  archetype.entities.remove(eid);
-  newArchetype.entities.insert(eid);
-
-  if (world.handlers.enter[newArchetype.id]?.length) {
-    const handlers = world.handlers.enter[newArchetype.id];
-    const entity = [eid];
-    for (const fn of handlers) {
-      fn(entity);
-    }
-  }
-
-  world.entitiesArchetypes[eid] = newArchetype;
-};
-
-/**
  * Remove a component from the given entity.
  * @param component
  * @param eid
