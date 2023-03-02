@@ -119,20 +119,22 @@ describe("Prefab", () => {
       {
         Position: {
           x: 10,
-          y: 10,
+          y: 12,
         },
       }
     );
 
     const ent = actor({
       Stats: {
-        strength: 10,
-        intelligence: 10,
+        strength: 5,
+        intelligence: 2,
       },
     });
 
     expect(Position.x[ent]).toEqual(10);
-    expect(Position.y[ent]).toEqual(10);
+    expect(Position.y[ent]).toEqual(12);
+    expect(Stats.strength[ent]).toEqual(5);
+    expect(Stats.intelligence[ent]).toEqual(2);
   });
 
   it.skip("precompile", () => {
@@ -165,12 +167,12 @@ describe("Prefab", () => {
     }
 
     function inc(numb: number) {
-      return numb+1;
+      return numb + 1;
     }
 
     const fun = precompile(inc, 1);
 
     console.log(fun.toString());
-    expect(fun()).toEqual(2)
+    expect(fun()).toEqual(2);
   });
 });

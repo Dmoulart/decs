@@ -90,44 +90,43 @@ export const prefabWithDefault = <Definition extends PrefabDefinition>(
   const components = Object.values(definition);
   const archetype = buildArchetype(components, world);
 
-  (globalThis as any).$Components = definition
-
-  const unrolledLoop = `${Object.keys(defaultProps)
+  const componentIdentifiers = Object.keys(defaultProps)
     .map((componentName) => {
-      return Object.entries(defaultProps[componentName]!)
+      return `
+      const ${componentName} = definition.${componentName};
+      `;
+    })
+    .join("");
+  const unrolledAssignations = Object.keys(defaultProps)
+    .map((componentName) => {
+      const componentAssignations = Object.entries(defaultProps[componentName]!)
         .map(([prop, val]) => {
-          return `$Components.${componentName}.${prop}[eid] = ${val};`;
+          return `
+          ${componentName}.${prop}[eid] = ${val};
+          `;
         })
         .join("");
+
+      return componentAssignations;
     })
-    .join("")}`;
+    .join("");
 
-  // const unrolledComps = `${components}`
-
-  const inlineDefaultValues = new Function('eid', `
-      // console.log('inline-EID', eid)
+  const unrolledLoop = `
+    ${componentIdentifiers}
+    ${unrolledAssignations}
+  `;
+  const inlineAssign = new Function(
+    "eid",
+    "definition",
+    `
       ${unrolledLoop}
-  `);
-  // const inline = `${Object.keys(defaultProps)
-  //   .map((componentName) => {
-  //     ''
-  //   })
-  //   .join("$a$")}`;
-
-  // console.log("unrolledLoop", unrolledLoop);
+  `
+  );
 
   return (options?: PrefabInstanceOptions<Definition>) => {
     const eid = createEntity(world, archetype);
-    // default rpops
-    // for (const componentName in defaultProps) {
-    //   const component = definition[componentName];
-    //   const props = defaultProps[componentName];
 
-    //   for (const prop in props) {
-    //     component[prop][eid] = props![prop];
-    //   }
-    // }
-    inlineDefaultValues(eid);
+    inlineAssign(eid, definition);
 
     for (const componentName in options) {
       const component = definition[componentName];
