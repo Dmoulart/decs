@@ -99,7 +99,105 @@ describe("Prefab", () => {
     expect(query.archetypes.length).toEqual(1);
     expect(query.archetypes[0].entities.count()).toEqual(1);
   });
-  it("can be init with default values", () => {
+  it("can be not inline without default values", () => {
+    const Position = defineComponent({
+      x: f32,
+      y: f32,
+    });
+    const Stats = defineComponent({
+      strength: ui8,
+      intelligence: ui8,
+    });
+
+    const world = createWorld();
+    const query = Query().all(Position, Stats);
+    registerQuery(query, world);
+
+    const actor = prefab(
+      world,
+      {Position, Stats},
+      {
+        Position: {
+          x: 10,
+          y: 12,
+        },
+      },
+      {
+        inline: false,
+      }
+    );
+
+    const ent = actor({
+      Stats: {
+        strength: 5,
+        intelligence: 2,
+      },
+    });
+
+    expect(Position.x[ent]).toEqual(10);
+    expect(Position.y[ent]).toEqual(12);
+    expect(Stats.strength[ent]).toEqual(5);
+    expect(Stats.intelligence[ent]).toEqual(2);
+  });
+  it("can be not inline with default values", () => {
+    const Position = defineComponent({
+      x: f32,
+      y: f32,
+    });
+    const Stats = defineComponent({
+      strength: ui8,
+      intelligence: ui8,
+    });
+
+    const world = createWorld();
+    const query = Query().all(Position, Stats);
+    registerQuery(query, world);
+
+    const actor = prefab(world, {Position, Stats}, undefined, {
+      inline: false,
+    });
+
+    const ent = actor({
+      Stats: {
+        strength: 5,
+        intelligence: 2,
+      },
+    });
+
+    expect(Position.x[ent]).toEqual(0);
+    expect(Position.y[ent]).toEqual(0);
+    expect(Stats.strength[ent]).toEqual(5);
+    expect(Stats.intelligence[ent]).toEqual(2);
+  });
+  it("can be inline without default values", () => {
+    const Position = defineComponent({
+      x: f32,
+      y: f32,
+    });
+    const Stats = defineComponent({
+      strength: ui8,
+      intelligence: ui8,
+    });
+
+    const world = createWorld();
+    const query = Query().all(Position, Stats);
+    registerQuery(query, world);
+
+    const actor = prefab(world, {Position, Stats}, undefined, {inline: true});
+
+    const ent = actor({
+      Stats: {
+        strength: 5,
+        intelligence: 2,
+      },
+    });
+
+    expect(Position.x[ent]).toEqual(0);
+    expect(Position.y[ent]).toEqual(0);
+    expect(Stats.strength[ent]).toEqual(5);
+    expect(Stats.intelligence[ent]).toEqual(2);
+  });
+  it("can be inline with default values", () => {
     const Position = defineComponent({
       x: f32,
       y: f32,

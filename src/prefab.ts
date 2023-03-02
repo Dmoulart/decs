@@ -45,6 +45,10 @@ export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
     PrefabField<Options[ComponentName]>
   >;
 };
+
+export type PrefabConfiguration = {
+  inline: boolean;
+};
 /**
  * Creates a factory function to generate entities of a certain type by using
  * objects to initialize its components values.
@@ -55,8 +59,13 @@ export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
 export const prefab = <Definition extends PrefabDefinition>(
   world: World,
   definition: Definition,
-  conf: {inline: boolean} = {inline: true}
+  defaultProps?: PrefabInstanceOptions<Definition>,
+  conf: PrefabConfiguration | PrefabInstanceOptions<Definition> = {inline: true}
 ) => {
+  if (defaultProps) {
+    return prefabWithDefault(world, definition, defaultProps, conf);
+  }
+
   const components = Object.values(definition);
   const archetype = buildArchetype(components, world);
 
@@ -64,7 +73,7 @@ export const prefab = <Definition extends PrefabDefinition>(
     const inlineAssignInstanceValues =
       makeInlinePrefabInstanceAssignationFunction(definition);
 
-    return (options: PrefabInstanceOptions<Definition>) => {
+    return (options?: PrefabInstanceOptions<Definition>) => {
       const eid = createEntity(world, archetype);
 
       inlineAssignInstanceValues(eid, definition, options);
@@ -72,7 +81,7 @@ export const prefab = <Definition extends PrefabDefinition>(
       return eid;
     };
   } else {
-    return (options: PrefabInstanceOptions<Definition>) => {
+    return (options?: PrefabInstanceOptions<Definition>) => {
       const eid = createEntity(world, archetype);
 
       for (const componentName in options) {
@@ -194,35 +203,53 @@ const makeInlinePrefabInstanceAssignationFunction = <
 export const prefabWithDefault = <Definition extends PrefabDefinition>(
   world: World,
   definition: Definition,
-  defaultProps: PrefabInstanceOptions<Definition>
+  defaultProps: PrefabInstanceOptions<Definition>,
+  conf: PrefabConfiguration | PrefabInstanceOptions<Definition> = {inline: true}
 ) => {
   const components = Object.values(definition);
   const archetype = buildArchetype(components, world);
 
-  /**
-   * ----------------------------------------------------------------
-   */
+  if (conf?.inline) {
+    const inlineAssignDefaultValues =
+      makeInlinePrefabDefaultAssignationFunction(definition, defaultProps);
 
-  const inlineAssignDefaultValues = makeInlinePrefabDefaultAssignationFunction(
-    definition,
-    defaultProps
-  );
+    const inlineAssignInstanceValues =
+      makeInlinePrefabInstanceAssignationFunction(definition);
 
-  /**
-   * ----------------------------------------------------------------
-   */
-  const inlineAssignInstanceValues =
-    makeInlinePrefabInstanceAssignationFunction(definition);
+    return (options?: PrefabInstanceOptions<Definition>) => {
+      const eid = createEntity(world, archetype);
 
-  return (options?: PrefabInstanceOptions<Definition>) => {
-    const eid = createEntity(world, archetype);
+      inlineAssignDefaultValues(eid, definition);
 
-    inlineAssignDefaultValues(eid, definition);
+      if (!options) return eid;
 
-    if (!options) return eid;
+      inlineAssignInstanceValues(eid, definition, options);
 
-    inlineAssignInstanceValues(eid, definition, options);
+      return eid;
+    };
+  } else {
+    return (options?: PrefabInstanceOptions<Definition>) => {
+      const eid = createEntity(world, archetype);
 
-    return eid;
-  };
+      for (const componentName in defaultProps) {
+        const component = definition[componentName];
+        const props = defaultProps[componentName];
+
+        for (const prop in props) {
+          component[prop][eid] = props![prop];
+        }
+      }
+
+      for (const componentName in options) {
+        const component = definition[componentName];
+        const props = options[componentName];
+
+        for (const prop in props) {
+          component[prop][eid] = props![prop];
+        }
+      }
+
+      return eid;
+    };
+  }
 };

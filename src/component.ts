@@ -161,7 +161,7 @@ export const detach = (
   eid: Entity,
   world: World
 ) => {
-  const archetype = world.entitiesArchetypes[eid]!;
+  const archetype = world.entitiesArchetypes[eid];
 
   if (!archetype) {
     throw new NonExistantEntityError(
