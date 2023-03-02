@@ -23,16 +23,16 @@ describe("Parallelism", () => {
     // console.log("before", Position.x[0]);
 
     const worker = new Worker("./worker.js");
-    // let messageFromWorker = "";
-    // worker.on("message", (msg: any) => {
-    //   messageFromWorker = msg;
-    // });
+    let messageFromWorker = "";
+    worker.on("message", (msg: any) => {
+      messageFromWorker = msg;
+    });
     worker.postMessage({Position});
 
     await sleep(500);
     await worker.terminate();
 
-    // console.log("after", Position.x[0]);
+    console.log("after", Position.x[0]);
 
     expect(Position.x[0]).toEqual(40);
   });

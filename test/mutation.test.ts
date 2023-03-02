@@ -32,7 +32,8 @@ describe("Mutation", () => {
       {
         points: 10,
       },
-      ent
+      ent,
+      world
     );
 
     expect(Health.points[ent]).toEqual(10);

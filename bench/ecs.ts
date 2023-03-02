@@ -4,7 +4,7 @@ import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
-import {prefab, set} from "../src";
+import {prefab, prefabWithDefault, set} from "../src";
 
 {
   resetEntityCursor();
@@ -177,16 +177,29 @@ import {prefab, set} from "../src";
     y: Types.f32,
   });
 
-  run("World : Create 100_000 entities ", () => {
+  run("World : Create 100_000 entities with set functions ", () => {
     for (let i = 0; i <= 100_000; i++) {
       const eid = createEntity(world);
-      attach(Position, eid, world);
-      // set()
-      Position.x[eid] = 100;
-      Position.y[eid] = 100;
-      attach(Velocity, eid, world);
-      Velocity.x[eid] = 1.5;
-      Velocity.y[eid] = 1.7;
+
+      set(
+        Position,
+        {
+          x: 100,
+          y: 100,
+        },
+        eid,
+        world
+      );
+
+      set(
+        Velocity,
+        {
+          x: 1.5,
+          y: 1.7,
+        },
+        eid,
+        world
+      );
     }
   });
 }
@@ -207,20 +220,53 @@ import {prefab, set} from "../src";
 
   run("World : Create 100_000 entities with new prefab API ", () => {
     for (let i = 0; i < 100_000; i++) {
-      try {
-        actor({
-          position: {
-            x: 100,
-            y: 100,
-          },
-          velocity: {
-            x: 1.5,
-            y: 1.7,
-          },
-        });
-      } catch (e) {
-        console.error(e);
-      }
+      actor({
+        position: {
+          x: 100,
+          y: 100,
+        },
+        velocity: {
+          x: 1.5,
+          y: 1.7,
+        },
+      });
     }
   });
+}
+
+//  Create 100_000; entities with new prefabWithPrefab function
+{
+  resetEntityCursor();
+  let world = createWorld();
+  const position = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  const velocity = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  const actor = prefabWithDefault(
+    world,
+    {position, velocity},
+    {
+      position: {
+        x: 10,
+        y: 10,
+      },
+      velocity: {
+        x: 1.5,
+        y: 1.7,
+      },
+    }
+  );
+
+  run(
+    "World : Create 100_000 entities with new prefabWithDefault function ",
+    () => {
+      for (let i = 0; i < 100_000; i++) {
+        actor();
+      }
+    }
+  );
 }

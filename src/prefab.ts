@@ -74,3 +74,70 @@ export const prefab = <Definition extends PrefabDefinition>(
     return eid;
   };
 };
+
+/**
+ * Creates a factory function to generate entities of a certain type by using
+ * objects to initialize its components values.
+ * @param world
+ * @param components
+ * @returns entity factory function
+ */
+export const prefabWithDefault = <Definition extends PrefabDefinition>(
+  world: World,
+  definition: Definition,
+  defaultProps: PrefabInstanceOptions<Definition>
+) => {
+  const components = Object.values(definition);
+  const archetype = buildArchetype(components, world);
+
+  (globalThis as any).$Components = definition
+
+  const unrolledLoop = `${Object.keys(defaultProps)
+    .map((componentName) => {
+      return Object.entries(defaultProps[componentName]!)
+        .map(([prop, val]) => {
+          return `$Components.${componentName}.${prop}[eid] = ${val};`;
+        })
+        .join("");
+    })
+    .join("")}`;
+
+  // const unrolledComps = `${components}`
+
+  const inlineDefaultValues = new Function('eid', `
+      // console.log('inline-EID', eid)
+      ${unrolledLoop}
+  `);
+  // const inline = `${Object.keys(defaultProps)
+  //   .map((componentName) => {
+  //     ''
+  //   })
+  //   .join("$a$")}`;
+
+  // console.log("unrolledLoop", unrolledLoop);
+
+  return (options?: PrefabInstanceOptions<Definition>) => {
+    const eid = createEntity(world, archetype);
+    // default rpops
+    // for (const componentName in defaultProps) {
+    //   const component = definition[componentName];
+    //   const props = defaultProps[componentName];
+
+    //   for (const prop in props) {
+    //     component[prop][eid] = props![prop];
+    //   }
+    // }
+    inlineDefaultValues(eid);
+
+    for (const componentName in options) {
+      const component = definition[componentName];
+      const props = options[componentName];
+
+      for (const prop in props) {
+        component[prop][eid] = props![prop];
+      }
+    }
+
+    return eid;
+  };
+};

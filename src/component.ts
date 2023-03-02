@@ -4,6 +4,7 @@ import {createEntity, NonExistantEntityError} from "./entity";
 import {DEFAULT_WORLD_MAX_SIZE} from "./world";
 import {deriveArchetype} from "./archetype";
 import {Entity} from "./entity";
+import {set, SetOptions} from "./mutation";
 
 export type Component<Definition extends ComponentDefinition> = {
   id: number;
@@ -11,6 +12,8 @@ export type Component<Definition extends ComponentDefinition> = {
   [key in keyof Definition]: ComponentField<Definition[key]>;
 } & {
   data: {[key in keyof Definition]: SharedArrayBuffer};
+} & {
+  set: typeof set;
 };
 
 // A component field is a typed array or an array of typed array.
@@ -94,6 +97,14 @@ export const defineComponent = <Definition extends ComponentDefinition>(
   const comp = createComponentFields(def, size);
 
   comp.id = ++nextCid;
+
+  // (comp as any).set = (
+  //   eid: Entity,
+  //   options: Partial<SetOptions<Component<Definition>>>,
+  //   world: World
+  // ) => {
+  //   set(comp, options, eid, world);
+  // };
 
   return comp;
 };
