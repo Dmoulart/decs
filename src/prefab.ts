@@ -54,25 +54,134 @@ export type PrefabInstanceOptions<Options extends PrefabDefinition> = {
  */
 export const prefab = <Definition extends PrefabDefinition>(
   world: World,
-  definition: Definition
+  definition: Definition,
+  conf: {inline: boolean} = {inline: true}
 ) => {
   const components = Object.values(definition);
   const archetype = buildArchetype(components, world);
 
-  return (options: PrefabInstanceOptions<Definition>) => {
-    const eid = createEntity(world, archetype);
+  if (conf?.inline) {
+    const inlineAssignInstanceValues =
+      makeInlinePrefabInstanceAssignationFunction(definition);
 
-    for (const componentName in options) {
-      const component = definition[componentName];
-      const props = options[componentName];
+    return (options: PrefabInstanceOptions<Definition>) => {
+      const eid = createEntity(world, archetype);
 
-      for (const prop in props) {
-        component[prop][eid] = props![prop];
+      inlineAssignInstanceValues(eid, definition, options);
+
+      return eid;
+    };
+  } else {
+    return (options: PrefabInstanceOptions<Definition>) => {
+      const eid = createEntity(world, archetype);
+
+      for (const componentName in options) {
+        const component = definition[componentName];
+        const props = options[componentName];
+
+        for (const prop in props) {
+          component[prop][eid] = props![prop];
+        }
       }
-    }
 
-    return eid;
-  };
+      return eid;
+    };
+  }
+};
+
+const makeInlinePrefabDefaultAssignationFunction = <
+  Definition extends PrefabDefinition
+>(
+  definition: Definition,
+  defaultProps: PrefabInstanceOptions<Definition>
+) => {
+  const defaultComponentIdentifiers = Object.keys(defaultProps)
+    .map((componentName) => {
+      return `
+      const ${componentName} = definition.${componentName};
+      `;
+    })
+    .join("");
+
+  const unrolledDefaultComponentAssignations = Object.keys(defaultProps)
+    .map((componentName) => {
+      const componentAssignations = Object.entries(defaultProps[componentName]!)
+        .map(([prop, val]) => {
+          return `
+          ${componentName}.${prop}[eid] = ${val};
+          `;
+        })
+        .join("");
+
+      return componentAssignations;
+    })
+    .join("");
+
+  const unrolledDefaultLoop = `
+    ${defaultComponentIdentifiers}
+    ${unrolledDefaultComponentAssignations}
+  `;
+
+  return new Function(
+    "eid",
+    "definition",
+    `
+      ${unrolledDefaultLoop}
+  `
+  );
+};
+
+const makeInlinePrefabInstanceAssignationFunction = <
+  Definition extends PrefabDefinition
+>(
+  definition: Definition
+) => {
+  const allComponentIdentifiers = Object.keys(definition)
+    .map((componentName) => {
+      return `
+      const ${componentName} = definition.${componentName};
+      `;
+    })
+    .join("");
+  // console.log(`${allComponentIdentifiers}`);
+
+  const unrolledInstanceComponentAssignations = Object.keys(definition)
+    .map((componentName) => {
+      const componentAssignations = Object.entries(definition[componentName]!)
+        .map(([prop, val]) => {
+          if (prop === "data" || prop === "id") return "";
+          return `
+            options_${componentName}.${prop} && (${componentName}.${prop}[eid] = options_${componentName}.${prop});
+          `;
+          return `
+            options.${componentName}.${prop} && (${componentName}.${prop}[eid] = options.${componentName}.${prop});
+          `;
+        })
+        .join("");
+
+      return `
+        if(options.${componentName}){
+          const options_${componentName} = options.${componentName}
+          ${componentAssignations}
+        }
+      `;
+    })
+    .join("");
+  // console.log(`${unrolledInstanceComponentAssignations}`);
+
+  const unrolledInstanceLoop = `
+    ${allComponentIdentifiers}
+    ${unrolledInstanceComponentAssignations}
+  `;
+  // console.log(`${unrolledInstanceLoop}`);
+  return new Function(
+    "eid",
+    "definition",
+    "options",
+    `
+      ${unrolledInstanceLoop}
+  `
+  );
 };
 
 /**
@@ -90,52 +199,29 @@ export const prefabWithDefault = <Definition extends PrefabDefinition>(
   const components = Object.values(definition);
   const archetype = buildArchetype(components, world);
 
-  const componentIdentifiers = Object.keys(defaultProps)
-    .map((componentName) => {
-      return `
-      const ${componentName} = definition.${componentName};
-      `;
-    })
-    .join("");
-  const unrolledAssignations = Object.keys(defaultProps)
-    .map((componentName) => {
-      const componentAssignations = Object.entries(defaultProps[componentName]!)
-        .map(([prop, val]) => {
-          return `
-          ${componentName}.${prop}[eid] = ${val};
-          `;
-        })
-        .join("");
+  /**
+   * ----------------------------------------------------------------
+   */
 
-      return componentAssignations;
-    })
-    .join("");
-
-  const unrolledLoop = `
-    ${componentIdentifiers}
-    ${unrolledAssignations}
-  `;
-  const inlineAssign = new Function(
-    "eid",
-    "definition",
-    `
-      ${unrolledLoop}
-  `
+  const inlineAssignDefaultValues = makeInlinePrefabDefaultAssignationFunction(
+    definition,
+    defaultProps
   );
+
+  /**
+   * ----------------------------------------------------------------
+   */
+  const inlineAssignInstanceValues =
+    makeInlinePrefabInstanceAssignationFunction(definition);
 
   return (options?: PrefabInstanceOptions<Definition>) => {
     const eid = createEntity(world, archetype);
 
-    inlineAssign(eid, definition);
+    inlineAssignDefaultValues(eid, definition);
 
-    for (const componentName in options) {
-      const component = definition[componentName];
-      const props = options[componentName];
+    if (!options) return eid;
 
-      for (const prop in props) {
-        component[prop][eid] = props![prop];
-      }
-    }
+    inlineAssignInstanceValues(eid, definition, options);
 
     return eid;
   };

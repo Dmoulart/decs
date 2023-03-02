@@ -204,7 +204,44 @@ import {prefab, prefabWithDefault, set} from "../src";
   });
 }
 
-//  Create 100_000; entities with new prefab api
+//  Create 100_000; entities with new prefab api non inlined
+{
+  resetEntityCursor();
+  let world = createWorld(100_000);
+  const position = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  const velocity = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  const actor = prefab(world, {position, velocity}, {inline: false});
+
+  run(
+    "World : Create 100_000 entities with new prefab API not inlined ",
+    () => {
+      for (let i = 0; i < 100_000; i++) {
+        try {
+          actor({
+            position: {
+              x: 100,
+              y: 100,
+            },
+            velocity: {
+              x: 1.5,
+              y: 1.7,
+            },
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  );
+}
+
+//  Create 100_000; entities with new prefab api inlined
 {
   resetEntityCursor();
   let world = createWorld(100_000);
@@ -218,20 +255,65 @@ import {prefab, prefabWithDefault, set} from "../src";
   });
   const actor = prefab(world, {position, velocity});
 
-  run("World : Create 100_000 entities with new prefab API ", () => {
-    for (let i = 0; i <= 100_000; i++) {
-      actor({
-        position: {
-          x: 100,
-          y: 100,
-        },
-        velocity: {
-          x: 1.5,
-          y: 1.7,
-        },
-      });
+  run("World : Create 100_000 entities with new prefab API inlined ", () => {
+    for (let i = 0; i < 100_000; i++) {
+      try {
+        actor({
+          position: {
+            x: 100,
+            y: 100,
+          },
+          velocity: {
+            x: 1.5,
+            y: 1.7,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
   });
+}
+
+//  Create 100_000; entities with new prefabWithPrefab function
+{
+  resetEntityCursor();
+  let world = createWorld(100_000);
+  const position = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  const velocity = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+
+  const hundred = 100;
+  const someValue = {val: 1_0000_0000};
+  const actor = prefabWithDefault(
+    world,
+    {position, velocity},
+    {
+      position: {
+        x: hundred,
+        y: hundred,
+      },
+      velocity: {
+        x: someValue.val,
+        y: 1.7,
+      },
+    }
+  );
+
+  run(
+    "World : Create 100_000 entities with new prefabWithDefault function  inlined",
+    () => {
+      for (let i = 0; i < 100_000; i++) {
+        actor();
+      }
+    }
+  );
+  console.log(position.x[1]);
 }
 
 //  Create 100_000; entities with new prefabWithPrefab function
@@ -265,16 +347,21 @@ import {prefab, prefabWithDefault, set} from "../src";
   );
 
   run(
-    "World : Create 100_000 entities with new prefabWithDefault function ",
+    "World : Create 100_000 entities with  prefabWithDefault function and overrided properties inlined",
     () => {
-      try {
-        for (let i = 0; i < 100_000; i++) {
-          actor();
-        }
-        console.log(position.x[1]);
-      } catch (e) {
-        console.error(e);
+      for (let i = 0; i < 100_000; i++) {
+        actor({
+          position: {
+            x: 100,
+            y: 100,
+          },
+          velocity: {
+            x: 1.5,
+            y: 1.7,
+          },
+        });
       }
     }
   );
+  console.log(position.x[1]);
 }
