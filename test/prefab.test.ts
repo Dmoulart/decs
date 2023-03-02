@@ -211,7 +211,7 @@ describe("Prefab", () => {
     const query = Query().all(Position, Stats);
     registerQuery(query, world);
 
-    const actor = prefabWithDefault(
+    const actor = prefab(
       world,
       {Position, Stats},
       {
