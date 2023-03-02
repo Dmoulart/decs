@@ -375,7 +375,7 @@ import {prefab, prefabWithDefault, set} from "../src";
   );
 
   run(
-    "World : Create 100_000 entities with new prefabWithDefault function  inlined",
+    "World : Create 100_000 entities with new prefabWithDefault function inlined",
     () => {
       for (let i = 0; i < 100_000; i++) {
         actor();
@@ -400,6 +400,7 @@ import {prefab, prefabWithDefault, set} from "../src";
 
   const ten = 10;
   const someValue = {val: 1_0000_0000};
+
   const actor = prefab(
     world,
     {position, velocity},

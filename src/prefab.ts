@@ -116,8 +116,15 @@ const makeInlinePrefabDefaultAssignationFunction = <
     .map((componentName) => {
       const componentAssignations = Object.entries(defaultProps[componentName]!)
         .map(([prop, val]) => {
+          // if val is a string then its quotes will be removed. So we need to add them back.
+          if (typeof val === "string") {
+            return `
+            ${componentName}.${prop}[eid] = '${val}';
+          `;
+          }
+
           return `
-          ${componentName}.${prop}[eid] = ${val};
+            ${componentName}.${prop}[eid] = ${val};
           `;
         })
         .join("");
