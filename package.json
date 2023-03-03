@@ -14,6 +14,7 @@
         "build": "tsc -p tsconfig.json",
         "bench:node": "node  --experimental-specifier-resolution=node ./bench/ecs.ts",
         "bench:bun": "bun run ./bench/ecs.ts",
+        "sandbox": "bun run ./bench/sandbox.ts",
         "test": "jest --coverage ./test",
         "test:watch": "jest --watchAll",
         "prepare": "yarn build && yarn test"

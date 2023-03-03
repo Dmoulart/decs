@@ -21,6 +21,18 @@ import {prefab, prefabWithDefault, set} from "../src";
   const MovementQuery = Query().all(Position, Velocity);
   registerQuery(MovementQuery, world);
 
+  const update = () => {
+    // update mvmt system
+    for (let i = 0; i < MovementQuery.archetypes.length; i++) {
+      const arch = MovementQuery.archetypes[i];
+      for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
+        const id = arch.entities.dense[j];
+        Position.x[id] += Velocity.x[id];
+        Position.y[id] += Velocity.y[id];
+      }
+    }
+  };
+
   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
   run("World : Velocity 2000 Iterations", () => {
     for (let i = 0; i <= 2000; i++) {
@@ -33,15 +45,52 @@ import {prefab, prefabWithDefault, set} from "../src";
       Velocity.x[eid1] = 1.2;
       Velocity.y[eid1] = 1.7;
 
-      // update mvmt system
-      for (let i = 0; i < MovementQuery.archetypes.length; i++) {
-        const arch = MovementQuery.archetypes[i];
-        for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
-          const id = arch.entities.dense[j];
-          Position.x[id] += Velocity.x[id];
-          Position.y[id] += Velocity.y[id];
-        }
+      update();
+    }
+  });
+}
+
+{
+  resetEntityCursor();
+  let world = createWorld();
+  let Position = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  let Velocity = defineComponent({
+    x: Types.f32,
+    y: Types.f32,
+  });
+  let count = 0;
+  const MovementQuery = Query().all(Position, Velocity);
+  registerQuery(MovementQuery, world);
+
+  const update = () => {
+    // update mvmt system
+    for (let i = 0; i < MovementQuery.archetypes.length; i++) {
+      const arch = MovementQuery.archetypes[i];
+      for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
+        const id = arch.entities.dense[j];
+        Position.x[id] += Velocity.x[id];
+        Position.y[id] += Velocity.y[id];
       }
+    }
+  };
+  for (let i = 0; i <= 2000; i++) {
+    const eid1 = createEntity(world);
+
+    attach(Position, eid1, world);
+    Position.x[eid1] = 100;
+    Position.y[eid1] = 100;
+    attach(Velocity, eid1, world);
+    Velocity.x[eid1] = 1.2;
+    Velocity.y[eid1] = 1.7;
+  }
+
+  //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
+  run("World : Movement 100_000 Iterations", () => {
+    for (let i = 0; i < 100_000; i++) {
+      update();
     }
   });
 }
