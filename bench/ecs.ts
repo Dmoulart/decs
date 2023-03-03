@@ -108,74 +108,74 @@ import {prefab, prefabWithDefault, set} from "../src";
   });
 }
 
-{
-  resetEntityCursor();
-  let world = createWorld();
-  let Position = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
-  let Velocity = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
-  let count = 0;
-  const MovementQuery = Query().all(Position, Velocity);
-  registerQuery(MovementQuery, world);
-  const actor = prefab(
-    world,
-    {Position, Velocity},
-    {
-      Position: {
-        x: 100,
-        y: 100,
-      },
-      Velocity: {
-        x: 1.2,
-        y: 1.7,
-      },
-    }
-  );
-  //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
-  run("World : Add/Remove 5000 Iterations with prefabs", () => {
-    for (let i = 0; i <= 5000; i++) {
-      const eid1 = actor();
-      const eid2 = actor();
+// {
+//   resetEntityCursor();
+//   let world = createWorld();
+//   let Position = defineComponent({
+//     x: Types.f32,
+//     y: Types.f32,
+//   });
+//   let Velocity = defineComponent({
+//     x: Types.f32,
+//     y: Types.f32,
+//   });
+//   let count = 0;
+//   const MovementQuery = Query().all(Position, Velocity);
+//   registerQuery(MovementQuery, world);
+//   const actor = prefab(
+//     world,
+//     {Position, Velocity},
+//     {
+//       Position: {
+//         x: 100,
+//         y: 100,
+//       },
+//       Velocity: {
+//         x: 1.2,
+//         y: 1.7,
+//       },
+//     }
+//   );
+//   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
+//   run("World : Add/Remove 5000 Iterations with prefabs", () => {
+//     for (let i = 0; i <= 5000; i++) {
+//       const eid1 = actor();
+//       const eid2 = actor();
 
-      // MovementQuery.each((id) => {
-      //   Position.x[id] += Velocity.x[id];
-      //   Position.y[id] += Velocity.y[id];
-      // });
-      //update mvmt system
-      for (let i = 0; i < MovementQuery.archetypes.length; i++) {
-        const arch = MovementQuery.archetypes[i];
-        for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
-          const id = arch.entities.dense[j];
-          Position.x[id] += Velocity.x[id];
-          Position.y[id] += Velocity.y[id];
-        }
-      }
+//       // MovementQuery.each((id) => {
+//       //   Position.x[id] += Velocity.x[id];
+//       //   Position.y[id] += Velocity.y[id];
+//       // });
+//       //update mvmt system
+//       for (let i = 0; i < MovementQuery.archetypes.length; i++) {
+//         const arch = MovementQuery.archetypes[i];
+//         for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
+//           const id = arch.entities.dense[j];
+//           Position.x[id] += Velocity.x[id];
+//           Position.y[id] += Velocity.y[id];
+//         }
+//       }
 
-      detach(Position, eid1, world);
+//       detach(Position, eid1, world);
 
-      // MovementQuery.each((id) => {
-      //   Position.x[id] += Velocity.x[id];
-      //   Position.y[id] += Velocity.y[id];
-      // });
-      //update mvmt system
-      for (let i = 0; i < MovementQuery.archetypes.length; i++) {
-        const arch = MovementQuery.archetypes[i];
-        for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
-          const id = arch.entities.dense[j];
-          Position.x[id] += Velocity.x[id];
-          Position.y[id] += Velocity.y[id];
-        }
-      }
+//       // MovementQuery.each((id) => {
+//       //   Position.x[id] += Velocity.x[id];
+//       //   Position.y[id] += Velocity.y[id];
+//       // });
+//       //update mvmt system
+//       for (let i = 0; i < MovementQuery.archetypes.length; i++) {
+//         const arch = MovementQuery.archetypes[i];
+//         for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
+//           const id = arch.entities.dense[j];
+//           Position.x[id] += Velocity.x[id];
+//           Position.y[id] += Velocity.y[id];
+//         }
+//       }
 
-      removeEntity(eid1, world);
-    }
-  });
-}
+//       removeEntity(eid1, world);
+//     }
+//   });
+// }
 
 //  Destroy 100_000; entities
 {
