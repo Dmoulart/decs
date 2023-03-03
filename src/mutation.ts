@@ -6,9 +6,22 @@ type MutationDefinition = PrefabDefinition;
 
 export const mutation = <Definition extends MutationDefinition>(
   definition: Definition,
-  fields: PrefabInstanceOptions<Definition>
+  defaultValues?: PrefabInstanceOptions<Definition>
 ) => {
-  return (eid: Entity) => {};
+  const components = Object.values(definition);
+
+  // const inlineAssignation = makeInlinePrefabDefaultAssignationFunction(definition, fields);
+  return (
+    entity: Entity,
+    options: PrefabInstanceOptions<Definition>,
+    world?: World
+  ) => {
+    for (const component of components) {
+      for (const field in options) {
+        component[field][entity] = options[field];
+      }
+    }
+  };
 };
 
 /**
@@ -17,12 +30,12 @@ export const mutation = <Definition extends MutationDefinition>(
 export type SetOptions<Comp extends Component<any>> = PrefabField<Comp>;
 
 export const set = <Comp extends Component<any>>(
+  entity: Entity,
   component: Comp,
   options: Partial<SetOptions<Comp>>,
-  entity: Entity,
-  world: World
+  world?: World
 ) => {
-  if (!hasComponent(component, entity, world)) {
+  if (world && !hasComponent(component, entity, world)) {
     attach(component, entity, world);
   }
   for (const field in options) {

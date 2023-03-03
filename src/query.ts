@@ -74,16 +74,16 @@ export type Query = {
    */
   each: (fn: (eid: Entity, index: number) => void) => void;
 
-  /**
-   * Execute the given function for each entities.
-   * It is slower than a classic for loop.
-   * @param fn
-   * @returns nothing
-   */
-  $precompileEach: (
-    fn: (eid: Entity, index: number) => void,
-    vars?: Record<string, any>
-  ) => () => void;
+  // /**
+  //  * Execute the given function for each entities.
+  //  * It is slower than a classic for loop.
+  //  * @param fn
+  //  * @returns nothing
+  //  */
+  // $precompileEach: (
+  //   fn: (eid: Entity, index: number) => void,
+  //   vars?: Record<string, any>
+  // ) => () => void;
 };
 
 /**
@@ -154,59 +154,59 @@ export const Query = (): Query => {
         }
       }
     },
-    $precompileEach(
-      fn: (eid: Entity, index: number) => void,
-      vars?: Record<string, any>
-    ) {
-      const varsDeclarations = vars
-        ? Object.entries(vars)
-            .map(([identifier, object]) => {
-              return `let ${identifier} = vars.${identifier};`;
-            })
-            .join("")
-        : "";
-      // console.log(varsDeclarations);
-      const fnString = fn.toString();
-      const fnBody = fnString.substring(
-        fnString.indexOf("{") + 1,
-        fnString.lastIndexOf("}")
-      );
-      const precompiledIterator = new Function(
-        "archetypes",
-        "vars",
-        `
-        ${varsDeclarations}
-        for (let i = 0; i < archetypes.length; i++) {
-          const ents = archetypes[i].entities.dense;
-          const len = ents.length;
-          for (let j = 0; j < len; j++) {
-            const id = ents[j];
-            ${fnBody}
-          }
-        }
-      `
-      );
+    // $precompileEach(
+    //   fn: (eid: Entity, index: number) => void,
+    //   vars?: Record<string, any>
+    // ) {
+    //   const varsDeclarations = vars
+    //     ? Object.entries(vars)
+    //         .map(([identifier, object]) => {
+    //           return `let ${identifier} = vars.${identifier};`;
+    //         })
+    //         .join("")
+    //     : "";
+    //   // console.log(varsDeclarations);
+    //   const fnString = fn.toString();
+    //   const fnBody = fnString.substring(
+    //     fnString.indexOf("{") + 1,
+    //     fnString.lastIndexOf("}")
+    //   );
+    //   const precompiledIterator = new Function(
+    //     "archetypes",
+    //     "vars",
+    //     `
+    //     ${varsDeclarations}
+    //     for (let i = 0; i < archetypes.length; i++) {
+    //       const ents = archetypes[i].entities.dense;
+    //       const len = ents.length;
+    //       for (let j = 0; j < len; j++) {
+    //         const id = ents[j];
+    //         ${fnBody}
+    //       }
+    //     }
+    //   `
+    //   );
 
-      // console.log(precompiledIterator.toString());
+    //   // console.log(precompiledIterator.toString());
 
-      // const precompiledIterator = new Function(
-      //   "archetypes",
-      //   `
-      //   ${fn.toString()}
+    //   // const precompiledIterator = new Function(
+    //   //   "archetypes",
+    //   //   `
+    //   //   ${fn.toString()}
 
-      //   for (let i = 0; i < archetypes.length; i++) {
-      //     const ents = archetypes[i].entities.dense;
-      //     const len = ents.length;
-      //     for (let j = 0; j < len; j++) {
-      //       const id = ents[j];
-      //       func(id);
-      //     }
-      //   }
-      // `
-      // );
-      console.log(precompiledIterator.toString());
-      return () => precompiledIterator(archetypes, vars);
-    },
+    //   //   for (let i = 0; i < archetypes.length; i++) {
+    //   //     const ents = archetypes[i].entities.dense;
+    //   //     const len = ents.length;
+    //   //     for (let j = 0; j < len; j++) {
+    //   //       const id = ents[j];
+    //   //       func(id);
+    //   //     }
+    //   //   }
+    //   // `
+    //   // );
+    //   console.log(precompiledIterator.toString());
+    //   return () => precompiledIterator(archetypes, vars);
+    // },
   };
 };
 

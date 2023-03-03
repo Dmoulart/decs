@@ -28,11 +28,11 @@ describe("Mutation", () => {
     const ent = createEntity(world);
 
     set(
+      ent,
       Health,
       {
         points: 10,
       },
-      ent,
       world
     );
 
@@ -48,17 +48,7 @@ describe("Mutation", () => {
       constitution: Types.ui8,
     });
 
-    const hit = mutation(
-      {Health, Stats},
-      {
-        Health: {
-          points: -10,
-        },
-        Stats: {
-          constitution: 1,
-        },
-      }
-    );
+    const hit = mutation({Health, Stats});
 
     const ent = createEntity(world);
 
@@ -68,7 +58,11 @@ describe("Mutation", () => {
     Health.points[ent] = 12;
     Stats.constitution[ent] = 10;
 
-    hit(ent);
+    hit(ent, {
+      Health: {
+        points: -2,
+      },
+    });
 
     expect(Health.points[ent]).toEqual(2);
     expect(Stats.constitution[ent]).toEqual(9);

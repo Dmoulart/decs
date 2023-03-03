@@ -8,7 +8,7 @@ import {
   ui8,
   createWorld,
   prefab,
-  prefabWithDefault,
+  $prefab,
 } from "../src";
 
 describe("Prefab", () => {
@@ -41,6 +41,7 @@ describe("Prefab", () => {
         Velocity.y[ent] === 10
     ).toBeTruthy();
   });
+
   it("can be queried", () => {
     const Position = defineComponent({
       x: Types.f32,
@@ -69,6 +70,7 @@ describe("Prefab", () => {
     expect(archetypes.length).toEqual(1);
     expect(archetypes[0].entities.count()).toEqual(1);
   });
+
   it("can register to existing query", () => {
     const Position = defineComponent({
       x: f32,
@@ -99,6 +101,7 @@ describe("Prefab", () => {
     expect(query.archetypes.length).toEqual(1);
     expect(query.archetypes[0].entities.count()).toEqual(1);
   });
+
   it("can be not inline without default values", () => {
     const Position = defineComponent({
       x: f32,
@@ -121,9 +124,6 @@ describe("Prefab", () => {
           x: 10,
           y: 12,
         },
-      },
-      {
-        inline: false,
       }
     );
 
@@ -139,6 +139,7 @@ describe("Prefab", () => {
     expect(Stats.strength[ent]).toEqual(5);
     expect(Stats.intelligence[ent]).toEqual(2);
   });
+
   it("can be not inline with default values", () => {
     const Position = defineComponent({
       x: f32,
@@ -153,9 +154,7 @@ describe("Prefab", () => {
     const query = Query().all(Position, Stats);
     registerQuery(query, world);
 
-    const actor = prefab(world, {Position, Stats}, undefined, {
-      inline: false,
-    });
+    const actor = prefab(world, {Position, Stats});
 
     const ent = actor({
       Stats: {
@@ -169,6 +168,7 @@ describe("Prefab", () => {
     expect(Stats.strength[ent]).toEqual(5);
     expect(Stats.intelligence[ent]).toEqual(2);
   });
+
   it("can be inline without default values", () => {
     const Position = defineComponent({
       x: f32,
@@ -183,7 +183,7 @@ describe("Prefab", () => {
     const query = Query().all(Position, Stats);
     registerQuery(query, world);
 
-    const actor = prefab(world, {Position, Stats}, undefined, {inline: true});
+    const actor = $prefab(world, {Position, Stats});
 
     const ent = actor({
       Stats: {
@@ -197,6 +197,7 @@ describe("Prefab", () => {
     expect(Stats.strength[ent]).toEqual(5);
     expect(Stats.intelligence[ent]).toEqual(2);
   });
+
   it("can be inline with default values", () => {
     const Position = defineComponent({
       x: f32,
@@ -211,7 +212,7 @@ describe("Prefab", () => {
     const query = Query().all(Position, Stats);
     registerQuery(query, world);
 
-    const actor = prefab(
+    const actor = $prefab(
       world,
       {Position, Stats},
       {
