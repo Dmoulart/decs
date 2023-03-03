@@ -4,7 +4,7 @@ import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
-import {$prefab, prefab, set} from "../src";
+import {$prefab, prefab} from "../src";
 
 {
   resetEntityCursor();
@@ -106,9 +106,21 @@ import {$prefab, prefab, set} from "../src";
     x: Types.f32,
     y: Types.f32,
   });
-  let count = 0;
+
   const MovementQuery = Query().all(Position, Velocity);
   registerQuery(MovementQuery, world);
+
+  const update = () => {
+    //update mvmt system
+    for (let i = 0; i < MovementQuery.archetypes.length; i++) {
+      const arch = MovementQuery.archetypes[i];
+      for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
+        const id = arch.entities.dense[j];
+        Position.x[id] += Velocity.x[id];
+        Position.y[id] += Velocity.y[id];
+      }
+    }
+  };
 
   //https://github.com/ddmills/js-ecs-benchmarks/blob/master/suites/suite-add-remove.js
   run("World : Add/Remove 5000 Iterations", () => {
@@ -130,27 +142,12 @@ import {$prefab, prefab, set} from "../src";
       Velocity.x[eid2] = 1.2;
       Velocity.y[eid2] = 1.7;
 
-      //update mvmt system
-      for (let i = 0; i < MovementQuery.archetypes.length; i++) {
-        const arch = MovementQuery.archetypes[i];
-        for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
-          const id = arch.entities.dense[j];
-          Position.x[id] += Velocity.x[id];
-          Position.y[id] += Velocity.y[id];
-        }
-      }
+      update();
 
       detach(Position, eid1, world);
 
       //update mvmt system
-      for (let i = 0; i < MovementQuery.archetypes.length; i++) {
-        const arch = MovementQuery.archetypes[i];
-        for (let j = 0, l = arch.entities.dense.length; j < l; j++) {
-          const id = arch.entities.dense[j];
-          Position.x[id] += Velocity.x[id];
-          Position.y[id] += Velocity.y[id];
-        }
-      }
+      update();
 
       removeEntity(eid1, world);
     }
@@ -282,45 +279,45 @@ import {$prefab, prefab, set} from "../src";
   });
 }
 
-//  Create 100_000; entities and set components values
-{
-  resetEntityCursor();
-  let world = createWorld();
-  let Position = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
-  let Velocity = defineComponent({
-    x: Types.f32,
-    y: Types.f32,
-  });
+// //  Create 100_000; entities and set components values
+// {
+//   resetEntityCursor();
+//   let world = createWorld();
+//   let Position = defineComponent({
+//     x: Types.f32,
+//     y: Types.f32,
+//   });
+//   let Velocity = defineComponent({
+//     x: Types.f32,
+//     y: Types.f32,
+//   });
 
-  run("World : Create 100_000 entities with set functions ", () => {
-    for (let i = 0; i <= 100_000; i++) {
-      const eid = createEntity(world);
+//   run("World : Create 100_000 entities with set functions ", () => {
+//     for (let i = 0; i <= 100_000; i++) {
+//       const eid = createEntity(world);
 
-      set(
-        eid,
-        Position,
-        {
-          x: 100,
-          y: 100,
-        },
-        world
-      );
+//       set(
+//         eid,
+//         Position,
+//         {
+//           x: 100,
+//           y: 100,
+//         },
+//         world
+//       );
 
-      set(
-        eid,
-        Velocity,
-        {
-          x: 1.5,
-          y: 1.7,
-        },
-        world
-      );
-    }
-  });
-}
+//       set(
+//         eid,
+//         Velocity,
+//         {
+//           x: 1.5,
+//           y: 1.7,
+//         },
+//         world
+//       );
+//     }
+//   });
+// }
 
 //  Create 100_000; entities with new prefab api non inlined
 {

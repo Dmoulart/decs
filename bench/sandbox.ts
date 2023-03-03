@@ -4,7 +4,7 @@ import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
 import {Query, registerQuery} from "../src/query";
-import {prefab, set} from "../src";
+import {prefab} from "../src";
 
 // {
 //   resetEntityCursor();
