@@ -25,7 +25,10 @@ const isSparseArrayReconstruction = <Type extends IntegerTypedArray>(
   options: any
 ): options is AtomicSparseSetReconstructionOptions<Type> => {
   return (
-    "denseArray" in options && "sparseArray" in options && "cursor" in options
+    typeof options === "object" &&
+    "denseArray" in options &&
+    "sparseArray" in options &&
+    "cursor" in options
   );
 };
 
@@ -40,6 +43,8 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   optionsOrType: AtomicSparseSetReconstructionOptions<Type> | Type,
   nothingOrSize: number = 10_000
 ): AtomicSparseSet<Type> => {
+  //@todo Ts types ??
+
   // let dense: InstanceType<Type>;
   // let sparse: InstanceType<Type>;
   // let __cursor: InstanceType<Type>;
