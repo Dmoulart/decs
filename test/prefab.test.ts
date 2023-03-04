@@ -259,8 +259,6 @@ describe("Prefab", () => {
       }
 
       const remainingArguments = argNames.slice(i);
-      console.log({remainingArguments});
-      console.log("body", body);
 
       return new Function(remainingArguments.join(","), body);
     }
@@ -271,7 +269,6 @@ describe("Prefab", () => {
 
     const fun = precompile(inc, 1);
 
-    console.log(fun.toString());
     expect(fun()).toEqual(2);
   });
 });

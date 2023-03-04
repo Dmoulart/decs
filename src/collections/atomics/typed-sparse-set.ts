@@ -10,6 +10,7 @@ export type TypedSparseSet<Type extends TypedArray> = Omit<
 
 /**
  * Create a thread safe sparse set.
+ * Single threaded typed SparseSet work in progress
  * @warning can't use 0 in this set ! 0 represents absence
  * @note without lock it seems faster than our regular sparse set
  * @returns sparse set

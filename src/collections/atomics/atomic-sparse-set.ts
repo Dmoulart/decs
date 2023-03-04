@@ -11,6 +11,7 @@ export type AtomicSparseSet<Type extends IntegerTypedArray> = Omit<
   dense: InstanceType<Type>;
   sparse: InstanceType<Type>;
   size: number;
+  __cursor: number;
 };
 
 /**
@@ -24,7 +25,8 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   ArrayType = Int32Array,
   size: number = 10_000,
   denseArray?: Type,
-  sparseArray?: Type
+  sparseArray?: Type,
+  cursor = 0
 ): AtomicSparseSet<Type> => {
   const denseBuffer = new SharedArrayBuffer(size * ArrayType.BYTES_PER_ELEMENT);
   const dense = denseArray ?? (new ArrayType(denseBuffer) as any); // !
@@ -34,7 +36,7 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   );
   const sparse = sparseArray ?? (new ArrayType(sparseBuffer) as any); // !
 
-  let __cursor = 0;
+  let __cursor = cursor;
 
   const insert = (num: number) => {
     Atomics.store(dense, __cursor, num);
@@ -60,9 +62,10 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
     if (!has(num)) return;
 
     const last = Atomics.load(dense, __cursor - 1);
-    __cursor--;
     // remove the last element
-    Atomics.store(dense, __cursor, 0);
+    Atomics.store(dense, __cursor - 1, 0);
+
+    __cursor--;
 
     if ((last as unknown as number) === num) return;
 
@@ -81,6 +84,7 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
     dense,
     sparse,
     size,
+    __cursor,
   };
 };
 
@@ -88,16 +92,18 @@ export const deconstructAtomicSparseSet = <Type extends IntegerTypedArray>({
   dense,
   sparse,
   size,
+  count,
 }: AtomicSparseSet<Type>): [
   AtomicSparseSet<Type>["dense"],
   AtomicSparseSet<Type>["sparse"],
+  number,
   number
 ] => {
-  return [dense, sparse, size];
+  return [dense, sparse, size, count()];
 };
 
 export const reconstructAtomicSparseSet = <
   Type extends InstanceType<IntegerTypedArray>
->([dense, sparse, size]: [Type, Type, number]) => {
-  return AtomicSparseSet(Int32Array, size, dense as any, sparse);
+>([dense, sparse, size, __cursor]: [Type, Type, number, number]) => {
+  return AtomicSparseSet(Int32Array, size, dense as any, sparse, __cursor);
 };

@@ -39,40 +39,22 @@ describe("Parallelism", () => {
 
     expect(Position.x[1]).toEqual(40);
   });
-  it("can mutate an atomic sparse set in same thread", async () => {
-    const sset = AtomicSparseSet(i32, 10_000);
+  it("can mutate an atomic sparse set in another thread", async () => {
+    const sset = AtomicSparseSet(i32, 11);
     sset.insert(10);
     expect(sset.has(10)).toStrictEqual(true);
 
-    // const ssetParts = deconstructAtomicSparseSet(sset);
-    fake_worker: {
-      // const sset = reconstructAtomicSparseSet(ssetParts);
-      sset.remove(10);
-      sset.insert(2);
-      sset.insert(3);
-      // console.log(sset);
-    }
+    const worker = new Worker("./test/workers/mutate-sparse-set.js");
+
+    const ssetParts = deconstructAtomicSparseSet(sset);
+    worker.postMessage(ssetParts);
+
+    await sleep(2000);
+    await worker.terminate();
+
     expect(sset.has(10)).toStrictEqual(false);
     expect(sset.has(2)).toStrictEqual(true);
-    // expect(sset.has(3)).toStrictEqual(true);
   });
-  // it("can mutate an atomic sparse set in another thread", async () => {
-  //   const sset = AtomicSparseSet(i32, 10_000);
-  //   sset.insert(10);
-  //   expect(sset.has(10)).toStrictEqual(true);
-
-  //   const worker = new Worker("./test/workers/mutate-sparse-set.js");
-
-  //   const ssetParts = deconstructAtomicSparseSet(sset);
-  //   worker.postMessage(ssetParts);
-
-  //   await sleep(500);
-  //   await worker.terminate();
-
-  //   expect(sset.has(10)).toStrictEqual(false);
-  //   expect(sset.has(2)).toStrictEqual(true);
-  //   // expect(sset.has(3)).toStrictEqual(true);
-  // });
   it.skip("can pass worlds", async () => {
     const {attach, detach, exists, hasComponent, create, world} = useWorld();
 
@@ -86,20 +68,13 @@ describe("Parallelism", () => {
 
     Position.x[0] = 20;
 
-    // console.log("before", Position.x[0]);
-
     const worker = new Worker("./test/workers/worker.js");
-    let messageFromWorker = "";
-    worker.on("message", (msg: any) => {
-      messageFromWorker = msg;
-    });
+
     const sset = AtomicSparseSet(i32, 10_000);
     worker.postMessage({Position, sset});
 
     await sleep(500);
     await worker.terminate();
-
-    console.log("after", Position.x[0]);
 
     expect(Position.x[0]).toEqual(40);
   });
