@@ -36,6 +36,7 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   );
   const sparse = sparseArray ?? (new ArrayType(sparseBuffer) as any); // !
 
+  const __cursorBuffer = new SharedArrayBuffer(ArrayType.BYTES_PER_ELEMENT);
   let __cursor = cursor;
 
   const insert = (num: number) => {

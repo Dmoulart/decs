@@ -42,7 +42,6 @@ describe("Parallelism", () => {
   it("can mutate an atomic sparse set in another thread", async () => {
     const sset = AtomicSparseSet(i32, 11);
     sset.insert(10);
-    expect(sset.has(10)).toStrictEqual(true);
 
     const worker = new Worker("./test/workers/mutate-sparse-set.js");
 
@@ -54,6 +53,7 @@ describe("Parallelism", () => {
 
     expect(sset.has(10)).toStrictEqual(false);
     expect(sset.has(2)).toStrictEqual(true);
+    expect(sset.count()).toStrictEqual(2);
   });
   it.skip("can pass worlds", async () => {
     const {attach, detach, exists, hasComponent, create, world} = useWorld();
