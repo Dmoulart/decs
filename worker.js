@@ -8,7 +8,8 @@ import {workerData, parentPort} from "worker_threads";
 
 parentPort.postMessage("ok");
 
-parentPort.on("message", ({Position}) => {
+parentPort.on("message", (options) => {
+  const Position = options.Position;
   Position.x[0] *= 2;
   parentPort.postMessage({});
 });

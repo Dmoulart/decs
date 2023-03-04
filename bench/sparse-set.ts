@@ -1,10 +1,14 @@
 import {SparseSet} from "../src/collections/sparse-set.js";
+import {AtomicSparseSet, TypedSparseSet} from "../src/index.js";
+import {i32} from "../src/types.js";
 import {run} from "./run/runner.js";
 
 // INSERT method
 // ----------------------
 
-const sset = SparseSet();
+const sset = AtomicSparseSet(i32, 1_000_000);
+// const sset = TypedSparseSet(i32, 1_000_000);
+// const sset = SparseSet();
 const set = new Set();
 
 run("Sparse Set: Insert 100_000 number", () => {

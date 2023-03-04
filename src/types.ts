@@ -1,16 +1,19 @@
-export const i8 = Int8Array
-export const ui8 = Uint8Array
+export const i8 = Int8Array;
+export const ui8 = Uint8Array;
 
-export const i16 = Int16Array
-export const ui16 = Uint16Array
+export const i16 = Int16Array;
+export const ui16 = Uint16Array;
 
-export const i32 = Int32Array
-export const ui32 = Uint32Array
+export const i32 = Int32Array;
+export const ui32 = Uint32Array;
 
-export const f32 = Float32Array
-export const f64 = Float64Array
+export const f32 = Float32Array;
+export const f64 = Float64Array;
 
-export const eid = Uint32Array
+export const bi64 = BigInt64Array;
+export const bui64 = BigUint64Array;
+
+export const eid = Uint32Array;
 
 /**
  * The possible types for components entries.
@@ -24,6 +27,8 @@ export const Types = Object.freeze({
   ui32,
   f32,
   f64,
+  bi64,
+  bui64,
   eid,
 });
 
