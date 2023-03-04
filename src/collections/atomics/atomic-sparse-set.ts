@@ -39,10 +39,19 @@ const isSparseArrayReconstruction = <Type extends IntegerTypedArray>(
  * @todo Atomics typed to bigint ?
  * @returns sparse set
  */
-export const AtomicSparseSet = <Type extends IntegerTypedArray>(
+export function AtomicSparseSet<Type extends IntegerTypedArray>(
+  options: AtomicSparseSetReconstructionOptions<Type>
+): AtomicSparseSet<Type>;
+
+export function AtomicSparseSet<Type extends IntegerTypedArray>(
+  type: Type,
+  size: number
+): AtomicSparseSet<Type>;
+
+export function AtomicSparseSet<Type extends IntegerTypedArray>(
   optionsOrType: AtomicSparseSetReconstructionOptions<Type> | Type,
   nothingOrSize: number = 10_000
-): AtomicSparseSet<Type> => {
+): AtomicSparseSet<Type> {
   //@todo Ts types ??
 
   // let dense: InstanceType<Type>;
@@ -141,7 +150,7 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
     size: _size,
     cursor: _cursor,
   };
-};
+}
 
 type AtomicSparseSetBricks<Type extends IntegerTypedArray> = [
   AtomicSparseSet<Type>["dense"],
