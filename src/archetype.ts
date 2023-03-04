@@ -66,12 +66,7 @@ export const deriveArchetype = (
   const mask = base.mask.clone();
   mask.xor(component.id);
 
-  const archetype: Archetype = {
-    id: ++nextAid,
-    entities: SparseSet(),
-    edge: [],
-    mask,
-  };
+  const archetype = createArchetype(mask);
 
   // Register in archetype graph
   base.edge[component.id] = archetype;
