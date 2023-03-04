@@ -15,6 +15,8 @@ export const bui64 = BigUint64Array;
 
 export const eid = Uint32Array;
 
+
+// @todo differentiate betwwen float and integer array
 /**
  * The possible types for components entries.
  */

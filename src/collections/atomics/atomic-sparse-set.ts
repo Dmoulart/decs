@@ -1,13 +1,16 @@
-import {i32, TypedArray} from "../../types";
+import {TypedArray} from "../../types";
 import type {SparseSet} from "../sparse-set";
 
-type TypedArrayExceptI8 = Exclude<TypedArray, Int8ArrayConstructor>;
-export type AtomicSparseSet<Type extends TypedArrayExceptI8> = Omit<
+// @todo differentiate betwwen float and integer array
+type IntegerTypedArray = TypedArray;
+
+export type AtomicSparseSet<Type extends IntegerTypedArray> = Omit<
   SparseSet,
   "dense"
 > & {
   dense: InstanceType<Type>;
   sparse: InstanceType<Type>;
+  size: number;
 };
 
 /**
@@ -17,23 +20,25 @@ export type AtomicSparseSet<Type extends TypedArrayExceptI8> = Omit<
  * @note without lock it seems faster than our regular sparse set
  * @returns sparse set
  */
-export const AtomicSparseSet = <Type extends TypedArrayExceptI8>(
-  ArrayType: Type,
-  size: number
+export const AtomicSparseSet = <Type extends IntegerTypedArray>(
+  ArrayType = Int32Array,
+  size: number = 10_000,
+  denseArray?: Type,
+  sparseArray?: Type
 ): AtomicSparseSet<Type> => {
   const denseBuffer = new SharedArrayBuffer(size * ArrayType.BYTES_PER_ELEMENT);
-  const dense = new ArrayType(denseBuffer) as any; // !
+  const dense = denseArray ?? (new ArrayType(denseBuffer) as any); // !
 
   const sparseBuffer = new SharedArrayBuffer(
     size * ArrayType.BYTES_PER_ELEMENT
   );
-  const sparse = new ArrayType(sparseBuffer) as any; // !
+  const sparse = sparseArray ?? (new ArrayType(sparseBuffer) as any); // !
 
-  let __cursor = 1;
+  let __cursor = 0;
 
   const insert = (num: number) => {
-    __cursor++;
     Atomics.store(dense, __cursor, num);
+    __cursor++;
     Atomics.store(sparse, num, __cursor);
   };
 
@@ -41,7 +46,8 @@ export const AtomicSparseSet = <Type extends TypedArrayExceptI8>(
     // In case of out of bounds it will trow an invalid atomic access index
     try {
       const sparseIndex = Atomics.load(sparse, num) as unknown as number;
-      return !!Atomics.load(dense, sparseIndex);
+      console.log({sparseIndex});
+      return !!Atomics.load(dense, sparseIndex - 1);
     } catch (e) {
       return false;
     }
@@ -70,5 +76,24 @@ export const AtomicSparseSet = <Type extends TypedArrayExceptI8>(
     remove,
     dense,
     sparse,
+    size,
   };
+};
+
+export const deconstructAtomicSparseSet = <Type extends IntegerTypedArray>({
+  dense,
+  sparse,
+  size,
+}: AtomicSparseSet<Type>): [
+  AtomicSparseSet<Type>["dense"],
+  AtomicSparseSet<Type>["sparse"],
+  number
+] => {
+  return [dense, sparse, size];
+};
+
+export const reconstructAtomicSparseSet = <
+  Type extends InstanceType<IntegerTypedArray>
+>([dense, sparse, size]: [Type, Type, number]) => {
+  return AtomicSparseSet(Int32Array, size, dense as any, sparse);
 };

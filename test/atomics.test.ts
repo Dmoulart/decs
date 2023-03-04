@@ -57,6 +57,18 @@ describe("Atomics", () => {
     insert(3);
     expect(count()).toEqual(3);
   });
+  it("it can execute multiple operations and still be consistent", () => {
+    const sset = AtomicSparseSet(i32, 10_000);
+    sset.insert(10);
+    expect(sset.has(10)).toStrictEqual(true);
+
+    sset.remove(10);
+    sset.insert(2);
+    sset.insert(3);
+
+    expect(sset.has(10)).toStrictEqual(false);
+    expect(sset.has(2)).toStrictEqual(true);
+  });
 
   it("can be created", () => {
     expect(() => AtomicBitSet()).not.toThrowError();

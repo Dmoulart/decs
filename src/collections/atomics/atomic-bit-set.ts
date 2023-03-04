@@ -36,14 +36,13 @@ export const AtomicBitSet = (size = 4): AtomicBitset => {
       if (index > size) {
         resize();
       }
+
       Atomics.or(mask, index, 1 << (val & 31));
-      // mask[index] |= 1 << (val & 31);
     },
     xor(val: number) {
       const index = val >>> 5;
 
       Atomics.xor(mask, index, 1 << (val & 31));
-      // mask[index] ^= 1 << (val & 31);
     },
     contains(other: Bitset) {
       const len = Math.min(mask.length, other.mask.length);
@@ -71,9 +70,6 @@ export const AtomicBitSet = (size = 4): AtomicBitset => {
       const clone = AtomicBitSet(size);
       clone.mask.set(mask);
       return clone;
-    },
-    toString() {
-      return mask.join("");
     },
   };
 };

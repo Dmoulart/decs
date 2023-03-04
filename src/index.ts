@@ -5,3 +5,4 @@ export * from "./query";
 export * from "./types";
 export * from "./collections";
 export * from "./prefab";
+export * from "./parallel";
