@@ -40,9 +40,18 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   const __cursor = cursor ?? (new ArrayType(__cursorBuffer) as any);
 
   const insert = (num: number) => {
-    Atomics.store(dense, count(), num);
-    incrementCount();
-    Atomics.store(sparse, num, count());
+    // Get the current count
+    let tempCount = Atomics.load(__cursor, 0) as unknown as number;
+
+    Atomics.store(dense, tempCount, num);
+
+    // incrementCount();
+    // It's way faster without calling the method incrementCount() why .. ?
+    // Returns the count before the increment. It could be useful if another threaded operations has happened
+    // since the  first tempcount assignation ?
+    Atomics.add(__cursor, 0, 1);
+
+    Atomics.store(sparse, num, tempCount + 1);
   };
 
   const has = (num: number) => {
