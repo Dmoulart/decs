@@ -26,6 +26,10 @@ export type SparseSet = {
    * The elements contained in the set
    */
   dense: number[];
+  /**
+   * The unpacked elements contained in the set
+   */
+  sparse: number[];
 };
 
 /**
@@ -38,7 +42,7 @@ export const SparseSet = () => {
 
   const insert = (num: number) => (sparse[num] = dense.push(num) - 1);
 
-  const has = (num: number) => !!dense[sparse[num]];
+  const has = (num: number) => dense[sparse[num]] === num;
 
   const remove = (num: number) => {
     if (!has(num)) return;
@@ -60,5 +64,6 @@ export const SparseSet = () => {
     count,
     remove,
     dense,
+    sparse,
   };
 };

@@ -46,9 +46,12 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
     // In case of out of bounds it will trow an invalid atomic access index
     try {
       const sparseIndex = Atomics.load(sparse, num) as unknown as number;
-      console.log({sparseIndex});
-      return !!Atomics.load(dense, sparseIndex - 1);
+      return (
+        (Atomics.load(dense, sparseIndex - 1) as unknown as number) === num
+      );
     } catch (e) {
+      // if sparse index === - 1 or is out of bounds maybe do a upper check ?
+      // console.error(e);
       return false;
     }
   };
@@ -56,9 +59,10 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   const remove = (num: number) => {
     if (!has(num)) return;
 
-    const last = Atomics.load(dense, __cursor);
-    Atomics.store(dense, __cursor, 0);
+    const last = Atomics.load(dense, __cursor - 1);
     __cursor--;
+    // remove the last element
+    Atomics.store(dense, __cursor, 0);
 
     if ((last as unknown as number) === num) return;
 
@@ -67,7 +71,7 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
     Atomics.store(sparse, last as unknown as number, i);
   };
 
-  const count = () => __cursor - 1;
+  const count = () => __cursor;
 
   return {
     insert,

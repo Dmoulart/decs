@@ -58,5 +58,6 @@ export const TypedSparseSet = <Type extends TypedArray>(
     count,
     remove,
     dense,
+    sparse
   };
 };
