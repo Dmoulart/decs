@@ -1,4 +1,8 @@
-import {AtomicBitSet} from "../src";
+import {
+  AtomicBitSet,
+  deconstructAtomicBitSet,
+  reconstructAtomicBitSet,
+} from "../src";
 
 describe("AtomicBitSet", () => {
   it("can be created", () => {
@@ -26,5 +30,17 @@ describe("AtomicBitSet", () => {
 
     expect(set.contains(other)).toBeTruthy();
     expect(other.contains(set)).toBeFalsy();
+  });
+  it("can be deconstructed and reconstructed", () => {
+    const set = AtomicBitSet();
+    set.or(1);
+    set.or(2);
+    set.or(3);
+    const reconstructed = reconstructAtomicBitSet(deconstructAtomicBitSet(set));
+
+    expect(reconstructed.has(1)).toStrictEqual(true);
+    expect(reconstructed.has(2)).toStrictEqual(true);
+    expect(reconstructed.has(3)).toStrictEqual(true);
+    expect(reconstructed.has(4)).toStrictEqual(false);
   });
 });

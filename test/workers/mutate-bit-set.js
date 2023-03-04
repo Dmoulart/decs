@@ -1,9 +1,9 @@
 import {parentPort} from "worker_threads";
-import {reconstructAtomicSparseSet} from "../../dist/collections/atomics/atomic-bit-set.js";
+import {reconstructAtomicBitSet} from "../../dist/collections/atomics/atomic-bit-set.js";
 
 parentPort.on("message", (bitsetParts) => {
   try {
-    const bitset = reconstructAtomicBitset(bitsetParts);
+    const bitset = reconstructAtomicBitSet(bitsetParts);
     bitset.or(5);
   } catch (e) {
     console.error(e);

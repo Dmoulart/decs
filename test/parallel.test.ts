@@ -2,6 +2,7 @@ import "jest";
 import {
   AtomicBitSet,
   AtomicSparseSet,
+  deconstructAtomicBitSet,
   deconstructAtomicSparseSet,
   defineComponent,
   f32,
@@ -74,17 +75,17 @@ describe("Parallelism", () => {
     expect(sset.count()).toStrictEqual(2);
   });
   it("can mutate a bit set in another thread", async () => {
-    // const sset = AtomicBitSet();
-    // sset.insert(10);
-    // const worker = new Worker("./test/workers/mutate-bit-set.js");
-    // const ssetParts = deconstructAtomicSparseSet(sset);
-    // worker.postMessage(ssetParts);
-    // await sleep(2000);
-    // await worker.terminate();
-    // expect(sset.has(10)).toStrictEqual(false);
-    // expect(sset.has(2)).toStrictEqual(true);
-    // expect(sset.has(3)).toStrictEqual(true);
-    // // expect(sset.count()).toStrictEqual(2);
+    const bitset = AtomicBitSet();
+
+    const worker = new Worker("./test/workers/mutate-bit-set.js");
+    const bitsetParts = deconstructAtomicBitSet(bitset);
+    worker.postMessage(bitsetParts);
+
+    await sleep(2000);
+    await worker.terminate();
+
+    expect(bitset.has(1)).toStrictEqual(false);
+    expect(bitset.has(5)).toStrictEqual(true);
   });
 
   it.skip("can pass worlds", async () => {
