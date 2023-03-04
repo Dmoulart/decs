@@ -1,4 +1,9 @@
-import {AtomicSparseSet, i32} from "../src";
+import {
+  AtomicSparseSet,
+  deconstructAtomicSparseSet,
+  i32,
+  reconstructAtomicSparseSet,
+} from "../src";
 
 describe("AtomicSparseSet", () => {
   it("can be created", () => {
@@ -76,5 +81,22 @@ describe("AtomicSparseSet", () => {
     remove(3);
 
     expect(count()).toEqual(2);
+  });
+  it("can be deconstructed and reconstructed", () => {
+    const sset = AtomicSparseSet(i32, 12);
+    sset.insert(1);
+    sset.insert(2);
+    sset.insert(3);
+
+    const reconstructed = reconstructAtomicSparseSet(
+      deconstructAtomicSparseSet(sset)
+    );
+
+    expect(reconstructed.has(1)).toStrictEqual(true);
+    expect(reconstructed.has(2)).toStrictEqual(true);
+    expect(reconstructed.has(3)).toStrictEqual(true);
+    expect(reconstructed.has(4)).toStrictEqual(false);
+    expect(reconstructed.size).toStrictEqual(12);
+    expect(reconstructed.count()).toEqual(3);
   });
 });

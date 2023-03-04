@@ -15,7 +15,6 @@ export const bui64 = BigUint64Array;
 
 export const eid = Uint32Array;
 
-
 // @todo differentiate betwwen float and integer array
 /**
  * The possible types for components entries.
@@ -37,6 +36,11 @@ export const Types = Object.freeze({
 // The JS typed arrays types we'll use as component fields definitions
 export type TypedArrays = typeof Types;
 export type TypedArray = TypedArrays[keyof TypedArrays];
+
+export type IntegerTypedArray = Exclude<
+  TypedArray,
+  Float32ArrayConstructor | Float64ArrayConstructor
+>;
 
 // The nested arrays fields will be defined like in bitECS : a typed array constructor and the length of the array
 export type NestedTypedArray = [TypedArray, number];
