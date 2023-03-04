@@ -40,9 +40,10 @@ export const TypedSparseSet = <Type extends TypedArray>(
   const remove = (num: number) => {
     if (!has(num)) return;
 
-    const last = dense[__cursor];
+    const last = dense[__cursor - 1];
+    dense[__cursor - 1] = 0;
+
     __cursor--;
-    dense[__cursor] = 0;
 
     if (last === num) return;
 
