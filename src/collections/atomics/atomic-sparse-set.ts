@@ -15,9 +15,9 @@ export type AtomicSparseSet<Type extends IntegerTypedArray> = Omit<
 
 /**
  * Create a thread safe sparse set.
- * @todo Atomics typed to bigint ???
- * @warning can't use 0 in this set ! 0 represents absence
- * @note without lock it seems faster than our regular sparse set
+ *
+ * @warning can't use 0 in this set ! 0 represents the absence of a value
+ * @todo Atomics typed to bigint ?
  * @returns sparse set
  */
 export const AtomicSparseSet = <Type extends IntegerTypedArray>(
