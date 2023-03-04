@@ -53,6 +53,22 @@ describe("Parallelism", () => {
 
     expect(sset.has(10)).toStrictEqual(false);
     expect(sset.has(2)).toStrictEqual(true);
+    // expect(sset.count()).toStrictEqual(2);
+  });
+  it("can mutate an atomic sparse set in another thread and still get the right count", async () => {
+    const sset = AtomicSparseSet(i32, 11);
+    sset.insert(10);
+
+    const worker = new Worker("./test/workers/mutate-sparse-set.js");
+
+    const ssetParts = deconstructAtomicSparseSet(sset);
+    worker.postMessage(ssetParts);
+
+    await sleep(2000);
+    await worker.terminate();
+
+    expect(sset.has(10)).toStrictEqual(false);
+    expect(sset.has(2)).toStrictEqual(true);
     expect(sset.count()).toStrictEqual(2);
   });
   it.skip("can pass worlds", async () => {

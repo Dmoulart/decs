@@ -12,7 +12,7 @@ export const AtomicBitSet = (size = 4): AtomicBitset => {
   let mask = new Uint32Array(buffer);
 
   const resize = () => {
-    buffer = new SharedArrayBuffer(Uint32Array.BYTES_PER_ELEMENT * (size + 1)); // ?? grow factor
+    buffer = new SharedArrayBuffer(Uint32Array.BYTES_PER_ELEMENT * (size + 2)); // ?? grow factor
     const newMask = new Uint32Array(buffer);
     newMask.set(mask);
     mask = newMask;

@@ -11,7 +11,7 @@ export type AtomicSparseSet<Type extends IntegerTypedArray> = Omit<
   dense: InstanceType<Type>;
   sparse: InstanceType<Type>;
   size: number;
-  __cursor: number;
+  __cursor: InstanceType<Type>;
 };
 
 /**
@@ -26,7 +26,7 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   size: number = 10_000,
   denseArray?: Type,
   sparseArray?: Type,
-  cursor = 0
+  cursor?: Type
 ): AtomicSparseSet<Type> => {
   const denseBuffer = new SharedArrayBuffer(size * ArrayType.BYTES_PER_ELEMENT);
   const dense = denseArray ?? (new ArrayType(denseBuffer) as any); // !
@@ -37,12 +37,12 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   const sparse = sparseArray ?? (new ArrayType(sparseBuffer) as any); // !
 
   const __cursorBuffer = new SharedArrayBuffer(ArrayType.BYTES_PER_ELEMENT);
-  let __cursor = cursor;
+  const __cursor = cursor ?? (new ArrayType(__cursorBuffer) as any);
 
   const insert = (num: number) => {
-    Atomics.store(dense, __cursor, num);
-    __cursor++;
-    Atomics.store(sparse, num, __cursor);
+    Atomics.store(dense, count(), num);
+    incrementCount();
+    Atomics.store(sparse, num, count());
   };
 
   const has = (num: number) => {
@@ -62,11 +62,11 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   const remove = (num: number) => {
     if (!has(num)) return;
 
-    const last = Atomics.load(dense, __cursor - 1);
+    const last = Atomics.load(dense, count() - 1);
     // remove the last element
-    Atomics.store(dense, __cursor - 1, 0);
+    Atomics.store(dense, count() - 1, 0);
 
-    __cursor--;
+    decrementCount();
 
     if ((last as unknown as number) === num) return;
 
@@ -75,7 +75,11 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
     Atomics.store(sparse, last as unknown as number, i);
   };
 
-  const count = () => __cursor;
+  const count = () => Atomics.load(__cursor, 0) as unknown as number;
+
+  const incrementCount = () => Atomics.add(__cursor, 0, 1);
+
+  const decrementCount = () => Atomics.sub(__cursor, 0, 1);
 
   return {
     insert,
@@ -89,22 +93,27 @@ export const AtomicSparseSet = <Type extends IntegerTypedArray>(
   };
 };
 
+type AtomicSparseSetBricks<Type extends IntegerTypedArray> = [
+  AtomicSparseSet<Type>["dense"],
+  AtomicSparseSet<Type>["sparse"],
+  AtomicSparseSet<Type>["size"],
+  AtomicSparseSet<Type>["__cursor"]
+];
+
 export const deconstructAtomicSparseSet = <Type extends IntegerTypedArray>({
   dense,
   sparse,
   size,
-  count,
-}: AtomicSparseSet<Type>): [
-  AtomicSparseSet<Type>["dense"],
-  AtomicSparseSet<Type>["sparse"],
-  number,
-  number
-] => {
-  return [dense, sparse, size, count()];
+  __cursor,
+}: AtomicSparseSet<Type>): AtomicSparseSetBricks<Type> => {
+  return [dense, sparse, size, __cursor];
 };
 
-export const reconstructAtomicSparseSet = <
-  Type extends InstanceType<IntegerTypedArray>
->([dense, sparse, size, __cursor]: [Type, Type, number, number]) => {
+export const reconstructAtomicSparseSet = <Type extends IntegerTypedArray>([
+  dense,
+  sparse,
+  size,
+  __cursor,
+]: AtomicSparseSetBricks<Type>) => {
   return AtomicSparseSet(Int32Array, size, dense as any, sparse, __cursor);
 };
