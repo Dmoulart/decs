@@ -26,22 +26,22 @@ export const TypedSparseSet = <Type extends TypedArray>(
   );
   const sparse = new ArrayType(sparseBuffer) as any; // !
 
-  let __cursor = 1;
+  let __cursor = 0;
 
   const insert = (num: number) => {
-    __cursor++;
     dense[__cursor] = num;
+    __cursor++;
     sparse[num] = __cursor;
   };
 
-  const has = (num: number) => !!dense[sparse[num]];
+  const has = (num: number) => dense[sparse[num]] === num;
 
   const remove = (num: number) => {
     if (!has(num)) return;
 
     const last = dense[__cursor];
-    dense[__cursor] = 0;
     __cursor--;
+    dense[__cursor] = 0;
 
     if (last === num) return;
 
@@ -50,7 +50,7 @@ export const TypedSparseSet = <Type extends TypedArray>(
     sparse[last] = i;
   };
 
-  const count = () => __cursor - 1;
+  const count = () => __cursor;
 
   return {
     insert,
@@ -58,6 +58,6 @@ export const TypedSparseSet = <Type extends TypedArray>(
     count,
     remove,
     dense,
-    sparse
+    sparse,
   };
 };
