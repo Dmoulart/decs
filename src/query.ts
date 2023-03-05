@@ -163,21 +163,38 @@ export const Query = (): Query => {
       }
     },
     $parallel(url: string, args: any) {
-      const workers = archetypes.map((arch) => new Worker(url));
-
+      console.time("create workers");
+      const workers = archetypes.map(
+        (arch, i) =>
+          new Worker(url, {
+            workerData: i,
+          })
+      );
+      console.timeEnd("create workers");
       return async () => {
-        workers.forEach((worker, i) => {
-          console.log("worker post message");
+        return new Promise((resolve, reject) => {
+          let terminations = 0;
 
-          worker.postMessage({
-            sset: deconstructAtomicSparseSet(archetypes[i].entities as any),
-            ...args,
-          });
+          workers.forEach((worker, i) => {
+            worker.postMessage({
+              sset: deconstructAtomicSparseSet(archetypes[i].entities as any),
+              ...args,
+            });
 
-          worker.on("message", async (message) => {
-            if (message === "done") {
-              await worker.terminate();
-            }
+            worker.on("message", async (message) => {
+              if (message === 1) {
+                // worker.terminate();
+                console.log("task done");
+                terminations++;
+                if (terminations === workers.length) {
+                  // console.timeEnd("task ");
+                  resolve();
+                  await Promise.all(
+                    workers.map(async (worker) => worker.terminate)
+                  );
+                }
+              }
+            });
           });
         });
 

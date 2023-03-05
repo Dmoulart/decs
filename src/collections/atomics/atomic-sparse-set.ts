@@ -100,11 +100,8 @@ export function AtomicSparseSet<Type extends IntegerTypedArray>(
     // Returns the count before the increment. It could be useful if another threaded operations has happened
     // since the  first tempcount assignation ?
     Atomics.add(_cursor, 0, 1);
-    try {
-      Atomics.store(sparse, num, tempCount + 1);
-    } catch (e) {
-      console.log(e, num);
-    }
+
+    Atomics.store(sparse, num, tempCount + 1);
   };
 
   const has = (num: number) => {
