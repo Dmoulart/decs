@@ -27,7 +27,7 @@ if (isMainThread) {
   const timerBuffer = new SharedArrayBuffer(1024);
   const timer = new Int32Array(timerBuffer);
 
-  const worker = new Worker("./test/workers/worker-loop.js", {
+  const worker = new Worker("./poc/workers/worker-loop.js", {
     workerData: timer,
   });
 
@@ -47,6 +47,6 @@ if (isMainThread) {
   console.log("worker init", count);
 
   $onTick(timer, () => {
-    console.log("other thread notified");
+    console.log("other thread finishes the work");
   });
 }

@@ -3,7 +3,7 @@ import {Worker, isMainThread, parentPort, workerData} from "worker_threads";
 const now = performance.now;
 
 if (isMainThread) {
-  const worker = new Worker("./test/workers/worker.js", {workerData: "hello"});
+  const worker = new Worker("./poc/workers/worker.js", {workerData: "hello"});
 
   worker.on("message", (msg) => {
     console.log(`Worker message received: ${msg}`);
