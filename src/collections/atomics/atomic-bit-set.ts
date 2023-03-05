@@ -1,4 +1,4 @@
-import {isUint32Array} from "util/types";
+// import {isUint32Array} from "util/types";
 import {Bitset} from "../bit-set";
 
 export type AtomicBitSet = Bitset;
@@ -8,7 +8,19 @@ type AtomicBitSetBricks = AtomicBitSet["mask"];
 const isBitSetReconstruction = (
   options: number | Uint32Array
 ): options is Uint32Array => {
-  return isUint32Array(options);
+  // don't work in bun
+  try {
+    const {isUint32Array} = require("util/types");
+    if (isUint32Array) {
+      return isUint32Array(options);
+    } else {
+      // Work something more precise here
+      return typeof options === "object" && "BYTES_PER_ELEMENT" in options;
+    }
+  } catch (e) {
+    // Work something more precise here
+    return typeof options === "object" && "BYTES_PER_ELEMENT" in options;
+  }
 };
 
 /**

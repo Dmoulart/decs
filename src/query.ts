@@ -1,9 +1,12 @@
-import {BitSet} from "./collections";
+import {BitSet, deconstructAtomicSparseSet} from "./collections";
 import {Component} from "./component";
 import {World} from "./world";
 import {Archetype} from "./archetype";
 import {Entity} from "./entity";
 import {Worker} from "node:worker_threads";
+
+const sleep = async (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * A matcher represents the conditional expression used for every query operators.
@@ -75,7 +78,7 @@ export type Query = {
    */
   each: (fn: (eid: Entity, index: number) => void) => void;
 
-  $each: (url: string, divider: number) => void;
+  $parallel: (url: string, args: any) => () => Promise<void>;
 
   /**
    * Experimental.
@@ -159,21 +162,31 @@ export const Query = (): Query => {
         }
       }
     },
-    async $each(url: string, divider: number = 4) {
-      const worker = new Worker(url);
-      // const bitsetParts = deconstructAtomicBitSet(bitset);
-      // worker.postMessage();
+    $parallel(url: string, args: any) {
+      const workers = archetypes.map((arch) => new Worker(url));
 
-      await worker.terminate();
+      return async () => {
+        workers.forEach((worker, i) => {
+          console.log("worker post message");
 
-      // for (let i = 0; i < archetypes.length; i++) {
-      //   const ents = archetypes[i].entities.dense;
-      //   const len = ents.length;
-      //   for (let j = 0; j < len; j++) {
-      //     fn(ents[j], j);
-      //   }
-      // }
+          worker.postMessage({
+            sset: deconstructAtomicSparseSet(archetypes[i].entities as any),
+            ...args,
+          });
+
+          worker.on("message", async (message) => {
+            if (message === "done") {
+              await worker.terminate();
+            }
+          });
+        });
+
+        // await sleep(1000);
+
+        // Promise.all(workers.map((worker) => worker.terminate()));
+      };
     },
+
     $compiledEach(
       fn: (eid: Entity, index: number) => void,
       vars?: Record<string, any>

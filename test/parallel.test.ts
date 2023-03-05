@@ -1,5 +1,7 @@
 import "jest";
 import {
+  $createWorld,
+  $prefab,
   AtomicBitSet,
   AtomicSparseSet,
   deconstructAtomicBitSet,
@@ -10,10 +12,14 @@ import {
   i32,
   i8,
   parallel,
+  Query,
   reconstructAtomicSparseSet,
+  registerQuery,
+  ui32,
   useWorld,
 } from "../src";
 import {Worker} from "node:worker_threads";
+import {rmSync, writeFileSync} from "node:fs";
 
 const sleep = async (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -74,6 +80,7 @@ describe("Parallelism", () => {
     expect(sset.has(3)).toStrictEqual(true);
     expect(sset.count()).toStrictEqual(2);
   });
+
   it("can mutate a bit set in another thread", async () => {
     const bitset = AtomicBitSet();
 
@@ -86,6 +93,83 @@ describe("Parallelism", () => {
 
     expect(bitset.has(1)).toStrictEqual(false);
     expect(bitset.has(5)).toStrictEqual(true);
+  });
+
+  it("can fire parallel query each functions", async () => {
+    const world = $createWorld();
+
+    const Vector = {x: i32, y: i32, z: i32};
+    const position = defineComponent(Vector);
+    const velocity = defineComponent(Vector);
+
+    const sprite = defineComponent({
+      identifier: i32,
+    });
+    const color = defineComponent({
+      hex: ui32,
+    });
+
+    const actor = $prefab(
+      world,
+      {position, velocity},
+      {
+        position: {
+          x: 10,
+          y: 10,
+        },
+        velocity: {
+          x: 10,
+        },
+      }
+    );
+
+    const character = $prefab(
+      world,
+      {position, velocity, color, sprite},
+      {
+        position: {
+          x: 10,
+          y: 10,
+        },
+        velocity: {
+          x: 10,
+        },
+      }
+    );
+
+    const staticCharacter = $prefab(
+      world,
+      {position, sprite},
+      {
+        position: {
+          x: 10,
+          y: 10,
+        },
+      }
+    );
+
+    for (let i = 0; i < 50; i++) {
+      actor();
+      character();
+      staticCharacter();
+    }
+
+    const player = actor();
+
+    const query = Query().any(position, velocity, sprite, color);
+    registerQuery(query, world);
+
+    const parallelEach = query.$parallel("./test/workers/query-each.js", {
+      position,
+    });
+
+    await parallelEach();
+
+    rmSync("./report.json");
+    writeFileSync("./report.json", JSON.stringify(position));
+
+    expect(position.x[player]).toStrictEqual(25);
+    expect(position.y[player]).toStrictEqual(25);
   });
 
   it.skip("can pass worlds", async () => {

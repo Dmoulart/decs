@@ -1,5 +1,5 @@
 import {run} from "./run/runner";
-import {createWorld} from "../src/world";
+import {$createWorld, createWorld} from "../src/world";
 import {createEntity, removeEntity, resetEntityCursor} from "../src/entity";
 import {attach, defineComponent, detach} from "../src/component";
 import {Types} from "../src/types";
@@ -359,7 +359,7 @@ import {$prefab, prefab} from "../src";
 //  Create 100_000; entities with new prefab api inlined
 {
   resetEntityCursor();
-  let world = createWorld(100_000);
+  let world = $createWorld(120_000);
   const position = defineComponent({
     x: Types.f32,
     y: Types.f32,
@@ -393,7 +393,7 @@ import {$prefab, prefab} from "../src";
 //  Create 100_000; entities with new prefabWithPrefab function
 {
   resetEntityCursor();
-  let world = createWorld(100_000);
+  let world = $createWorld(120_000);
   const position = defineComponent({
     x: Types.f32,
     y: Types.f32,
@@ -434,7 +434,7 @@ import {$prefab, prefab} from "../src";
 //  Create 100_000; entities with new prefabWithPrefab function
 {
   resetEntityCursor();
-  let world = createWorld(100_000);
+  let world = $createWorld(120_000);
   const position = defineComponent({
     x: Types.f32,
     y: Types.f32,

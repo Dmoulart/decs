@@ -12,7 +12,7 @@
     "author": "dmoulart",
     "scripts": {
         "build": "rm -rf ./dist && tsc -p tsconfig.json",
-        "bench:node": "node  --experimental-specifier-resolution=node ./bench/ecs.ts",
+        "bench:node": "node --experimental-specifier-resolution=node --loader ts-node/esm ./bench/ecs.ts",
         "bench:bun": "bun run ./bench/ecs.ts",
         "sandbox": "bun run ./bench/sandbox.ts",
         "test": "jest --coverage ./test",

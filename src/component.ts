@@ -95,14 +95,6 @@ export const defineComponent = <Definition extends ComponentDefinition>(
 
   comp.id = ++nextCid;
 
-  // (comp as any).set = (
-  //   eid: Entity,
-  //   options: Partial<SetOptions<Component<Definition>>>,
-  //   world: World
-  // ) => {
-  //   set(comp, options, eid, world);
-  // };
-
   return comp;
 };
 

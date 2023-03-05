@@ -1,6 +1,6 @@
 import {ComponentField, InferComponentDefinition, Component} from "./component";
 import {World} from "./world";
-import {buildArchetype} from "./archetype";
+import {$buildArchetype, buildArchetype} from "./archetype";
 import {createEntity} from "./entity";
 import {NestedTypedArray, TypedArray} from "./types";
 
@@ -117,7 +117,7 @@ export const $prefab = <Definition extends PrefabDefinition>(
   defaultProps?: PrefabInstanceOptions<Definition>
 ) => {
   const components = Object.values(definition);
-  const archetype = buildArchetype(components, world);
+  const archetype = $buildArchetype(components, world);
 
   const inlineAssignInstanceValues =
     makeInlinePrefabInstanceAssignationFunction(definition);

@@ -1,5 +1,5 @@
 import {createEntity, Entity, existsEntity, removeEntity} from "./entity";
-import {Archetype, createArchetype} from "./archetype";
+import {$createArchetype, Archetype, createArchetype} from "./archetype";
 import {Query, QueryHandler} from "./query";
 import {attach, Component, detach, hasComponent} from "./component";
 import {
@@ -8,6 +8,7 @@ import {
   PrefabDefinition,
   PrefabInstanceOptions,
 } from "./prefab";
+import { AtomicBitSet } from "./collections/atomics";
 
 export const DEFAULT_WORLD_MAX_SIZE = 100_000;
 
@@ -49,6 +50,28 @@ export type World = {
  */
 export const createWorld = (size = DEFAULT_WORLD_MAX_SIZE): World => {
   const rootArchetype = createArchetype();
+
+  return {
+    rootArchetype,
+    archetypes: [rootArchetype],
+    deletedEntities: [] as Entity[],
+    entitiesArchetypes: [] as Archetype[],
+    queries: [] as Query[],
+    handlers: {
+      enter: [] as Array<QueryHandler[]>,
+      exit: [] as Array<QueryHandler[]>,
+    },
+    size,
+  };
+};
+
+/**
+ * Create a new world which will contain it's own archetypes and entities.
+ * @param size
+ * @returns new world
+ */
+export const $createWorld = (size = DEFAULT_WORLD_MAX_SIZE): World => {
+  const rootArchetype = $createArchetype(AtomicBitSet(2), size);
 
   return {
     rootArchetype,
