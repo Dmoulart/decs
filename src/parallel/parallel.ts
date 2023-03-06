@@ -70,11 +70,8 @@ function $onUpdate(timer: ParallelTimer, fn: () => void) {
     fn();
     parentPort!.postMessage({type: "result"});
     count = Atomics.load(timer, 0);
-    // parentPort!.postMessage({type: "result"});
   }, 1);
 }
-
-// export type $OnUpdate = typeof $onUpdate;
 
 export type $SystemContext = {
   $onUpdate: (fn: () => void) => void;
@@ -82,9 +79,8 @@ export type $SystemContext = {
 
 export const $expose = (fn: (ctx?: $SystemContext, ...args: any) => void) => {
   const [timer, args] = workerData;
-  let count = timer[0];
 
-  console.log("WORKER -- worker init", count);
+  console.log("WORKER -- worker init");
 
   parentPort!.postMessage("ready");
 
