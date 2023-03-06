@@ -1,153 +1,96 @@
-import {Query} from "../query";
-import {Worker} from "node:worker_threads";
-import {deconstructAtomicSparseSet} from "../collections";
+import {parentPort, Worker, workerData} from "node:worker_threads";
 
-export const parallel = (fn: (...args: any) => void) => {};
+export type System = {
+  run: () => Promise<void>;
+  terminate: () => Promise<number>;
+};
+export type ParallelTimer = Int32Array;
 
-export const $defineSystem = (query: Query, url: string) => {
-  const workers: Array<Worker> = [];
+export const $defineSystem = async (url: string, ...args: Array<any>) => {
+  return new Promise<System>((resolve, reject) => {
+    const timerBuffer = new SharedArrayBuffer(1024);
+    const timer = new Int32Array(timerBuffer);
 
-  const archetypes = query.archetypes.slice(0, 2);
-
-  const initialize = () => {
-    console.log("system initialization");
-    archetypes.forEach((_, i) => {
-      const worker = new Worker(url, {
-        workerData: i,
-      });
-
-      workers.push(worker);
+    const worker = new Worker(url, {
+      workerData: [timer, ...args],
     });
-  };
 
-  const transfer = (args: any) => {
-    workers.forEach((worker, i) => {
-      worker.postMessage(args);
-    });
-  };
+    worker.on("error", (error) => console.error(error));
+    worker.on("exit", (code) =>
+      console.log(`Worker exited with code ${code}.`)
+    );
 
-  const run = async (args: any) => {
-    return new Promise<void>((resolve, reject) => {
-      let terminations = 0;
+    const system: System = {
+      run: async () => await $update(timer, worker),
+      terminate: async () => await worker.terminate(),
+    };
 
-      function done({status, ts, id}: any) {
-        // console.log(
-        //   `message transport duration for worker ${id} : `,
-        //   `${(performance.now() - ts).toFixed(3)}ms`
-        // );
-        if (status === 1) {
-          console.log(`worker ${id} done`);
-          ++terminations;
-          console.timeEnd("run-worker:" + id);
-          if (terminations === workers.length) {
-            console.log("ALL WORKERS DONE");
-            resolve();
-          }
-        }
+    worker.on("message", (message) => {
+      if (message === "ready") {
+        resolve(system);
       }
-
-      workers.forEach((worker, i) => {
-        worker.on("message", done);
-        console.time("run-worker:" + i);
-
-        worker.postMessage({
-          sset: deconstructAtomicSparseSet(archetypes[i].entities as any),
-          ...args,
-        });
-      });
     });
-  };
-
-  const lightRun = async (args?: any) => {
-    return new Promise<void>((resolve, reject) => {
-      let terminations = 0;
-
-      function done({status, ts, id}: any) {
-        if (status === 1) {
-          console.log(`worker ${id} done`);
-          ++terminations;
-          console.timeEnd("run-worker:" + id);
-          if (terminations === workers.length) {
-            console.log("ALL WORKERS DONE");
-            resolve();
-          }
-        }
-      }
-
-      workers.forEach((worker, i) => {
-        worker.on("message", done);
-        console.time("run-worker:" + i);
-        // const entities = archetypes[i].entities.dense;
-        worker.postMessage(1);
-      });
-    });
-  };
-
-  const terminate = async () => {
-    return await Promise.all(workers.map((worker, i) => worker.terminate()));
-  };
-  return {
-    workers,
-    initialize,
-    run,
-    lightRun,
-    terminate,
-  };
+  });
 };
 
-// import {isNode} from "./runtimes";
+function $tick(timer: ParallelTimer) {
+  Atomics.add(timer, 0, 1);
+  Atomics.notify(timer, 0);
+}
 
-// // worker = new Worker(makeDataUrl(content), { type: "module" });
-// const makeBlob = (content: any) =>
-//   new globalThis.Blob([content], {type: "text/javascript"});
+async function $update(timer: ParallelTimer, worker: Worker) {
+  return new Promise<void>((resolve, reject) => {
+    console.log("MAIN-- send update");
 
-// const makeDataUrl = (content: any) => {
-//   const data = globalThis.Buffer.from(content).toString();
-//   return `data:text/javascript;${data}`;
-// };
+    worker.once("message", ({a, type}) => {
+      if (type === "result") {
+        resolve();
+      }
+    });
 
-// const makeContent = (fn: (...args: any[]) => void) => {
-//   return `
-// 	globalThis.onmessage = async ({data: arguments_}) => {
-// 		try {
-// 			const output = await (${fn.toString()})(...arguments_);
-// 			globalThis.postMessage({output});
-// 		} catch (error) {
-// 			globalThis.postMessage({error});
-// 		}
-// 	};
-// 	`;
-// };
+    worker.once("error", (err) => {
+      err ? reject(err) : reject();
+    });
 
-// export const parallel = (fn: (...args: any[]) => void) => {
-//   let url: string;
-//   let worker: Worker;
-//   const content = makeContent(fn);
+    $tick(timer);
+  });
+}
 
-//   const cleanup = () => {
-//     if (url) {
-//       URL.revokeObjectURL(url);
-//     }
+/**
+ * @warning Inside $onUpdate the console.log is defered and will be executed when the main thread is finished !
+ * @param {*} timer
+ * @param {*} fn
+ */
+function $onUpdate(timer: ParallelTimer, fn: () => void) {
+  // Get the current timer count
+  let count = Atomics.load(timer, 0);
+  // listen for updates
+  setInterval(() => {
+    const res = Atomics.wait(timer, 0, count);
+    fn();
+    parentPort!.postMessage({type: "result"});
+    count = Atomics.load(timer, 0);
+    // parentPort!.postMessage({type: "result"});
+  }, 1);
+}
 
-//     worker?.terminate();
-//   };
+// export type $OnUpdate = typeof $onUpdate;
 
-//   if (isNode) {
-//     const {Worker} = require("worker_threads");
-//     worker = new Worker(makeDataUrl(content), {type: "module"});
-//   } else {
-//     url = URL.createObjectURL(makeBlob(content));
-//     worker = new Worker(url, {type: "module"});
-//   }
-//   return [
-//     (...args: any[]) => {
-//       worker.postMessage(args);
-//     },
-//     cleanup,
-//   ];
+export type $SystemContext = {
+  $onUpdate: (fn: () => void) => void;
+};
 
-//   //   return {
-//   //     worker,
-//   //     cleanup,
-//   //   };
-// };
+export const $expose = (fn: (ctx?: $SystemContext) => void) => {
+  const [timer] = workerData;
+  let count = timer[0];
+
+  console.log("WORKER -- worker init", count);
+
+  parentPort!.postMessage("ready");
+
+  const ctx = {
+    $onUpdate: (fn: () => void) => $onUpdate(timer, fn),
+  };
+
+  fn(ctx);
+};

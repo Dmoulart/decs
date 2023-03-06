@@ -30,23 +30,6 @@ if (isMainThread) {
     );
   });
 
-  // const worker2 = new Worker("./poc/workers/worker-update_2.js", {
-  //   workerData: [timer, position],
-  // });
-
-  // onWorkerReady(worker2, async () => {
-  //   console.log("WORKER2-- START !");
-  //   console.time("update2");
-  //   await$update(timer, worker2).then(() => console.log("worker 2 DONE !"));
-  //   console.timeEnd("update2");
-  //   // console.log("WORKER2 -- update finished");
-  //   // If you remove the await the result should be equal to 0
-  //   console.log(
-  //     "position.x[1_500_000] should be equal to 1_500_000 : [result]=",
-  //     position.x[1_500_000]
-  //   );
-  // });
-
   worker.on("error", (error) => console.error(error));
   worker.on("exit", (code) => console.log(`Worker exited with code ${code}.`));
 } else {

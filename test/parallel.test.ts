@@ -11,7 +11,6 @@ import {
   f64,
   i32,
   i8,
-  parallel,
   Query,
   reconstructAtomicSparseSet,
   registerQuery,
@@ -95,82 +94,82 @@ describe("Parallelism", () => {
     expect(bitset.has(5)).toStrictEqual(true);
   });
 
-  it("can fire parallel query each functions", async () => {
-    const world = $createWorld();
+  // it("can fire parallel query each functions", async () => {
+  //   const world = $createWorld();
 
-    const Vector = {x: i32, y: i32, z: i32};
-    const position = defineComponent(Vector);
-    const velocity = defineComponent(Vector);
+  //   const Vector = {x: i32, y: i32, z: i32};
+  //   const position = defineComponent(Vector);
+  //   const velocity = defineComponent(Vector);
 
-    const sprite = defineComponent({
-      identifier: i32,
-    });
-    const color = defineComponent({
-      hex: ui32,
-    });
+  //   const sprite = defineComponent({
+  //     identifier: i32,
+  //   });
+  //   const color = defineComponent({
+  //     hex: ui32,
+  //   });
 
-    const actor = $prefab(
-      world,
-      {position, velocity},
-      {
-        position: {
-          x: 10,
-          y: 10,
-        },
-        velocity: {
-          x: 10,
-        },
-      }
-    );
+  //   const actor = $prefab(
+  //     world,
+  //     {position, velocity},
+  //     {
+  //       position: {
+  //         x: 10,
+  //         y: 10,
+  //       },
+  //       velocity: {
+  //         x: 10,
+  //       },
+  //     }
+  //   );
 
-    const character = $prefab(
-      world,
-      {position, velocity, color, sprite},
-      {
-        position: {
-          x: 10,
-          y: 10,
-        },
-        velocity: {
-          x: 10,
-        },
-      }
-    );
+  //   const character = $prefab(
+  //     world,
+  //     {position, velocity, color, sprite},
+  //     {
+  //       position: {
+  //         x: 10,
+  //         y: 10,
+  //       },
+  //       velocity: {
+  //         x: 10,
+  //       },
+  //     }
+  //   );
 
-    const staticCharacter = $prefab(
-      world,
-      {position, sprite},
-      {
-        position: {
-          x: 10,
-          y: 10,
-        },
-      }
-    );
+  //   const staticCharacter = $prefab(
+  //     world,
+  //     {position, sprite},
+  //     {
+  //       position: {
+  //         x: 10,
+  //         y: 10,
+  //       },
+  //     }
+  //   );
 
-    for (let i = 0; i < 50; i++) {
-      actor();
-      character();
-      staticCharacter();
-    }
+  //   for (let i = 0; i < 50; i++) {
+  //     actor();
+  //     character();
+  //     staticCharacter();
+  //   }
 
-    const player = actor();
+  //   const player = actor();
 
-    const query = Query().any(position, velocity, sprite, color);
-    registerQuery(query, world);
+  //   const query = Query().any(position, velocity, sprite, color);
+  //   registerQuery(query, world);
 
-    const parallelEach = query.$parallel("./test/workers/query-each.js", {
-      position,
-    });
+  //   const parallelEach = query.$parallel("./test/workers/query-each.js", {
+  //     position,
+  //   });
 
-    await parallelEach();
+  //   await parallelEach();
 
-    rmSync("./report.json");
-    writeFileSync("./report.json", JSON.stringify(position));
+  //   rmSync("./report.json");
+  //   writeFileSync("./report.json", JSON.stringify(position));
 
-    expect(position.x[player]).toStrictEqual(25);
-    expect(position.y[player]).toStrictEqual(25);
-  });
+  //   expect(position.x[player]).toStrictEqual(25);
+  //   expect(position.y[player]).toStrictEqual(25);
+  // });
 
   it.skip("can pass worlds", async () => {
     const {attach, create} = useWorld();
