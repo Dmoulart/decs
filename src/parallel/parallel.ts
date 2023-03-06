@@ -6,13 +6,13 @@ export type System = {
 };
 export type ParallelTimer = Int32Array;
 
-export const $defineSystem = async (url: string, ...args: Array<any>) => {
+export const $defineSystem = async (url: string, args: any) => {
   return new Promise<System>((resolve, reject) => {
     const timerBuffer = new SharedArrayBuffer(1024);
     const timer = new Int32Array(timerBuffer);
 
     const worker = new Worker(url, {
-      workerData: [timer, ...args],
+      workerData: [timer, args],
     });
 
     worker.on("error", (error) => console.error(error));
@@ -80,8 +80,8 @@ export type $SystemContext = {
   $onUpdate: (fn: () => void) => void;
 };
 
-export const $expose = (fn: (ctx?: $SystemContext) => void) => {
-  const [timer] = workerData;
+export const $expose = (fn: (ctx?: $SystemContext, ...args: any) => void) => {
+  const [timer, args] = workerData;
   let count = timer[0];
 
   console.log("WORKER -- worker init", count);
@@ -92,5 +92,5 @@ export const $expose = (fn: (ctx?: $SystemContext) => void) => {
     $onUpdate: (fn: () => void) => $onUpdate(timer, fn),
   };
 
-  fn(ctx);
+  fn(ctx, args);
 };
