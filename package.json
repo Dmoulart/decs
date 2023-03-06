@@ -2,7 +2,9 @@
     "name": "@dmoulart/decs",
     "version": "1.3.01",
     "license": "MIT",
-    "dependencies": {},
+    "dependencies": {
+        "make-asynchronous": "^0.3.0"
+    },
     "type": "module",
     "main": "./dist/index.js",
     "files": [
