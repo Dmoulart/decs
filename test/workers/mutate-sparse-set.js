@@ -1,5 +1,5 @@
 import {parentPort} from "worker_threads";
-import {reconstructAtomicSparseSet} from "../../dist/collections/atomics/atomic-sparse-set.js";
+import {reconstructAtomicSparseSet} from "../../dist/src/collections/atomics/atomic-sparse-set.js";
 
 parentPort.on("message", (ssetParts) => {
   try {

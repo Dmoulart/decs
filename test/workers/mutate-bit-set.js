@@ -1,5 +1,5 @@
 import {parentPort} from "worker_threads";
-import {reconstructAtomicBitSet} from "../../dist/collections/atomics/atomic-bit-set.js";
+import {reconstructAtomicBitSet} from "../../dist/src/collections/atomics/atomic-bit-set.js";
 
 parentPort.on("message", (bitsetParts) => {
   try {

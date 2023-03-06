@@ -1,6 +1,7 @@
 import "jest";
 import {
   $createWorld,
+  $defineSystem,
   $prefab,
   AtomicBitSet,
   AtomicSparseSet,
@@ -79,7 +80,6 @@ describe("Parallelism", () => {
     expect(sset.has(3)).toStrictEqual(true);
     expect(sset.count()).toStrictEqual(2);
   });
-
   it("can mutate a bit set in another thread", async () => {
     const bitset = AtomicBitSet();
 
@@ -92,6 +92,29 @@ describe("Parallelism", () => {
 
     expect(bitset.has(1)).toStrictEqual(false);
     expect(bitset.has(5)).toStrictEqual(true);
+  });
+  it("can run multiple systems in parallel", async () => {
+    const world = $createWorld();
+    const position = defineComponent({
+      x: i32,
+      y: i32,
+    });
+
+    const systemA = await $defineSystem("./test/workers/parallel-system.js", {
+      position,
+      propToMutate: "x",
+    });
+    const systemB = await $defineSystem("./test/workers/parallel-system.js", {
+      position,
+      propToMutate: "y",
+    });
+
+    await Promise.all([systemA.run(), systemB.run()]);
+    console.log("done !");
+    await Promise.all([systemA.terminate(), systemB.terminate()]);
+    console.log("terminated");
+    expect(position.x[10]).toStrictEqual(20);
+    expect(position.y[10]).toStrictEqual(20);
   });
 
   // it("can fire parallel query each functions", async () => {
