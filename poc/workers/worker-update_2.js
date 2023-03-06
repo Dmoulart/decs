@@ -17,17 +17,35 @@ if (isMainThread) {
     workerData: [timer, position],
   });
 
-  worker.on("message", async (msg) => {
-    if (msg === "ready") {
-      await $update(timer, worker, position);
-      console.log("MAIN -- update finished");
-      // If you remove the await the result should be equal to 0
-      console.log(
-        "position.x[1_500_000] should be equal to 1_500_000 : [result]=",
-        position.x[1_500_000]
-      );
-    }
+  onWorkerReady(worker, async () => {
+    console.log("WORKER1-- START !");
+    console.time("update");
+    await $update(timer, worker);
+    console.timeEnd("update");
+    // console.log("WORKER1 -- update finished");
+    // If you remove the await the result should be equal to 0
+    console.log(
+      "position.x[1_500_000] should be equal to 1_500_000 : [result]=",
+      position.x[1_500_000]
+    );
   });
+
+  // const worker2 = new Worker("./poc/workers/worker-update_2.js", {
+  //   workerData: [timer, position],
+  // });
+
+  // onWorkerReady(worker2, async () => {
+  //   console.log("WORKER2-- START !");
+  //   console.time("update2");
+  //   await$update(timer, worker2).then(() => console.log("worker 2 DONE !"));
+  //   console.timeEnd("update2");
+  //   // console.log("WORKER2 -- update finished");
+  //   // If you remove the await the result should be equal to 0
+  //   console.log(
+  //     "position.x[1_500_000] should be equal to 1_500_000 : [result]=",
+  //     position.x[1_500_000]
+  //   );
+  // });
 
   worker.on("error", (error) => console.error(error));
   worker.on("exit", (code) => console.log(`Worker exited with code ${code}.`));
@@ -40,13 +58,11 @@ if (isMainThread) {
   parentPort.postMessage("ready");
 
   $onUpdate(timer, () => {
-    let a = 100 * 200;
     for (let i = 0; i <= 1_500_000; i++) {
-      a += i;
       position.x[i] = i;
     }
 
-    parentPort.postMessage({a, type: "result"});
+    parentPort.postMessage({type: "result"});
   });
 }
 
@@ -61,8 +77,8 @@ function $tick(timer) {
   Atomics.notify(timer, 0);
 }
 
-async function $update(timer, worker, position) {
-  return new Promise((resolve) => {
+async function $update(timer, worker) {
+  return new Promise((resolve, reject) => {
     console.log("MAIN-- send update");
 
     worker.once("message", ({a, type}) => {
@@ -72,10 +88,18 @@ async function $update(timer, worker, position) {
     });
 
     worker.once("error", (err) => {
-      reject(err);
+      err ? reject(err) : reject();
     });
 
     $tick(timer);
+  });
+}
+
+function onWorkerReady(worker, fn) {
+  worker.on("message", async (msg) => {
+    if (msg === "ready") {
+      await fn();
+    }
   });
 }
 
