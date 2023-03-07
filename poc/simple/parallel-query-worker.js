@@ -3,7 +3,7 @@ import {$expose, reconstructAtomicSparseSet} from "../../src";
 $expose(({$onUpdate}, {position, velocity, arch}) => {
   const sset = reconstructAtomicSparseSet(arch);
   const entities = sset.dense;
-  const len = entities.length;
+  const len = sset.count();
 
   $onUpdate(() => {
     for (let j = 0; j < len; j++) {

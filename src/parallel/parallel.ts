@@ -76,15 +76,19 @@ export type $SystemContext = {
 };
 
 export const $expose = (fn: (ctx?: $SystemContext, ...args: any) => void) => {
-  const [timer, args] = workerData;
+  try {
+    const [timer, args] = workerData;
 
-  parentPort!.postMessage("ready");
+    parentPort!.postMessage("ready");
 
-  const ctx = {
-    $onUpdate: (fn: () => void) => $onUpdate(timer, fn),
-  };
+    const ctx = {
+      $onUpdate: (fn: () => void) => $onUpdate(timer, fn),
+    };
 
-  fn(ctx, args);
+    fn(ctx, args);
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 // export const $defineSystem2 = async (urlOrFn: string | Function, args: any) => {

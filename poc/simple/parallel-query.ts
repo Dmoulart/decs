@@ -12,7 +12,7 @@ import {
 } from "../../src";
 
 (async function () {
-  const world = $createWorld(101_000);
+  const world = $createWorld(130_000);
 
   const Vec2 = {x: i32, y: i32};
   const Color = {hex: ui32};
@@ -25,9 +25,19 @@ import {
 
   const ui = $prefab(world, {position, color});
 
-  for (let i = 0; i < 10_000; i++) {
-    actor();
-    ui();
+  for (let i = 0; i < 60_000; i++) {
+    actor({
+      velocity: {
+        x: 25,
+        y: 25,
+      },
+    });
+    ui({
+      position: {
+        x: 7,
+        y: 7,
+      },
+    });
   }
 
   const result = any(position, velocity).from(world);
@@ -53,14 +63,6 @@ import {
       arch: archActorPacked,
     }
   );
-  const actor2System = await $defineSystem(
-    "./poc/simple/parallel-query-worker.js",
-    {
-      position,
-      velocity,
-      arch: archActorPacked,
-    }
-  );
 
   console.time("parallel");
   await Promise.all([uiSystem.run(), actorSystem.run()]);
@@ -69,7 +71,8 @@ import {
   console.time("sync");
   for (let i = 0; i < result.length; i++) {
     const ents = result[i].entities.dense;
-    const len = ents.length;
+    const len = result[i].entities.count();
+
     for (let j = 0; j < len; j++) {
       const ent = ents[j];
       position.x[ent] += velocity.x[ent];
@@ -79,6 +82,7 @@ import {
   console.timeEnd("sync");
 
   await Promise.all([uiSystem.terminate(), actorSystem.terminate()]);
+  // writeFileSync("report.json", JSON.stringify(position));
 
   // console.time("sys");
   // const ents = archActor.entities.dense;
