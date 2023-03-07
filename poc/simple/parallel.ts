@@ -25,7 +25,7 @@ import {
     actor();
   }
 
-  const system = await $defineSystem("./poc/simple/worker.js", {
+  const system = await $defineSystem("./poc/simple/parallel-worker.js", {
     position,
     velocity,
   });
