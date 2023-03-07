@@ -1,5 +1,5 @@
 import {parentPort, Worker, workerData} from "node:worker_threads";
-
+import {makeWorker} from "../../poc/workers/make-worker";
 export type System = {
   run: () => Promise<void>;
   terminate: () => Promise<number>;
@@ -80,8 +80,6 @@ export type $SystemContext = {
 export const $expose = (fn: (ctx?: $SystemContext, ...args: any) => void) => {
   const [timer, args] = workerData;
 
-  console.log("WORKER -- worker init");
-
   parentPort!.postMessage("ready");
 
   const ctx = {
@@ -90,3 +88,42 @@ export const $expose = (fn: (ctx?: $SystemContext, ...args: any) => void) => {
 
   fn(ctx, args);
 };
+
+// export const $defineSystem2 = async (urlOrFn: string | Function, args: any) => {
+//   return new Promise<System>((resolve, reject) => {
+//     const timerBuffer = new SharedArrayBuffer(1024);
+//     const timer = new Int32Array(timerBuffer);
+
+//     const urlDefinedWorker = typeof urlOrFn === "string";
+
+//     const worker: any = urlDefinedWorker
+//       ? new Worker(urlOrFn, {
+//           workerData: [timer, args],
+//         })
+//       : makeWorker(urlOrFn, args);
+
+//     console.log(worker);
+//     // worker.on("error", (error: any) => console.error(error));
+//     // worker.on("exit", (code: any) =>
+//     //   console.log(`Worker exited with code ${code}.`)
+//     // );
+
+//     const system: System = {
+//       run: async () => await $update(timer, worker),
+//       terminate: async () => await worker.terminate(),
+//     };
+//     if (urlDefinedWorker) {
+//       worker.on("message", (message: any) => {
+//         if (message === "ready") {
+//           resolve(system);
+//         }
+//       });
+//     } else {
+//       worker.onmessage = (message: any) => {
+//         if (message === "ready") {
+//           resolve(system);
+//         }
+//       };
+//     }
+//   });
+// };

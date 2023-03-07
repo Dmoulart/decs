@@ -2,6 +2,7 @@ import "jest";
 import {
   $createWorld,
   $defineSystem,
+  $defineSystem2,
   $prefab,
   AtomicBitSet,
   AtomicSparseSet,
@@ -113,6 +114,28 @@ describe("Parallelism", () => {
     expect(position.x[10]).toStrictEqual(20);
     expect(position.y[10]).toStrictEqual(20);
   });
+  // it("can define worker functions in same file", async () => {
+  //   const position = defineComponent({
+  //     x: i32,
+  //     y: i32,
+  //   });
+
+  //   const system = await $defineSystem2(
+  //     ({$onUpdate}: any, {position}: any) => {
+  //       $onUpdate(() => {
+  //         position.x[1] = 10_000;
+  //       });
+  //     },
+  //     {
+  //       position,
+  //       propToMutate: "x",
+  //     }
+  //   );
+
+  //   await Promise.all([system.run()]);
+  //   await Promise.all([system.terminate()]);
+  //   expect(position.x[10]).toStrictEqual(20);
+  // });
 
   // it("can fire parallel query each functions", async () => {
   //   const world = $createWorld();
