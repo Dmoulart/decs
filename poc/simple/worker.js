@@ -1,4 +1,4 @@
-import {$expose} from "../src";
+import {$expose} from "../../src";
 
 $expose(({$onUpdate}, {position, velocity}) => {
   $onUpdate(() => {

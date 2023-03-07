@@ -1,11 +1,11 @@
-import {writeFile, writeFileSync} from "node:fs";
+import {writeFileSync} from "node:fs";
 import {
   $createWorld,
   $defineSystem,
   $prefab,
   defineComponent,
   i32,
-} from "../src";
+} from "../../src";
 
 (async function () {
   const world = $createWorld(101_000);
@@ -25,7 +25,10 @@ import {
     actor();
   }
 
-  const system = await $defineSystem("./poc/worker.js", {position, velocity});
+  const system = await $defineSystem("./poc/simple/worker.js", {
+    position,
+    velocity,
+  });
   console.time("sys");
   for (let i = 0; i < 100_000; i++) {
     position.x[i] += 15;

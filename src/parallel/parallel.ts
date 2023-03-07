@@ -1,5 +1,5 @@
 import {parentPort, Worker, workerData} from "node:worker_threads";
-import {makeWorker} from "../../poc/workers/make-worker";
+
 export type System = {
   run: () => Promise<void>;
   terminate: () => Promise<number>;
