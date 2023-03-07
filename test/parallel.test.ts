@@ -94,7 +94,6 @@ describe("Parallelism", () => {
     expect(bitset.has(5)).toStrictEqual(true);
   });
   it("can run multiple systems in parallel", async () => {
-    const world = $createWorld();
     const position = defineComponent({
       x: i32,
       y: i32,
@@ -110,9 +109,7 @@ describe("Parallelism", () => {
     });
 
     await Promise.all([systemA.run(), systemB.run()]);
-    console.log("done !");
     await Promise.all([systemA.terminate(), systemB.terminate()]);
-    console.log("terminated");
     expect(position.x[10]).toStrictEqual(20);
     expect(position.y[10]).toStrictEqual(20);
   });
