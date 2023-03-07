@@ -40,8 +40,6 @@ function $tick(timer: ParallelTimer) {
 
 async function $update(timer: ParallelTimer, worker: Worker) {
   return new Promise<void>((resolve, reject) => {
-    console.log("MAIN-- send update");
-
     worker.once("message", ({a, type}) => {
       if (type === "result") {
         resolve();

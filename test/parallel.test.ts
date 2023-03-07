@@ -1,22 +1,13 @@
 import "jest";
 import {
-  $createWorld,
   $defineSystem,
-  $defineSystem2,
-  $prefab,
   AtomicBitSet,
   AtomicSparseSet,
   deconstructAtomicBitSet,
   deconstructAtomicSparseSet,
   defineComponent,
-  f32,
   f64,
   i32,
-  i8,
-  Query,
-  reconstructAtomicSparseSet,
-  registerQuery,
-  ui32,
   useWorld,
 } from "../src";
 import {Worker} from "node:worker_threads";
