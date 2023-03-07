@@ -12,7 +12,7 @@ import {
 } from "../../src";
 
 (async function () {
-  const world = $createWorld(130_000);
+  const world = $createWorld(200_000);
 
   const Vec2 = {x: i32, y: i32};
   const Color = {hex: ui32};
@@ -24,6 +24,8 @@ import {
   const actor = $prefab(world, {position, velocity});
 
   const ui = $prefab(world, {position, color});
+
+  const light = $prefab(world, {velocity, color});
 
   for (let i = 0; i < 60_000; i++) {
     actor({
@@ -38,15 +40,23 @@ import {
         y: 7,
       },
     });
+    light({
+      velocity: {
+        x: 3,
+        y: 3,
+      },
+    });
   }
 
   const result = any(position, velocity).from(world);
   console.log(result.map((arch) => arch.entities.count()));
 
-  const [, archActor, archUi] = result;
+  const [, archActor, archUi, , archLight] = result;
 
   const archUiPacked = deconstructAtomicSparseSet(archUi.entities as any);
   const archActorPacked = deconstructAtomicSparseSet(archActor.entities as any);
+  const archLightPacked = deconstructAtomicSparseSet(archLight.entities as any);
+
   const uiSystem = await $defineSystem(
     "./poc/simple/parallel-query-worker.js",
     {
@@ -63,9 +73,18 @@ import {
       arch: archActorPacked,
     }
   );
+  const lightSystem = await $defineSystem(
+    "./poc/simple/parallel-query-worker.js",
+    {
+      position,
+      velocity,
+      arch: archLightPacked,
+    }
+  );
 
   console.time("parallel");
-  await Promise.all([uiSystem.run(), actorSystem.run()]);
+  console.log("light system", archLight.entities.count());
+  await Promise.all([uiSystem.run(), actorSystem.run(), lightSystem.run()]);
   console.timeEnd("parallel");
 
   console.time("sync");
