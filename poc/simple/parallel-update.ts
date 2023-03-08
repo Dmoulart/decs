@@ -59,17 +59,17 @@ import {
 
   console.time("define psystem");
   const [uiSystem, actorSystem, lightSystem] = await Promise.all([
-    $defineSystem("./poc/simple/parallel-query-worker.js", {
+    $defineSystem("./poc/simple/parallel-update-worker.js", {
       position,
       velocity,
       arch: archUiPacked,
     }),
-    $defineSystem("./poc/simple/parallel-query-worker.js", {
+    $defineSystem("./poc/simple/parallel-update-worker.js", {
       position,
       velocity,
       arch: archActorPacked,
     }),
-    $defineSystem("./poc/simple/parallel-query-worker.js", {
+    $defineSystem("./poc/simple/parallel-update-worker.js", {
       position,
       velocity,
       arch: archLightPacked,
