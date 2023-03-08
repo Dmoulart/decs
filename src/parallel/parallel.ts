@@ -75,7 +75,7 @@ export type $SystemContext = {
   $onUpdate: (fn: () => void) => void;
 };
 
-export const $expose = (fn: (ctx?: $SystemContext, ...args: any) => void) => {
+export const $exposeSystem = (fn: (ctx?: $SystemContext, ...args: any) => void) => {
   try {
     const [timer, args] = workerData;
 

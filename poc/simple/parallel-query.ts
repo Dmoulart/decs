@@ -57,33 +57,27 @@ import {
   const archActorPacked = deconstructAtomicSparseSet(archActor.entities as any);
   const archLightPacked = deconstructAtomicSparseSet(archLight.entities as any);
 
-  const uiSystem = await $defineSystem(
-    "./poc/simple/parallel-query-worker.js",
-    {
+  console.time("define psystem");
+  const [uiSystem, actorSystem, lightSystem] = await Promise.all([
+    $defineSystem("./poc/simple/parallel-query-worker.js", {
       position,
       velocity,
       arch: archUiPacked,
-    }
-  );
-  const actorSystem = await $defineSystem(
-    "./poc/simple/parallel-query-worker.js",
-    {
+    }),
+    $defineSystem("./poc/simple/parallel-query-worker.js", {
       position,
       velocity,
       arch: archActorPacked,
-    }
-  );
-  const lightSystem = await $defineSystem(
-    "./poc/simple/parallel-query-worker.js",
-    {
+    }),
+    $defineSystem("./poc/simple/parallel-query-worker.js", {
       position,
       velocity,
       arch: archLightPacked,
-    }
-  );
+    }),
+  ]);
+  console.timeEnd("define psystem");
 
   console.time("parallel");
-  console.log("light system", archLight.entities.count());
   await Promise.all([uiSystem.run(), actorSystem.run(), lightSystem.run()]);
   console.timeEnd("parallel");
 
@@ -100,23 +94,9 @@ import {
   }
   console.timeEnd("sync");
 
-  await Promise.all([uiSystem.terminate(), actorSystem.terminate()]);
-  // writeFileSync("report.json", JSON.stringify(position));
-
-  // console.time("sys");
-  // const ents = archActor.entities.dense;
-  // const len = ents.length;
-  // for (let j = 0; j < len; j++) {
-  //   const ent = ents[j];
-  //   position.x[ent] += velocity.x[ent];
-  //   position.y[ent] += velocity.y[ent];
-  // }
-  // console.timeEnd("sys");
-
-  // console.time("parallel");
-  // await system.run();
-  // console.timeEnd("parallel");
-
-  // // writeFileSync("report.json", JSON.stringify(position));
-  // await system.terminate();
+  await Promise.all([
+    uiSystem.terminate(),
+    actorSystem.terminate(),
+    lightSystem.terminate(),
+  ]);
 })();

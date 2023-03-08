@@ -1,6 +1,6 @@
-import {$expose, reconstructAtomicSparseSet} from "../../src";
+import {$exposeSystem, reconstructAtomicSparseSet} from "../../src";
 
-$expose(({$onUpdate}, {position, velocity, arch}) => {
+$exposeSystem(({$onUpdate}, {position, velocity, arch}) => {
   const sset = reconstructAtomicSparseSet(arch);
   const entities = sset.dense;
   const len = sset.count();

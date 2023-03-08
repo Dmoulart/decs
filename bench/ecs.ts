@@ -428,7 +428,6 @@ import {$prefab, prefab} from "../src";
       }
     }
   );
-  console.log(position.x[1]);
 }
 
 //  Create 100_000; entities with new prefabWithPrefab function
@@ -479,5 +478,4 @@ import {$prefab, prefab} from "../src";
       }
     }
   );
-  console.log(position.x[1]);
 }
