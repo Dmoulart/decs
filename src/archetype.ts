@@ -41,6 +41,24 @@ export const createArchetype = (mask = BitSet(2)): Archetype => {
 };
 
 /**
+ * Composes an archetype from an array of components.
+ * It will also register all the intermediate archetypes in the world archetype graph.
+ * @param components
+ * @param world
+ */
+export const buildArchetype = (components: Component<any>[], world: World) => {
+  let archetype = world.rootArchetype;
+  for (const component of components) {
+    if (archetype.edge[component.id]) {
+      archetype = archetype.edge[component.id]!;
+    } else {
+      archetype = deriveArchetype(archetype, component, world);
+    }
+  }
+  return archetype;
+};
+
+/**
  * Create a new archetype by cloning another archetype and adding or removing the given
  * component.
  * It will also register itself in the archetype graph and match against world queries.

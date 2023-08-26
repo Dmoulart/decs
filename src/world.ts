@@ -1,8 +1,8 @@
 import {createEntity, Entity, existsEntity, removeEntity} from "./entity";
 import {Archetype, createArchetype} from "./archetype";
-import { Query, QueryHandler } from "./query";
+import {Query, QueryHandler, registerQuery} from "./query";
 import {attach, Component, detach, hasComponent} from "./component";
-import {prefab} from "./prefab";
+import {prefab, PrefabDefinition, PrefabInstanceOptions} from "./prefab";
 
 export const DEFAULT_WORLD_MAX_SIZE = 100_000;
 
@@ -34,7 +34,7 @@ export type World = {
   /**
    * The callback to execute when entities enter the query or exit the query
    */
-  handlers: { enter: Array<QueryHandler[]>, exit: Array<QueryHandler[]> }
+  handlers: {enter: Array<QueryHandler[]>; exit: Array<QueryHandler[]>};
 };
 
 /**
@@ -43,7 +43,7 @@ export type World = {
  * @returns new world
  */
 export const createWorld = (size = DEFAULT_WORLD_MAX_SIZE): World => {
-  const rootArchetype = createArchetype()
+  const rootArchetype = createArchetype();
 
   return {
     rootArchetype,
@@ -52,22 +52,33 @@ export const createWorld = (size = DEFAULT_WORLD_MAX_SIZE): World => {
     entitiesArchetypes: [] as Archetype[],
     queries: [] as Query[],
     handlers: {
-        enter: [] as Array<QueryHandler[]>,
-        exit: [] as Array<QueryHandler[]>
+      enter: [] as Array<QueryHandler[]>,
+      exit: [] as Array<QueryHandler[]>,
     },
     size,
-  }
+  };
 };
 
 export const useWorld = (world: World = createWorld()) => {
-    return {
-        world,
-        create: (archetype?: Archetype) => createEntity(world, archetype),
-        delete: (eid: Entity) => removeEntity(eid, world),
-        exists: (eid: Entity) => existsEntity(eid, world),
-        hasComponent: (component: Component<any>, eid: Entity) => hasComponent(component, eid, world),
-        prefab: (...components: Component<any>[]) => prefab(world, ...components),
-        attach: (component: Component<any>, eid: Entity) => attach(component, eid, world),
-        detach: (component: Component<any>, eid: Entity) => detach(component, eid, world),
-    }
-}
+  return {
+    world,
+    create: (archetype?: Archetype) => createEntity(world, archetype),
+    delete: (eid: Entity) => removeEntity(eid, world),
+    exists: (eid: Entity) => existsEntity(eid, world),
+    hasComponent: (component: Component<any>, eid: Entity) =>
+      hasComponent(component, eid, world),
+    prefab: <Definition extends PrefabDefinition>(
+      definition: Definition,
+      options?: PrefabInstanceOptions<Definition>
+    ) => {
+      return prefab(world, definition, options);
+    },
+    attach: (component: Component<any>, eid: Entity) =>
+      attach(component, eid, world),
+    detach: (component: Component<any>, eid: Entity) =>
+      detach(component, eid, world),
+    registerQuery: (query: Query) => {
+      registerQuery(query, world);
+    },
+  };
+};
