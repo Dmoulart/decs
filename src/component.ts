@@ -1,21 +1,23 @@
-import { NestedTypedArray, TypedArray } from "./types";
-import {createWorld, World} from "./world";
-import { createEntity, NonExistantEntityError } from "./entity";
-import { DEFAULT_WORLD_MAX_SIZE } from "./world";
-import { deriveArchetype } from "./archetype";
+import {ArrayFieldType, FieldType, StringArray} from "./types";
+import {World} from "./world";
+import {NonExistantEntityError} from "./entity";
+import {DEFAULT_WORLD_MAX_SIZE} from "./world";
+import {deriveArchetype} from "./archetype";
 import {Entity} from "./entity";
 
 export type Component<Definition extends ComponentDefinition> = {
   id: number;
 } & {
   [key in keyof Definition]: ComponentField<Definition[key]>;
+} & {
+  data: {[key in keyof Definition]: SharedArrayBuffer};
 };
 
 // A component field is a typed array or an array of typed array.
 export type ComponentField<Type extends ComponentDefinitionField> =
-  Type extends TypedArray
+  Type extends FieldType
     ? InstanceType<Type>
-    : Type extends NestedTypedArray
+    : Type extends ArrayFieldType
     ? Array<InstanceType<Type[0]>>
     : never;
 
@@ -26,7 +28,7 @@ export type ComponentDefinition = Readonly<{
 }>;
 
 // A component definition field will consists in simple numeric arrays or nested arrays.
-export type ComponentDefinitionField = TypedArray | NestedTypedArray;
+export type ComponentDefinitionField = FieldType | ArrayFieldType;
 
 // Get the component definition from a component type.
 export type InferComponentDefinition<Comp extends Component<any>> =
@@ -46,14 +48,16 @@ const createComponentFields = <Definition extends ComponentDefinition>(
   def: Definition,
   size: number
 ): Component<Definition> => {
-  const comp = {} as Component<Definition>;
+  const comp = {data: {}} as Component<Definition>;
 
-  const isNestedArray = (field: unknown): field is NestedTypedArray => {
+  const isNestedArray = (field: unknown): field is ArrayFieldType => {
     return Array.isArray(field);
   };
 
-  const isTypedArray = (field: unknown): field is TypedArray => {
-    return typeof field === "function";
+  const isTypedArray = (
+    field: unknown
+  ): field is Exclude<FieldType, StringArray> => {
+    return typeof field === "function" && field !== Array;
   };
 
   for (const field of Object.keys(def) as Array<keyof Definition>) {
@@ -62,13 +66,19 @@ const createComponentFields = <Definition extends ComponentDefinition>(
     if (isNestedArray(fieldDef)) {
       const [ArrayConstructor, arraySize] = fieldDef;
 
-      (comp[field] as any) = new Array(size)
-        .fill(0)
-        .map(() => new ArrayConstructor(arraySize));
+      (comp[field] as any) = new Array(size).fill(0).map(() => {
+        //@todo shared array buffer
+        return new ArrayConstructor(arraySize);
+      });
     }
     // If key is an array constructor let's initialize it with the world size
     else if (isTypedArray(fieldDef)) {
-      (comp[field] as any) = new fieldDef(size);
+      const buffer = new SharedArrayBuffer(size * fieldDef.BYTES_PER_ELEMENT);
+      (comp[field] as any) = new fieldDef(buffer);
+
+      comp.data[field] = buffer;
+    } else if ((fieldDef as StringArray) === Array) {
+      (comp[field] as any) = new Array(size);
     }
   }
 
@@ -120,57 +130,55 @@ export const attach = (
   archetype.entities.remove(eid);
   newArchetype.entities.insert(eid);
 
-  if(world.handlers.enter[newArchetype.id]?.length){
-      const handlers = world.handlers.enter[newArchetype.id]
-      const entity = [eid]
-      for (const fn of handlers){
-        fn(entity)
-      }
+  if (world.handlers.enter[newArchetype.id]?.length) {
+    const handlers = world.handlers.enter[newArchetype.id];
+    const entity = [eid];
+    for (const fn of handlers) {
+      fn(entity);
+    }
   }
 
   world.entitiesArchetypes[eid] = newArchetype;
 };
 
-
 /**
-* Remove a component from the given entity.
-* @param component
-* @param eid
-* @param world
-* @throws NonExistantEntityError
-* @returns nothing
-*/
+ * Remove a component from the given entity.
+ * @param component
+ * @param eid
+ * @param world
+ * @throws NonExistantEntityError
+ * @returns nothing
+ */
 export const detach = (
-        component: Component<any>,
-        eid: Entity,
-        world: World
-        ) => {
-    const archetype = world.entitiesArchetypes[eid]!;
+  component: Component<any>,
+  eid: Entity,
+  world: World
+) => {
+  const archetype = world.entitiesArchetypes[eid];
 
-    if (!archetype) {
-        throw new NonExistantEntityError(
-          `Trying to remove component from a non existant entity with id :${eid}`
-        );
+  if (!archetype) {
+    throw new NonExistantEntityError(
+      `Trying to remove component from a non existant entity with id :${eid}`
+    );
+  }
+
+  if (!archetype.mask.has(component.id)) return;
+
+  const newArchetype = deriveArchetype(archetype, component, world);
+
+  archetype.entities.remove(eid);
+  newArchetype.entities.insert(eid);
+
+  if (world.handlers.exit[archetype.id]?.length) {
+    const handlers = world.handlers.exit[archetype.id];
+    const entity = [eid];
+    for (const fn of handlers) {
+      fn(entity);
     }
+  }
 
-    if (!archetype.mask.has(component.id)) return;
-
-    const newArchetype = deriveArchetype(archetype, component, world);
-
-    archetype.entities.remove(eid);
-    newArchetype.entities.insert(eid);
-
-    if(world.handlers.exit[archetype.id]?.length){
-        const handlers = world.handlers.exit[archetype.id]
-        const entity = [eid]
-        for (const fn of handlers){
-            fn(entity)
-        }
-    }
-
-    world.entitiesArchetypes[eid] = newArchetype;
+  world.entitiesArchetypes[eid] = newArchetype;
 };
-
 
 /**
  * Returns true if the entity possess the specified component.
