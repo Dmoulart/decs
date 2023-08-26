@@ -10,7 +10,7 @@ export type Component<Definition extends ComponentDefinition> = {
 } & {
   [key in keyof Definition]: ComponentField<Definition[key]>;
 } & {
-  data: {[key in keyof Definition]: SharedArrayBuffer};
+  data: {[key in keyof Definition]: ArrayBuffer};
 };
 
 // A component field is a typed array or an array of typed array.
@@ -73,7 +73,7 @@ const createComponentFields = <Definition extends ComponentDefinition>(
     }
     // If key is an array constructor let's initialize it with the world size
     else if (isTypedArray(fieldDef)) {
-      const buffer = new SharedArrayBuffer(size * fieldDef.BYTES_PER_ELEMENT);
+      const buffer = new ArrayBuffer(size * fieldDef.BYTES_PER_ELEMENT);
       (comp[field] as any) = new fieldDef(buffer);
 
       comp.data[field] = buffer;
